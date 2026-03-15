@@ -9,7 +9,7 @@ We are building an AI-powered resume builder SaaS to disrupt the resume builder 
   - Free signup = 100 credits
   - Pro plan = $12/mo (unlimited AI + 500 credits/month) or $99/year
   - Credit packs: $4.99/100, $9.99/300, $19.99/800
-- **AI Features:** Bullet writer, summary writer, full resume generator, ATS scorer, cover letter generator
+- **AI Features:** Bullet writer, summary writer, full resume generator, ATS scorer/optimizer, cover letter generator
 - **Timeline:** ~95 days (3 months) to production launch
 - **Starting from:** Zero. No code, no design, no brand assets.
 
@@ -19,16 +19,16 @@ We are building an AI-powered resume builder SaaS to disrupt the resume builder 
 
 | Layer | Technology | Rationale |
 |-------|-----------|-----------|
-| Framework | Next.js 15 (App Router) + TypeScript | SSR for SEO, React ecosystem, API routes built-in |
-| Styling | Tailwind CSS v4 + shadcn/ui | Ship fast, consistent design system |
+| Framework | Next.js 16 (App Router) + TypeScript | SSR for SEO, React ecosystem, API routes built-in |
+| Styling | Tailwind CSS v4 + shadcn/ui v4 | Ship fast, consistent design system (base-ui, NOT radix — no `asChild`) |
 | State | Zustand | Lightweight, no boilerplate, great for editor state |
 | Resume Editor | Custom React editor + dnd-kit | Full control over layout, drag-and-drop sections |
 | PDF Export | @react-pdf/renderer | Pixel-perfect PDFs from React components |
-| AI Engine | Claude API (Anthropic SDK) | Best writing quality for professional content |
+| AI Engine | Gemini API (Google Generative AI SDK) | Fast, high-quality writing for professional content |
 | Auth | NextAuth.js v5 (Auth.js) | Google/GitHub/email login, session management |
 | Database | PostgreSQL via Supabase | Auth, realtime, storage, DB in one platform |
-| ORM | Prisma | Type-safe queries, migrations, great DX |
-| Validation | Zod | Runtime type validation, form validation, API validation |
+| ORM | Drizzle ORM | Type-safe, zero-codegen, SQL-like, lightweight |
+| Validation | Zod v4 | Runtime type validation, form validation, API validation |
 | Payments | Stripe (Checkout + Webhooks) | Subscriptions + one-time credit pack purchases |
 | File Storage | Supabase Storage | Generated PDFs, user uploads |
 | Hosting | Vercel | Zero-config Next.js, edge functions, analytics |
@@ -63,9 +63,16 @@ src/
 │   │   ├── auth/
 │   │   ├── resumes/
 │   │   ├── ai/
+│   │   │   ├── bullet-points/
+│   │   │   ├── summary/
+│   │   │   ├── full-resume/
+│   │   │   ├── ats-scan/
+│   │   │   ├── ats-optimize/
+│   │   │   └── cover-letter/
 │   │   ├── export/
 │   │   ├── credits/
 │   │   └── webhooks/
+│   ├── r/[slug]/          # Public resume page
 │   ├── layout.tsx
 │   └── globals.css
 ├── components/
@@ -73,13 +80,25 @@ src/
 │   ├── layout/            # Header, Sidebar, Footer
 │   ├── resume/            # Resume display components
 │   ├── editor/            # Editor-specific components
+│   ├── ai/                # AI feature components
+│   │   ├── bullet-generator.tsx
+│   │   ├── summary-generator.tsx
+│   │   ├── resume-wizard.tsx
+│   │   ├── ats-scanner.tsx
+│   │   └── cover-letter-generator.tsx
 │   ├── templates/         # Template gallery components
 │   └── marketing/         # Landing page components
 ├── lib/
-│   ├── ai/                # Claude API client, prompts, utils
+│   ├── ai/                # Gemini API client, prompts, utils
+│   │   ├── client.ts      # Lazy-init Google Generative AI SDK with generateAIResponse()
+│   │   ├── prompts.ts     # System prompts + prompt builders + sanitize()
+│   │   ├── credit-check.ts # checkAuth() + deductCreditsForAI() + refundCredits()
+│   │   ├── rate-limiter.ts # In-memory per-user rate limiter (20/hr free, 100/hr Pro)
+│   │   └── parse-json.ts  # Multi-strategy JSON extraction from AI responses
 │   ├── pdf/               # PDF generation logic
 │   ├── stripe/            # Stripe client, helpers
 │   ├── supabase/          # Supabase client config
+│   ├── db/                # Drizzle DB client, schema, utility functions
 │   ├── validations/       # Zod schemas
 │   └── utils.ts           # General helpers (cn, formatDate, etc.)
 ├── templates/             # Resume template React components
@@ -91,15 +110,18 @@ src/
 │   ├── template.ts
 │   └── index.ts
 ├── hooks/                 # Custom React hooks
-│   ├── use-resume.ts
 │   ├── use-autosave.ts
-│   └── use-credits.ts
+│   ├── use-pdf-export.ts
+│   ├── use-keyboard-shortcuts.ts
+│   ├── use-current-user.ts
+│   └── use-require-auth.ts
 ├── stores/                # Zustand stores
 │   ├── resume-store.ts
 │   └── editor-store.ts
 └── constants/             # App-wide constants
     ├── credit-costs.ts
-    └── template-categories.ts
+    ├── template-categories.ts
+    └── template-names.ts
 ```
 
 ---
@@ -109,114 +131,43 @@ src/
 | Action | Credit Cost | Pro Subscriber |
 |--------|------------|----------------|
 | Signup bonus | +100 | +500 |
-| AI bullet points | -10 | Unlimited |
-| AI summary | -10 | Unlimited |
-| AI full resume | -40 | Unlimited |
-| ATS scan | -15 | Unlimited |
-| ATS optimize | -15 | Unlimited |
-| Cover letter | -20 | Unlimited |
-| PDF export | -30 | Unlimited |
+| AI bullet points | -10 | Unlimited (0 charged) |
+| AI summary | -10 | Unlimited (0 charged) |
+| AI full resume | -40 | Unlimited (0 charged) |
+| ATS scan | -15 | Unlimited (0 charged) |
+| ATS optimize | -15 | Unlimited (0 charged) |
+| Cover letter | -20 | Unlimited (0 charged) |
+| PDF export | -30 | Unlimited (0 charged) |
 | Monthly Pro refill | — | +500/month |
+
+**Credit flow:** `checkAuth()` (auth + rate limit) → validate input with Zod → `deductCreditsForAI()` → call AI → on failure: `refundCredits()` with type `REFUND` and retry logic (3 attempts, 500ms delay).
+
+**Pro handling:** `deductCredits()` in `src/lib/db/credits.ts` checks `subscriptionTier === 'PRO'` and logs a 0-amount transaction. No credits deducted.
 
 ---
 
-## Database Schema
+## Database Schema (Drizzle ORM)
 
-```prisma
-enum SubscriptionTier { FREE  PRO }
-enum SubscriptionStatus { ACTIVE  CANCELED  PAST_DUE  TRIALING }
-enum CreditTransactionType {
-  SIGNUP_BONUS  PURCHASE  AI_BULLET_POINTS  AI_SUMMARY
-  AI_FULL_RESUME  AI_ATS_SCAN  AI_COVER_LETTER  PDF_EXPORT
-  SUBSCRIPTION_MONTHLY  REFUND  ADMIN_ADJUSTMENT
-}
-enum TemplateCategory {
-  PROFESSIONAL  MODERN  CREATIVE  TECH  ATS_OPTIMIZED  ACADEMIC  MINIMAL
-}
+Schema defined in `src/lib/db/schema.ts` as TypeScript-native Drizzle tables. No codegen step required.
 
-model User {
-  id                 String             @id @default(cuid())
-  email              String             @unique
-  emailVerified      DateTime?
-  name               String?
-  image              String?
-  hashedPassword     String?
-  credits            Int                @default(100)
-  subscriptionTier   SubscriptionTier   @default(FREE)
-  accounts           Account[]
-  sessions           Session[]
-  resumes            Resume[]
-  creditTransactions CreditTransaction[]
-  subscription       Subscription?
-  createdAt          DateTime           @default(now())
-  updatedAt          DateTime           @updatedAt
-  @@index([email])
-}
+**Tables:** users, accounts, sessions, verification_tokens, resumes, templates, credit_transactions, subscriptions
 
-model Resume {
-  id              String   @id @default(cuid())
-  userId          String
-  title           String   @default("Untitled Resume")
-  slug            String   @unique @default(cuid())
-  templateId      String   @default("classic-professional")
-  content         Json
-  isPublic        Boolean  @default(false)
-  lastEditedAt    DateTime @default(now())
-  thumbnailUrl    String?
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  creditTransactions CreditTransaction[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  @@index([userId])
-  @@index([slug])
-  @@index([userId, lastEditedAt(sort: Desc)])
-}
+**Enums:** subscription_tier (FREE, PRO), subscription_status (ACTIVE, CANCELED, PAST_DUE, TRIALING), credit_transaction_type (SIGNUP_BONUS, PURCHASE, AI_BULLET_POINTS, AI_SUMMARY, AI_FULL_RESUME, AI_ATS_SCAN, AI_ATS_OPTIMIZE, AI_COVER_LETTER, PDF_EXPORT, SUBSCRIPTION_MONTHLY, REFUND, ADMIN_ADJUSTMENT), template_category (PROFESSIONAL, MODERN, CREATIVE, TECH, ATS_OPTIMIZED, ACADEMIC, MINIMAL)
 
-model Template {
-  id          String           @id @default(cuid())
-  name        String           @unique
-  slug        String           @unique
-  description String?
-  category    TemplateCategory
-  thumbnail   String?
-  isPremium   Boolean          @default(false)
-  isActive    Boolean          @default(true)
-  config      Json
-  sortOrder   Int              @default(0)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  @@index([category])
-  @@index([isActive, sortOrder])
-}
+**Key design decisions:**
+- JSON columns use `jsonb` with TypeScript generics (`.$type<ResumeContent>()`) for type-safe JSON
+- All IDs are `nanoid(25)` strings (not UUIDs) for URL-friendliness
+- `postgres.js` driver (not `pg`) for better performance and ESM support
+- Ownership checks enforced in all resume CRUD functions (`userId` required)
+- Credit operations use `SELECT ... FOR UPDATE` row locking for atomicity
+- Pagination clamped: `page >= 1`, `limit <= 100`
 
-model CreditTransaction {
-  id          String                 @id @default(cuid())
-  userId      String
-  amount      Int
-  type        CreditTransactionType
-  description String?
-  resumeId    String?
-  user        User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  resume      Resume?                @relation(fields: [resumeId], references: [id], onDelete: SetNull)
-  createdAt   DateTime               @default(now())
-  @@index([userId, createdAt(sort: Desc)])
-  @@index([userId, type])
-}
-
-model Subscription {
-  id                   String             @id @default(cuid())
-  userId               String             @unique
-  stripeCustomerId     String             @unique
-  stripeSubscriptionId String?            @unique
-  stripePriceId        String?
-  status               SubscriptionStatus @default(ACTIVE)
-  currentPeriodStart   DateTime?
-  currentPeriodEnd     DateTime?
-  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt
-}
-```
+**DB scripts:**
+- `npm run db:generate` — generate migration SQL from schema changes
+- `npm run db:migrate` — apply pending migrations
+- `npm run db:push` — push schema directly (dev only)
+- `npm run db:studio` — open Drizzle Studio GUI
+- `npm run db:seed` — seed 15 template records
 
 ---
 
@@ -266,6 +217,50 @@ interface SectionEntry {
 
 ---
 
+## AI Architecture (Phases 10-11)
+
+### Infrastructure (`src/lib/ai/`)
+- **`client.ts`** — Lazy-initialized Google Generative AI SDK. Model: `gemini-2.0-flash`. Exports `generateAIResponse()` with system prompt, timeout, and max tokens. Throws if `GEMINI_API_KEY` not set.
+- **`prompts.ts`** — System prompt (STAR format, action verbs, no fabrication) + 6 prompt builders. Input sanitization via `sanitize()` (short fields: strips control chars + newlines + HTML tags, max 500 chars) and `sanitizeLong()` (long-form content: preserves newlines, strips control chars + HTML tags). All user data wrapped in `<user_data>` XML tags with system prompt instruction to treat as data only.
+- **`credit-check.ts`** — `checkAuth()` (auth + rate limit, returns userId + tier), `deductCreditsForAI()` (deducts or returns 402), `refundCredits()` (uses `REFUND` transaction type, 3 retries with 500ms delay, CRITICAL log on final failure).
+- **`rate-limiter.ts`** — In-memory Map-based per-user rate limiter. 20/hr for FREE, 100/hr for PRO. Cleanup every 5 minutes. Returns 429 with `Retry-After` header.
+- **`parse-json.ts`** — Multi-strategy JSON extraction: (1) markdown fences, (2) non-greedy regex, (3) greedy fallback. Validates shape matches expected type (object vs array).
+
+### AI Route Pattern (all 6 routes follow this)
+```
+1. checkAuth() — authenticate + rate limit
+2. req.json() + Zod validation — BEFORE charging credits
+3. deductCreditsForAI() — atomic deduction
+4. generateAIResponse() — Gemini API with Promise.race timeout (30s)
+5. extractJSON() — multi-strategy parsing
+6. Zod validation on AI response
+7. On failure: refundCredits() + console.error with raw AI text
+8. Timeout detection: err instanceof Error && err.name === 'AbortError' → 504
+```
+
+### AI Features
+
+| Feature | Route | Credits | UI Component |
+|---------|-------|---------|-------------|
+| Bullet Points | POST /api/ai/bullet-points | 10 | `bullet-generator.tsx` — per-entry modal, opt-in selection |
+| Summary | POST /api/ai/summary | 10 | `summary-generator.tsx` — 3 variants (Confident/Balanced/Technical) |
+| Full Resume | POST /api/ai/full-resume | 40 | `resume-wizard.tsx` — 5-step wizard (role → experience → education → skills → generate) |
+| ATS Scan | POST /api/ai/ats-scan | 15 | `ats-scanner.tsx` — score circle + breakdown + missing keywords |
+| ATS Optimize | POST /api/ai/ats-optimize | 15 | `ats-scanner.tsx` — rewrite bullets, apply per-entry |
+| Cover Letter | POST /api/ai/cover-letter | 20 | `cover-letter-generator.tsx` — tone/length selection, editable output |
+
+### AI UI Patterns
+- Dialogs block close during generation (`if (!generating) setOpen(val)`)
+- Handle 402 (insufficient credits) WITHOUT closing dialog — preserves user input
+- Handle 429 (rate limit) with clear message
+- Regenerate buttons show credit cost: "Regenerate (10 credits)"
+- Cover letter output is editable via `<Textarea>` after generation
+- Bullet generator uses opt-in selection (empty by default, user picks)
+- Resume wizard cleans up orphaned resumes on AI failure (DELETE call)
+- ATS scanner uses `useResumeStore.getState()` for fresh data when applying optimizations
+
+---
+
 ## Template Collection (15 Templates)
 
 **Professional (3):**
@@ -294,13 +289,115 @@ interface SectionEntry {
 **Academic (1):**
 14. Academic CV — Multi-page, publications, research, grants. Professors/PhDs.
 
+**Extra:**
+15. Clean Slate — Minimal single-column with clean dividers.
+
+All templates use pure inline styles (no Tailwind) for dual web + PDF rendering compatibility. Factory function `createSingleColumnTemplate()` generates 10 of 15 templates. 5 standalone templates (classic-professional, modern-minimal, executive, developer, sleek, creative-bold) have unique layouts.
+
+---
+
+## PDF Export
+
+- **Font:** Inter (400/600/700 weights) registered from Google Fonts CDN
+- **Route:** POST /api/export/pdf — generates PDF FIRST, then deducts credits (no charge on render failure)
+- **Hook:** `usePdfExport()` — auto-saves before export, 30s timeout via AbortController, abort on save failure
+- **Public page:** `/r/[slug]` — validates slug format (`^[a-zA-Z0-9_-]{1,50}$`), uses `cache()` for deduped DB query
+- **Date formatting:** Uses `||` (not `??`) to handle empty string dates correctly
+
+---
+
+## Completed Phases
+
+- **Phase 1** ✅ — Project scaffolding, folder structure, deps
+- **Phase 2** ✅ — Drizzle ORM schema, DB utils, seed script
+- **Phase 3** ✅ — NextAuth v5, Google/GitHub/email auth, protected routes
+- **Phase 4** ✅ — App shell, sidebar, dashboard, resume CRUD API
+- **Phase 5** ✅ — Zustand store (25+ actions), undo/redo, auto-save, keyboard shortcuts
+- **Phase 6** ✅ — All editor UI components, section editors, dnd-kit, preview panel
+- **Phase 7** ✅ — Template engine, registry, renderer, color system
+- **Phase 8** ✅ — All 15 templates built and registered
+- **Phase 9** ✅ — PDF export with @react-pdf/renderer, public resume page
+- **Phase 10** ✅ — AI infrastructure, bullet writer, summary writer
+- **Phase 11** ✅ — Full resume generator, ATS scanner/optimizer, cover letter generator
+- **Phase 12** ✅ — Stripe integration, checkout flows, webhooks, credits page, pricing page
+- **Phase 13** ✅ — Landing page (GSAP animations), marketing header/footer, about/privacy/terms
+- **Phase 14** ✅ — Vitest (40 tests), error boundaries, 404 page, security headers, SEO, robots/sitemap
+- **Phase 15** ✅ — Vercel config, env validation, health endpoint, pre-launch checklist, favicon
+
+---
+
+## Stripe Architecture (Phase 12)
+
+### Infrastructure (`src/lib/stripe/`)
+- **`client.ts`** — Lazy-init Stripe SDK via Proxy pattern. API version `2026-02-25.clover`.
+- **`helpers.ts`** — `getOrCreateStripeCustomer()` with row-level locking to prevent race conditions. `getSubscriptionPriceId()` for env-based price ID resolution.
+- **`rate-limit.ts`** — In-memory rate limiter for checkout/portal routes (10 req/min per user).
+
+### Checkout Flow
+```
+1. POST /api/stripe/checkout/credits — Creates Stripe Checkout session (mode: payment, inline price_data)
+2. POST /api/stripe/checkout/subscription — Creates Stripe Checkout session (mode: subscription, env price ID)
+3. POST /api/stripe/portal — Creates Stripe Customer Portal session for billing management
+```
+
+### Webhook Handler (`POST /api/webhooks/stripe`)
+- **Idempotency:** `stripe_events` table stores processed event IDs, skips duplicates
+- **Atomic operations:** Subscription activation (upsert + tier upgrade + credits) in single `db.transaction()`
+- **Error classification:** Transient errors → 500 (Stripe retries), permanent errors → 200 (stops retries, logs for reconciliation)
+- **Events handled:** `checkout.session.completed`, `invoice.paid`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_failed`
+
+### Security
+- CSRF: Origin header validation on all checkout/portal routes
+- Rate limiting: 10 req/min per user on checkout/portal
+- Auth: All routes require authenticated session
+- Subscription check: Queries DB directly (not stale JWT session)
+
+### UI Pages
+- **Credits page** (`/credits`): Balance card, Pro upgrade section, credit packs, cost reference, paginated transaction history with Suspense boundary
+- **Pricing page** (`/pricing`): Free vs Pro comparison, credit packs, cost table, FAQ, auth-aware CTAs
+- **Settings page**: Manage Billing button (Stripe Portal) for Pro users
+
+---
+
+## Marketing Site (Phase 13)
+
+- **Header** (`src/components/marketing/header.tsx`): Sticky nav, auth-aware CTAs (Login/Signup or Dashboard)
+- **Footer** (`src/components/marketing/footer.tsx`): 4-column layout, product/company links
+- **Landing page** (`src/app/(marketing)/page.tsx`): Server component for auth → client component with GSAP ScrollTrigger animations
+- **GSAP animations** (`src/components/marketing/landing-page.tsx`): ScrollTrigger on every section, 3D card flips, elastic bounces, clip-path reveals, before/after strikethrough, parallax backgrounds
+- **Pages**: About, Privacy Policy, Terms of Service with SEO metadata
+
+---
+
+## Testing & Security (Phase 14)
+
+- **Vitest** (`vitest.config.ts`): jsdom environment, path aliases, 40 unit tests
+- **Test files**: `parse-json.test.ts` (8), `validations.test.ts` (18), `credit-costs.test.ts` (14)
+- **Error boundaries**: Global `error.tsx`, app-scoped `(app)/error.tsx`, `not-found.tsx` (404)
+- **Security headers** (`next.config.ts`): X-Frame-Options DENY, HSTS, nosniff, Referrer-Policy, Permissions-Policy
+- **SEO**: OpenGraph + Twitter Card metadata, `robots.ts`, `sitemap.ts` (8 routes), favicon
+- **Health check**: `GET /api/health` → `{ status, timestamp, version }`
+
+---
+
+## Deployment (Phase 15)
+
+- **Vercel config** (`vercel.json`): Function timeouts (AI: 45s, PDF: 30s, webhooks: 15s), region iad1
+- **Env validation** (`src/lib/env.ts`): Validates required vars at startup via instrumentation hook, throws in production, warns in dev
+- **Pre-launch script** (`npm run prelaunch`): Checks all env vars, blocks deployment if required vars missing
+- **Favicon**: SVG favicon at `/public/favicon.svg`
+
+## Remaining Phases
+
+- **Phase 16+** — Post-launch growth features (see Future Roadmap)
+
 ---
 
 ## 15-Phase Roadmap
 
 ### PHASE 1 — Project Scaffolding & Dev Environment (Days 1-2)
-- Initialize Next.js 15 + TypeScript strict mode
-- Configure Tailwind CSS v4 + shadcn/ui
+- Initialize Next.js 16 + TypeScript strict mode
+- Configure Tailwind CSS v4 + shadcn/ui v4
 - Set up full folder structure (see Project Structure above)
 - Configure ESLint + Prettier
 - Set up .env.example with all required keys
@@ -312,26 +409,26 @@ interface SectionEntry {
 ---
 
 ### PHASE 2 — Database Schema & Data Layer (Days 3-5)
-- Install Prisma + connect Supabase PostgreSQL
-- Define complete Prisma schema (all models, enums, indexes — see above)
-- Run initial migration
-- Create Prisma client singleton (`src/lib/db.ts`)
+- Install Drizzle ORM + postgres.js driver
+- Define complete Drizzle schema in TypeScript (`src/lib/db/schema.ts`)
+- Run initial migration with `drizzle-kit push`
+- Create Drizzle client (`src/lib/db.ts`)
 - Create DB utility functions: users.ts, resumes.ts, credits.ts, templates.ts
 - Define TypeScript types (`src/types/resume.ts`)
 - Define Zod validation schemas (`src/lib/validations/resume.ts`)
-- Seed database with 14 template records (`prisma/seed.ts`)
+- Seed database with 15 template records (`src/lib/db/seed.ts`)
 
-**Verify:** `npx prisma studio` shows all tables, seed script runs, Zod validates correctly
+**Verify:** `npm run db:studio` shows all tables, seed script runs, Zod validates correctly
 
 ---
 
 ### PHASE 3 — Authentication System (Days 6-9)
-- NextAuth.js v5 + PrismaAdapter
+- NextAuth.js v5 + DrizzleAdapter
 - Google OAuth, GitHub OAuth, email/password (bcrypt)
-- Session callbacks: include userId, credits, subscriptionTier
+- Session callbacks: include userId, credits, subscriptionTier (only queries DB on initial sign-in)
 - Protected route middleware (protect /dashboard/*, /editor/*, etc.)
-- Signup API: hash password, create user, award 100 credits, log transaction
-- Login page UI: social buttons + email/password form
+- Signup API: hash password, create user, award 100 credits, log transaction (atomic with unique constraint catch)
+- Login page UI: social buttons + email/password form, open redirect protection
 - Signup page UI: name, email, password, confirm, strength indicator
 - Forgot password page UI
 - Auth hooks: useCurrentUser(), useRequireAuth()
@@ -344,10 +441,10 @@ interface SectionEntry {
 - App layout: sidebar + main content
 - Sidebar: nav links (Dashboard, Resumes, Templates, AI Tools, Credits, Settings), credit badge, upgrade CTA
 - Top bar: breadcrumbs, credit balance, "New Resume" button, user avatar dropdown
-- Dashboard page: welcome message, stats row, recent resumes grid, empty state
+- Dashboard page: welcome message, stats row, recent resumes grid, empty state, "Create with AI" → ResumeWizard
 - Resume card component: thumbnail, title, last edited, template badge, 3-dot menu
 - Settings page: profile, password, subscription, danger zone (delete account)
-- Resume CRUD API routes: GET/POST /api/resumes, GET/PUT/DELETE /api/resumes/[id], POST /api/resumes/[id]/duplicate
+- Resume CRUD API routes: GET/POST /api/resumes, GET/PUT/DELETE /api/resumes/[id], POST /api/resumes/[id]/duplicate, POST /api/resumes/[id]/save
 - Default resume content factory
 
 **Verify:** Dashboard loads, sidebar works, CRUD API works, mobile responsive
@@ -357,7 +454,7 @@ interface SectionEntry {
 ### PHASE 5 — Resume Editor: Data & State Management (Days 15-19)
 - Zustand resume store: all state + actions for personalInfo, sections, entries, bullets, template
 - Undo/redo system (50-step history stack, Ctrl+Z / Ctrl+Shift+Z)
-- Auto-save hook: debounced 2s, retry on failure, save on unload
+- Auto-save hook: debounced 2s, retry on failure (separate timer from debounce), save on unload via sendBeacon
 - Editor page route: fetch resume, load into store, two-panel layout
 - Keyboard shortcuts: Ctrl+S save, Ctrl+Z undo, Ctrl+Shift+Z redo
 - Save status indicator: "Saving...", "Saved", "Error"
@@ -369,16 +466,18 @@ interface SectionEntry {
 ### PHASE 6 — Resume Editor: UI Components (Days 20-27)
 - Resizable split pane: editor (left) + live preview (right)
 - Personal info form: all fields connected to store
-- Professional summary editor with character count
-- Section manager: add/remove/reorder sections via dnd-kit
-- Experience editor: job details + bullet points + drag-and-drop
+- Professional summary editor with character count + AI generate button
+- Section manager: add/remove/reorder sections via dnd-kit, inline title editing, scroll-to-section
+- Experience editor: job details + bullet points + drag-and-drop + AI bullet generator
 - Education editor: school, degree, field, dates, GPA
-- Skills editor: skill groups + tag input + proficiency levels
-- Projects editor: name, description, tech tags, URLs
-- Generic editors: certifications, awards, languages, volunteer, publications, custom
-- Preview panel: renders selected template, zoom controls, page indicator
-- Template switcher modal
-- Full drag-and-drop: sections, entries, bullets
+- Skills editor: skill groups + tag input
+- Languages editor: dedicated with proficiency dropdown
+- Generic editors: projects, certifications, awards, volunteer, publications, interests, references, custom
+- Preview panel: renders selected template, zoom controls
+- Template switcher dropdown
+- Completeness indicator with expandable checklist
+- Delete confirmation dialogs, empty section states, date month/year pickers
+- Tooltip hints on all icon buttons
 
 **Verify:** All section types work, preview updates real-time, drag-and-drop works, mobile tabs
 
@@ -386,11 +485,11 @@ interface SectionEntry {
 
 ### PHASE 7 — Template Engine Architecture (Days 28-32)
 - TemplateConfig interface: layout, colors, fonts, spacing
-- Template registry: slug → { component, pdfComponent, config }
+- Template registry: slug → { component, config }, fallback to classic-professional
 - Base template components: Header, Summary, Experience, Education, Skills, Projects, Generic, Divider
 - Template wrapper/renderer component
 - Color customization system: per-resume overrides, predefined schemes, custom hex
-- A4/Letter page sizing with page break detection
+- A4 page sizing
 
 **Verify:** Registry returns templates, renderer works, switching preserves content, colors apply
 
@@ -402,6 +501,7 @@ interface SectionEntry {
 - Register all in template registry
 - Handle all section types, missing sections, empty entries gracefully
 - Each template visually distinct and polished
+- All use pure inline styles (no Tailwind) for PDF compatibility
 
 **Verify:** All 15 render correctly, handle minimal/maximal content, color switching works
 
@@ -410,57 +510,40 @@ interface SectionEntry {
 ### PHASE 9 — PDF Export Engine (Days 43-48)
 - @react-pdf/renderer integration
 - PDF primitives: text styles, spacing, margins (Flexbox-only)
-- PDF template components: one per web template (template-name.pdf.tsx)
-- Font registration + subsetting
-- PDF generation API: POST /api/export/pdf (auth + credit check + generate + return binary)
-- PDF preview in browser
-- Download flow: credit confirmation → loading → download
-- Multi-page support: auto page breaks, optional page numbers
-- Shareable public link: /r/[slug] with OG meta tags
+- PDF template: shared `PDFResume` component with `createStyles()`, `PDFHeader`, `PDFSection`, `PDFEntry`
+- Font registration: Inter 400/600/700 from Google CDN
+- PDF generation API: POST /api/export/pdf (auth → validate with Zod → fetch resume → generate PDF → deduct credits)
+- Download hook with auto-save, 30s timeout, abort on save failure
+- Multi-page support: `wrap={false}` on entries
+- Shareable public link: /r/[slug] with OG meta tags, slug validation
 
-**Verify:** All 15 templates export correctly, PDF matches preview, credits deducted, < 500KB
+**Verify:** All 15 templates export correctly, PDF matches preview, credits deducted after success
 
 ---
 
 ### PHASE 10 — AI Infrastructure & Core AI Features (Days 49-56)
-- Anthropic SDK integration + streaming helper
-- AI prompt system: system prompt, bullet-points, summary, full-resume, ats-optimize, cover-letter
-- AI credit middleware: check Pro status → check balance → deduct atomically → log transaction
-- Rate limiter: 20/hr free, 100/hr Pro
-- **AI Bullet Point Writer:**
-  - POST /api/ai/bullet-points
-  - Input: jobTitle, company, responsibilities, industry
-  - Output: 4-6 STAR-format bullets, streaming
-  - UI: "Generate with AI" button per experience entry → modal → pick bullets → insert
-  - Cost: 10 credits
-- **AI Professional Summary Writer:**
-  - POST /api/ai/summary
-  - Input: targetRole, yearsExperience, keySkills, industry
-  - Output: 3 variants (Confident, Balanced, Technical)
-  - UI: modal with career details → 3 options → pick or edit
-  - Cost: 10 credits
+- Gemini SDK lazy-init with generateAIResponse() wrapper
+- AI prompt system with input sanitization (`sanitize()` + `sanitizeLong()`) and `<user_data>` XML injection defense
+- AI credit middleware: checkAuth (auth + rate limit) → validate → deduct → call AI → refund on failure
+- Rate limiter: 20/hr free, 100/hr Pro (in-memory)
+- Multi-strategy JSON extraction (`parse-json.ts`)
+- 30s timeout on all AI calls via `AbortSignal.timeout()`
+- **AI Bullet Point Writer:** POST /api/ai/bullet-points, 10 credits, opt-in selection UI
+- **AI Professional Summary Writer:** POST /api/ai/summary, 10 credits, 3 variants UI
 
-**Verify:** AI produces quality output, streaming works, credits deducted, failures don't charge
+**Verify:** AI produces quality output, credits deducted after validation, failures refund with REFUND type
 
 ---
 
 ### PHASE 11 — Advanced AI Features (Days 57-65)
-- **AI Full Resume Generator:**
-  - 5-step onboarding wizard (role, work history, education, skills, goals)
-  - POST /api/ai/full-resume → complete ResumeContent JSON
-  - Loading screen with progress steps
-  - Cost: 40 credits
-- **ATS Scanner & Optimizer:**
-  - POST /api/ai/ats-scan: resume + job description → score (0-100) + keyword match + skills alignment + suggestions
-  - POST /api/ai/ats-optimize: rewrite bullets to match JD, diff view, accept/reject per change
-  - Cost: 15 credits each
-- **Cover Letter Generator:**
-  - POST /api/ai/cover-letter: resume + company + JD + tone + length
-  - Output: personalized 3-paragraph cover letter
-  - Copy, download PDF, regenerate, inline edit
-  - Cost: 20 credits
+- **AI Full Resume Generator:** 5-step wizard → POST /api/ai/full-resume → 40 credits, orphan cleanup on failure
+- **ATS Scanner:** POST /api/ai/ats-scan → score (0-100) + breakdown + missing keywords, 15 credits
+- **ATS Optimizer:** POST /api/ai/ats-optimize → rewrite bullets to match JD, apply per-entry, 15 credits
+- **Cover Letter Generator:** POST /api/ai/cover-letter → tone/length selection, editable output, copy to clipboard, 20 credits
+- All wired into editor toolbar (ATS Scanner, Cover Letter) and dashboard (Resume Wizard)
+- AI tools visible on all screen sizes including mobile
 
-**Verify:** Full generator creates coherent resumes, ATS scores are meaningful, cover letters are personalized
+**Verify:** Full generator creates coherent resumes, ATS scores are meaningful, cover letters are personalized and editable
 
 ---
 
@@ -553,13 +636,20 @@ interface SectionEntry {
 
 ## Conventions
 - Use TypeScript strict mode everywhere
-- Validate all API inputs with Zod
-- Use Prisma for all DB operations (never raw SQL)
+- Validate all API inputs with Zod (note: `z.record()` requires 2 args in Zod v4)
+- Use Drizzle ORM for all DB operations
 - Use server components by default, client components only when needed
 - Use `cn()` utility for conditional Tailwind classes
 - Use sonner for toast notifications
 - Use lucide-react for icons
 - Use nanoid for generating IDs
-- Atomic credit operations (DB transactions for deduct + log)
-- Auto-save with 2s debounce in editor
-- All resume templates are pure functions: (ResumeContent, TemplateConfig) → JSX
+- Atomic credit operations (DB transactions with `SELECT ... FOR UPDATE` row locking)
+- Auto-save with 2s debounce in editor (separate retry timer from debounce timer)
+- All resume templates are pure functions: (ResumeContent, TemplateConfig) → JSX with inline styles
+- AI routes: validate BEFORE charging credits, refund on failure with `REFUND` type
+- AI prompts: `sanitize()` for short fields (collapses newlines), `sanitizeLong()` for long-form content (preserves newlines)
+- Dialogs block close during async generation
+- Handle 402 (insufficient credits) without closing dialog
+- Handle 429 (rate limit) in all AI UI components
+- AbortError detection uses `err instanceof Error` (not `DOMException`) for Node.js compatibility
+- Don't export types from Next.js route files — use `src/types/` instead

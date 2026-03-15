@@ -1,0 +1,17 @@
+export const TEMPLATE_NAMES: Record<string, string> = {
+  'classic-professional': 'Classic Professional',
+  executive: 'Executive',
+  corporate: 'Corporate',
+  'modern-minimal': 'Modern Minimal',
+  metro: 'Metro',
+  sleek: 'Sleek',
+  'creative-bold': 'Creative Bold',
+  designer: 'Designer',
+  starter: 'Starter',
+  developer: 'Developer',
+  data: 'Data',
+  'ats-simple': 'ATS Simple',
+  'ats-professional': 'ATS Professional',
+  'academic-cv': 'Academic CV',
+  'clean-slate': 'Clean Slate',
+}
