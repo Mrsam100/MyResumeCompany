@@ -48,10 +48,8 @@ export function Topbar() {
       {/* Left: Mobile menu + Breadcrumb */}
       <div className="flex items-center gap-3">
         <Sheet>
-          <SheetTrigger className="lg:hidden">
-            <Button variant="ghost" size="icon">
-              <Menu className="h-5 w-5" />
-            </Button>
+          <SheetTrigger className="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground">
+            <Menu className="h-5 w-5" />
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0">
             <Sidebar />
