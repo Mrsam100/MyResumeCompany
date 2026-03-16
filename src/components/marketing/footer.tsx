@@ -3,21 +3,29 @@ import Image from 'next/image'
 
 const PRODUCT_LINKS = [
   { href: '/pricing', label: 'Pricing' },
-  { href: '/templates', label: 'Templates' },
+  { href: '/resume-templates', label: 'Templates' },
+  { href: '/blog', label: 'Blog' },
   { href: '/signup', label: 'Get Started' },
 ]
 
 const COMPANY_LINKS = [
   { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
   { href: '/privacy', label: 'Privacy Policy' },
   { href: '/terms', label: 'Terms of Service' },
+]
+
+const COMPARE_LINKS = [
+  { href: '/compare/vs-zety', label: 'vs Zety' },
+  { href: '/compare/vs-resume-io', label: 'vs Resume.io' },
+  { href: '/compare/vs-canva', label: 'vs Canva' },
 ]
 
 export function MarketingFooter() {
   return (
     <footer className="border-t bg-muted/30">
       <div className="mx-auto max-w-6xl px-4 py-12">
-        <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-5">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-2">
             <Link href="/" className="flex items-center gap-2">
@@ -52,6 +60,23 @@ export function MarketingFooter() {
             <h3 className="text-sm font-semibold">Company</h3>
             <ul className="mt-3 space-y-2">
               {COMPANY_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Compare */}
+          <div>
+            <h3 className="text-sm font-semibold">Compare</h3>
+            <ul className="mt-3 space-y-2">
+              {COMPARE_LINKS.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}

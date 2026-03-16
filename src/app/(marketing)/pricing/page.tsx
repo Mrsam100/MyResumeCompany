@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Check, X, Crown, Zap, ArrowRight } from 'lucide-react'
 
@@ -6,6 +7,14 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { CREDIT_COSTS, CREDIT_PACKS, SUBSCRIPTION_PLANS } from '@/constants/credit-costs'
+import { JsonLd } from '@/components/schema/json-ld'
+
+export const metadata: Metadata = {
+  title: 'Pricing',
+  description:
+    'Simple, transparent pricing for TheResumeCompany. Start free with 100 credits or upgrade to Pro for unlimited AI resume writing, ATS scanning, and PDF exports.',
+  alternates: { canonical: '/pricing' },
+}
 
 const FREE_FEATURES = [
   { text: '100 free credits on signup', included: true },
@@ -43,19 +52,39 @@ const FAQ = [
   },
   {
     q: 'Can I use the builder without paying?',
-    a: 'Yes! You get 100 free credits on signup, which is enough to create and export a complete resume with AI assistance.',
+    a: 'Yes! You get 100 free credits on signup, which is enough to create and export a complete resume with AI assistance. Most users finish their first resume without spending anything.',
   },
   {
     q: 'What happens when I run out of credits?',
-    a: 'You can purchase credit packs starting at $4.99 for 100 credits, or upgrade to Pro for unlimited AI usage.',
+    a: 'You can purchase credit packs starting at $4.99 for 100 credits, or upgrade to Pro for unlimited AI usage. You can still use the drag-and-drop editor and view templates without credits.',
   },
   {
     q: 'Can I cancel my Pro subscription?',
-    a: 'Yes, you can cancel anytime from your Settings page. You\'ll keep Pro benefits until the end of your billing period.',
+    a: 'Yes, you can cancel anytime from your Settings page. You\'ll keep Pro benefits until the end of your billing period. No cancellation fees or penalties.',
   },
   {
     q: 'Do credits expire?',
-    a: 'No, credits never expire. Purchase them whenever you need them and use them at your own pace.',
+    a: 'No, purchased credits never expire. Buy them whenever you need them and use them at your own pace.',
+  },
+  {
+    q: 'How does the AI resume writer work?',
+    a: 'Our AI is powered by Google Gemini. It generates achievement-focused bullet points, professional summaries, and full resumes based on your experience. You review and edit everything before saving — the AI suggests, you decide.',
+  },
+  {
+    q: 'Will my resume pass ATS (Applicant Tracking Systems)?',
+    a: 'All 15 templates are tested against real ATS parsers. The ATS Scanner scores your resume 0-100 against a specific job description and shows exactly which keywords you\'re missing. The optimizer can rewrite your bullets to match.',
+  },
+  {
+    q: 'Is my data safe?',
+    a: 'Yes. Your resume data is encrypted in transit, stored securely on Supabase, and never sold to third parties. We don\'t use your data to train AI models. You can delete your account and all data anytime from Settings.',
+  },
+  {
+    q: 'What\'s the difference between Free and Pro?',
+    a: 'Free users pay credits per AI action and PDF export. Pro users ($12/month) get unlimited AI usage at zero credit cost, 500 bonus credits per month for PDF exports, and priority support. Both plans have access to all 15 templates and the full editor.',
+  },
+  {
+    q: 'Can I share my resume online?',
+    a: 'Yes. Every resume gets a public shareable link (theresumecompany.com/r/your-slug) that you can include in email signatures, LinkedIn, or job applications.',
   },
 ]
 
@@ -65,7 +94,44 @@ export default async function PricingPage() {
   const ctaHref = session?.user ? '/credits' : '/signup'
   const ctaLabel = session?.user ? 'Go to Credits' : 'Get Started Free'
 
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'
+
   return (
+    <>
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            {
+              '@type': 'ListItem',
+              position: 1,
+              name: 'Home',
+              item: siteUrl,
+            },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: 'Pricing',
+              item: `${siteUrl}/pricing`,
+            },
+          ],
+        }}
+      />
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: FAQ.map((item) => ({
+            '@type': 'Question',
+            name: item.q,
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: item.a,
+            },
+          })),
+        }}
+      />
     <div className="mx-auto max-w-5xl px-4 py-16 sm:py-24">
       {/* Hero */}
       <div className="text-center">
@@ -76,6 +142,28 @@ export default async function PricingPage() {
           Start for free with 100 credits. Upgrade to Pro for unlimited AI or buy credit packs as
           you go.
         </p>
+      </div>
+
+      {/* Who is this for */}
+      <div className="mt-16 grid gap-6 sm:grid-cols-3">
+        <div className="rounded-xl border p-5 text-center">
+          <p className="text-lg font-semibold">Students</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Entering the workforce? 100 free credits is all you need for your first AI-powered resume and PDF export.
+          </p>
+        </div>
+        <div className="rounded-xl border p-5 text-center">
+          <p className="text-lg font-semibold">Job seekers</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Applying to multiple roles? Pro gives you unlimited AI rewrites to tailor every resume to each job description.
+          </p>
+        </div>
+        <div className="rounded-xl border p-5 text-center">
+          <p className="text-lg font-semibold">Career changers</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Pivoting industries? The AI reframes your experience for a new audience. Credit packs let you pay as you go.
+          </p>
+        </div>
       </div>
 
       {/* Plan Cards */}
@@ -251,6 +339,7 @@ export default async function PricingPage() {
         </div>
       </div>
     </div>
+    </>
   )
 }
 

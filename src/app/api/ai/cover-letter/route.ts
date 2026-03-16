@@ -93,6 +93,7 @@ export async function POST(req: Request) {
     const isTimeout = err instanceof Error && err.name === 'AbortError'
     const isQuota = err instanceof Error && err.name === 'QuotaError'
     const isAuth = err instanceof Error && err.name === 'AuthError'
+    const isConfig = err instanceof Error && err.name === 'ConfigError'
     console.error('Cover letter error:', err instanceof Error ? `[${err.name}] ${err.message}` : err)
     await refundCredits(userId, CREDIT_COSTS.AI_COVER_LETTER, 'AI_COVER_LETTER', isTimeout ? 'AI request timed out' : 'Cover letter generation failed')
 
@@ -101,6 +102,9 @@ export async function POST(req: Request) {
     }
     if (isQuota) {
       return NextResponse.json({ error: 'AI service is temporarily unavailable due to quota limits. Please try again later.' }, { status: 503 })
+    }
+    if (isConfig) {
+      return NextResponse.json({ error: 'AI service is not configured. Please set GEMINI_API_KEY.' }, { status: 503 })
     }
     if (isAuth) {
       return NextResponse.json({ error: 'AI service configuration error. Please contact support.' }, { status: 503 })

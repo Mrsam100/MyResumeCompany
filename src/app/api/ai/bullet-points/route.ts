@@ -67,11 +67,13 @@ export async function POST(req: Request) {
     const isTimeout = err instanceof Error && err.name === 'AbortError'
     const isQuota = err instanceof Error && err.name === 'QuotaError'
     const isAuth = err instanceof Error && err.name === 'AuthError'
+    const isConfig = err instanceof Error && err.name === 'ConfigError'
     console.error('AI bullet points error:', err instanceof Error ? `[${err.name}] ${err.message}` : err)
     await refundCredits(userId, CREDIT_COSTS.AI_BULLET_POINTS, 'AI_BULLET_POINTS', isTimeout ? 'AI request timed out' : 'AI generation failed')
 
     if (isTimeout) return NextResponse.json({ error: 'AI request timed out. Please try again.' }, { status: 504 })
     if (isQuota) return NextResponse.json({ error: 'AI service is temporarily unavailable due to quota limits. Please try again later.' }, { status: 503 })
+    if (isConfig) return NextResponse.json({ error: 'AI service is not configured. Please set GEMINI_API_KEY.' }, { status: 503 })
     if (isAuth) return NextResponse.json({ error: 'AI service configuration error. Please contact support.' }, { status: 503 })
     return NextResponse.json({ error: 'AI generation failed. Please try again.' }, { status: 500 })
   }

@@ -37,6 +37,7 @@ export async function PUT(
     const parsed = updateResumeSchema.safeParse(body)
 
     if (!parsed.success) {
+      console.error('[PUT /api/resumes] Validation failed:', JSON.stringify(parsed.error.flatten(), null, 2))
       return NextResponse.json(
         { error: 'Validation failed', details: parsed.error.flatten().fieldErrors },
         { status: 400 },

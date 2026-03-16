@@ -1,12 +1,17 @@
 import type { Metadata } from 'next'
+import { JsonLd } from '@/components/schema/json-ld'
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
   description: 'TheResumeCompany terms of service — rules and guidelines for using our platform.',
+  alternates: { canonical: '/terms' },
 }
 
 export default function TermsPage() {
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'
   return (
+    <>
+    <JsonLd data={{ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl }, { '@type': 'ListItem', position: 2, name: 'Terms of Service', item: `${siteUrl}/terms` }] }} />
     <div className="mx-auto max-w-3xl px-4 py-16 sm:py-24">
       <h1 className="text-4xl font-bold tracking-tight">Terms of Service</h1>
       <p className="mt-2 text-sm text-muted-foreground">Last updated: March 15, 2026</p>
@@ -94,5 +99,6 @@ export default function TermsPage() {
         </p>
       </div>
     </div>
+    </>
   )
 }

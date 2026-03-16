@@ -5,7 +5,9 @@ import { auth } from '@/auth'
 import { Button } from '@/components/ui/button'
 
 const NAV_LINKS = [
+  { href: '/resume-templates', label: 'Templates' },
   { href: '/pricing', label: 'Pricing' },
+  { href: '/blog', label: 'Blog' },
   { href: '/about', label: 'About' },
 ]
 

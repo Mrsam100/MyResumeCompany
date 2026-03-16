@@ -1,0 +1,42 @@
+# TheResumeCompany
+
+> AI-powered resume builder with 15+ professional templates, ATS scanner, and cover letter generator.
+
+## About
+TheResumeCompany is an online resume builder that combines professionally designed templates with AI writing tools. Users can create, edit, and export resumes as pixel-perfect PDFs. The platform includes an AI bullet point writer, professional summary generator, full resume wizard, ATS (Applicant Tracking System) scanner and optimizer, and cover letter generator.
+
+## Key Features
+- 15 resume templates: Classic, Modern, Creative, Tech, ATS-Optimized, Academic
+- AI bullet point writer: Generates achievement-focused bullets with metrics
+- AI summary generator: Creates professional summaries in 3 tones
+- AI resume wizard: Builds a complete resume from 5 questions
+- ATS scanner: Scores resumes 0-100 against job descriptions, identifies missing keywords
+- ATS optimizer: Rewrites bullets to match job requirements
+- Cover letter generator: Personalized cover letters with tone and length options
+- Drag-and-drop editor with real-time preview
+- PDF export with pixel-perfect formatting
+- Public shareable resume links
+
+## Pricing
+- Free: 100 credits on signup, all features accessible
+- Pro: $12/month or $99/year — unlimited AI usage, 500 credits/month
+- Credit packs: $4.99 (100), $9.99 (300), $19.99 (800)
+
+## Pages
+- Homepage: https://theresumecompany.com
+- Pricing: https://theresumecompany.com/pricing
+- About: https://theresumecompany.com/about
+- Blog: https://theresumecompany.com/blog
+- Contact: https://theresumecompany.com/contact
+- Templates: https://theresumecompany.com/resume-templates
+- TheResumeCompany vs Zety: https://theresumecompany.com/compare/vs-zety
+- TheResumeCompany vs Resume.io: https://theresumecompany.com/compare/vs-resume-io
+- TheResumeCompany vs Canva: https://theresumecompany.com/compare/vs-canva
+- Privacy Policy: https://theresumecompany.com/privacy
+- Terms of Service: https://theresumecompany.com/terms
+
+## Technical
+- Built with Next.js, React, TypeScript
+- AI powered by Google Gemini API
+- Payments via Stripe
+- Hosted on Vercel

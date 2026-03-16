@@ -8,7 +8,7 @@ const checks: { name: string; check: () => boolean; required: boolean }[] = [
   { name: 'DATABASE_URL set', check: () => !!process.env.DATABASE_URL, required: true },
   { name: 'NEXTAUTH_SECRET set', check: () => !!process.env.NEXTAUTH_SECRET, required: true },
   { name: 'NEXTAUTH_URL set', check: () => !!process.env.NEXTAUTH_URL, required: true },
-  { name: 'ANTHROPIC_API_KEY set', check: () => !!process.env.ANTHROPIC_API_KEY, required: true },
+  { name: 'GEMINI_API_KEY set', check: () => !!process.env.GEMINI_API_KEY, required: true },
   { name: 'STRIPE_SECRET_KEY set', check: () => !!process.env.STRIPE_SECRET_KEY, required: true },
   { name: 'STRIPE_WEBHOOK_SECRET set', check: () => !!process.env.STRIPE_WEBHOOK_SECRET, required: true },
   { name: 'STRIPE_PRO_MONTHLY_PRICE_ID set', check: () => !!process.env.STRIPE_PRO_MONTHLY_PRICE_ID, required: true },

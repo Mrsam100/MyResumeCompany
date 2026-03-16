@@ -1,81 +1,60 @@
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
-import gsap from 'gsap'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
+
+const STORAGE_KEY = 'trc_visited'
 
 interface LogoIntroProps {
   onComplete: () => void
 }
 
 export function LogoIntro({ onComplete }: LogoIntroProps) {
-  const overlayRef = useRef<HTMLDivElement>(null)
-  const bigLogoRef = useRef<HTMLDivElement>(null)
-  const smallLogoRef = useRef<HTMLDivElement>(null)
-  const [done, setDone] = useState(false)
+  const [phase, setPhase] = useState<'check' | 'show' | 'fade' | 'done'>('check')
 
   useEffect(() => {
-    const tl = gsap.timeline({
-      onComplete: () => {
-        setDone(true)
-        onComplete()
-      },
-    })
+    // Skip intro for returning visitors
+    if (typeof window !== 'undefined' && sessionStorage.getItem(STORAGE_KEY)) {
+      setPhase('done')
+      onComplete()
+      return
+    }
 
-    // Phase 1: Big origami logo fades in at center
-    tl.fromTo(
-      bigLogoRef.current,
-      { scale: 0, rotation: -180, opacity: 0 },
-      { scale: 1, rotation: 0, opacity: 1, duration: 1, ease: 'back.out(1.7)' },
-    )
-
-    // Phase 2: Hold for a beat
-    tl.to({}, { duration: 0.6 })
-
-    // Phase 3: Shrink and fly to top-left corner position
-    tl.to(bigLogoRef.current, {
-      scale: 0.15,
-      x: () => -(window.innerWidth / 2) + 36,
-      y: () => -(window.innerHeight / 2) + 32,
-      duration: 0.8,
-      ease: 'power3.inOut',
-    })
-
-    // Phase 4: Crossfade — big logo fades out, small doc icon fades in at corner
-    tl.to(bigLogoRef.current, {
-      opacity: 0,
-      duration: 0.2,
-      ease: 'power2.out',
-    })
-
-    tl.fromTo(
-      smallLogoRef.current,
-      { opacity: 0, scale: 0.5 },
-      { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(2)' },
-      '-=0.15',
-    )
-
-    // Phase 5: Overlay fades out
-    tl.to(overlayRef.current, {
-      opacity: 0,
-      duration: 0.4,
-      ease: 'power2.out',
-    })
+    // Show logo briefly, then fade out
+    setPhase('show')
+    const fadeTimer = setTimeout(() => setPhase('fade'), 400)
+    const doneTimer = setTimeout(() => {
+      setPhase('done')
+      onComplete()
+      try {
+        sessionStorage.setItem(STORAGE_KEY, '1')
+      } catch {}
+    }, 700)
 
     return () => {
-      tl.kill()
+      clearTimeout(fadeTimer)
+      clearTimeout(doneTimer)
     }
   }, [onComplete])
 
-  if (done) return null
+  if (phase === 'check' || phase === 'done') return null
 
   return (
     <div
-      ref={overlayRef}
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-white"
+      style={{
+        opacity: phase === 'fade' ? 0 : 1,
+        transition: 'opacity 300ms ease-out',
+        pointerEvents: 'none',
+      }}
     >
-      {/* Big origami logo — starts centered */}
-      <div ref={bigLogoRef} style={{ opacity: 0 }}>
+      <div
+        style={{
+          opacity: phase === 'show' || phase === 'fade' ? 1 : 0,
+          transform: phase === 'show' || phase === 'fade' ? 'scale(1)' : 'scale(0.8)',
+          transition: 'opacity 200ms ease-out, transform 200ms ease-out',
+        }}
+      >
         <Image
           src="/logo-full.svg"
           alt="TheResumeCompany"
@@ -83,21 +62,6 @@ export function LogoIntro({ onComplete }: LogoIntroProps) {
           height={160}
           priority
           className="h-40 w-auto sm:h-48"
-        />
-      </div>
-
-      {/* Small doc icon — appears at top-left corner position */}
-      <div
-        ref={smallLogoRef}
-        className="fixed left-4 top-5"
-        style={{ opacity: 0 }}
-      >
-        <Image
-          src="/file.svg"
-          alt=""
-          width={24}
-          height={24}
-          className="h-6 w-6"
         />
       </div>
     </div>

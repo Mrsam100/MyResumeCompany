@@ -1,22 +1,25 @@
-import Anthropic from '@anthropic-ai/sdk'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
-export const AI_MODEL = 'claude-sonnet-4-6'
+export const AI_MODEL = 'gemini-2.5-flash'
 
-let _client: Anthropic | null = null
+let _client: GoogleGenerativeAI | null = null
 
-function getClient(): Anthropic {
-  const apiKey = process.env.ANTHROPIC_API_KEY
+function getClient(): GoogleGenerativeAI {
+  const apiKey = process.env.GEMINI_API_KEY
+  console.log('[AI DEBUG] GEMINI_API_KEY present:', !!apiKey, '| length:', apiKey?.length ?? 0, '| first 10:', apiKey?.slice(0, 10), '| last 5:', apiKey?.slice(-5))
   if (!apiKey) {
-    console.warn('ANTHROPIC_API_KEY not set — AI features will not work')
-    throw new Error('ANTHROPIC_API_KEY is not configured.')
+    console.warn('GEMINI_API_KEY not set — AI features will not work')
+    const err = new Error('GEMINI_API_KEY is not configured.')
+    err.name = 'ConfigError'
+    throw err
   }
-  if (!_client) _client = new Anthropic({ apiKey })
+  if (!_client) _client = new GoogleGenerativeAI(apiKey)
   return _client
 }
 
 /**
  * Unified AI generation function for all routes.
- * Wraps Claude API with timeout, system prompt, and text extraction.
+ * Wraps Gemini API with timeout, system prompt, and text extraction.
  */
 export async function generateAIResponse(options: {
   system: string
@@ -25,15 +28,17 @@ export async function generateAIResponse(options: {
   timeoutMs: number
 }): Promise<string> {
   const client = getClient()
+  const model = client.getGenerativeModel({
+    model: AI_MODEL,
+    systemInstruction: options.system,
+    generationConfig: {
+      maxOutputTokens: options.maxTokens,
+    },
+  })
 
   try {
     const response = await Promise.race([
-      client.messages.create({
-        model: AI_MODEL,
-        max_tokens: options.maxTokens,
-        system: options.system,
-        messages: [{ role: 'user', content: options.prompt }],
-      }),
+      model.generateContent(options.prompt),
       new Promise<never>((_, reject) => {
         setTimeout(() => {
           const err = new Error('AI request timed out')
@@ -43,11 +48,7 @@ export async function generateAIResponse(options: {
       }),
     ])
 
-    // Extract text from response content blocks
-    const text = response.content
-      .filter((block): block is Anthropic.TextBlock => block.type === 'text')
-      .map((block) => block.text)
-      .join('')
+    const text = response.response.text()
 
     if (!text) throw new Error('Empty AI response')
     return text
@@ -55,19 +56,27 @@ export async function generateAIResponse(options: {
     // Re-throw timeout errors as-is
     if (err instanceof Error && err.name === 'AbortError') throw err
 
-    // Handle Anthropic SDK typed errors
-    if (err instanceof Anthropic.RateLimitError) {
-      const apiErr = new Error('AI service rate limit exceeded. Please try again later.')
-      apiErr.name = 'QuotaError'
-      throw apiErr
+    // Log the full error for debugging
+    if (err instanceof Error) {
+      console.error('Gemini API error [FULL]:', err.name, err.message, JSON.stringify(err, Object.getOwnPropertyNames(err)).slice(0, 500))
     }
-    if (err instanceof Anthropic.AuthenticationError || err instanceof Anthropic.PermissionDeniedError) {
-      const apiErr = new Error('AI service authentication failed. Please check the API key configuration.')
-      apiErr.name = 'AuthError'
-      throw apiErr
-    }
-    if (err instanceof Anthropic.APIError) {
-      console.error(`Claude API error [${err.status}]:`, err.message)
+
+    // Handle Gemini API errors
+    if (err instanceof Error) {
+      const message = err.message.toLowerCase()
+
+      if (message.includes('quota') || message.includes('rate limit') || message.includes('resource has been exhausted')) {
+        const apiErr = new Error('AI service rate limit exceeded. Please try again later.')
+        apiErr.name = 'QuotaError'
+        throw apiErr
+      }
+      if (message.includes('api_key_invalid') || message.includes('permission denied')) {
+        const apiErr = new Error('AI service authentication failed. Please check the API key configuration.')
+        apiErr.name = 'AuthError'
+        throw apiErr
+      }
+
+      console.error('Gemini API error:', err.message)
     }
 
     throw err

@@ -96,11 +96,13 @@ export async function POST(req: Request) {
     const isTimeout = err instanceof Error && err.name === 'AbortError'
     const isQuota = err instanceof Error && err.name === 'QuotaError'
     const isAuth = err instanceof Error && err.name === 'AuthError'
+    const isConfig = err instanceof Error && err.name === 'ConfigError'
     console.error('ATS optimize error:', err instanceof Error ? `[${err.name}] ${err.message}` : err)
     await refundCredits(userId, CREDIT_COSTS.AI_ATS_OPTIMIZE, 'AI_ATS_OPTIMIZE', isTimeout ? 'AI request timed out' : 'ATS optimization failed')
 
     if (isTimeout) return NextResponse.json({ error: 'AI request timed out. Please try again.' }, { status: 504 })
     if (isQuota) return NextResponse.json({ error: 'AI service is temporarily unavailable due to quota limits. Please try again later.' }, { status: 503 })
+    if (isConfig) return NextResponse.json({ error: 'AI service is not configured. Please set GEMINI_API_KEY.' }, { status: 503 })
     if (isAuth) return NextResponse.json({ error: 'AI service configuration error. Please contact support.' }, { status: 503 })
     return NextResponse.json({ error: 'ATS optimization failed. Please try again.' }, { status: 500 })
   }

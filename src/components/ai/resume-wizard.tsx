@@ -194,9 +194,9 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
       // Merge AI content into the created resume
       const content = {
         personalInfo: {
-          fullName: '',
+          fullName: aiResume.personalInfo.fullName || 'Your Name',
           title: aiResume.personalInfo.title || data.targetRole,
-          email: '',
+          email: 'your@email.com',
           phone: '',
           location: '',
           summary: aiResume.personalInfo.summary || '',
