@@ -38,10 +38,6 @@ export function validateEnv() {
 
   if (missing.length > 0) {
     const msg = `Missing environment variables:\n${missing.map((k) => `  - ${k}`).join('\n')}`
-    if (isProduction) {
-      throw new Error(msg)
-    } else {
-      console.warn(`[env] ${msg}`)
-    }
+    console.warn(`[env] ${msg}`)
   }
 }
