@@ -123,7 +123,7 @@ export default function DashboardPage() {
       {/* ── Hero header ── */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1 className="text-2xl font-bold tracking-tight truncate">
             {getGreeting()}, {firstName}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -139,15 +139,15 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Stats row ── */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="animate-fade-in-up bg-gradient-to-br from-primary/5 to-transparent border-primary/10" style={{ animationDelay: '0ms' }}>
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm font-medium text-muted-foreground">Resumes</p>
-                <p className="mt-1 text-3xl font-bold tabular-nums">{loading ? '-' : resumes.length}</p>
+                <p className="mt-1 text-3xl font-bold tabular-nums truncate">{loading ? '-' : resumes.length}</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 shadow-sm">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 shadow-sm">
                 <FileText className="h-6 w-6 text-primary" />
               </div>
             </div>
@@ -157,11 +157,11 @@ export default function DashboardPage() {
         <Card className="animate-fade-in-up bg-gradient-to-br from-amber-500/5 to-transparent border-amber-500/10" style={{ animationDelay: '75ms' }}>
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm font-medium text-muted-foreground">Credits</p>
                 <p
                   className={cn(
-                    'mt-1 text-3xl font-bold tabular-nums',
+                    'mt-1 text-3xl font-bold tabular-nums truncate',
                     credits < 20 && !isPro && 'text-destructive',
                   )}
                 >
@@ -172,7 +172,7 @@ export default function DashboardPage() {
                   )}
                 </p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10 shadow-sm">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 shadow-sm">
                 <Coins className="h-6 w-6 text-amber-500" />
               </div>
             </div>
@@ -189,12 +189,12 @@ export default function DashboardPage() {
         <Card className="animate-fade-in-up bg-gradient-to-br from-green-500/5 to-transparent border-green-500/10" style={{ animationDelay: '150ms' }}>
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm font-medium text-muted-foreground">Plan</p>
                 <div className="mt-1 flex items-center gap-2">
-                  <p className="text-3xl font-bold tabular-nums">{isPro ? 'Pro' : 'Free'}</p>
+                  <p className="text-3xl font-bold tabular-nums truncate">{isPro ? 'Pro' : 'Free'}</p>
                   {isPro && (
-                    <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+                    <Badge className="shrink-0 bg-gradient-to-r from-amber-500 to-orange-500 text-white">
                       <Crown className="mr-1 h-3 w-3" />
                       PRO
                     </Badge>
@@ -203,7 +203,7 @@ export default function DashboardPage() {
               </div>
               <div
                 className={cn(
-                  'flex h-12 w-12 items-center justify-center rounded-xl shadow-sm',
+                  'flex h-12 w-12 shrink-0 items-center justify-center rounded-xl shadow-sm',
                   isPro ? 'bg-amber-500/10' : 'bg-green-500/10',
                 )}
               >
@@ -223,11 +223,11 @@ export default function DashboardPage() {
         <Card className="animate-fade-in-up bg-gradient-to-br from-violet-500/5 to-transparent border-violet-500/10" style={{ animationDelay: '225ms' }}>
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm font-medium text-muted-foreground">ATS Score</p>
-                <p className="mt-1 text-3xl font-bold tabular-nums text-muted-foreground/40">--</p>
+                <p className="mt-1 text-3xl font-bold tabular-nums truncate text-muted-foreground/40">--</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-500/10 shadow-sm">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 shadow-sm">
                 <Target className="h-6 w-6 text-violet-500" />
               </div>
             </div>
@@ -242,7 +242,7 @@ export default function DashboardPage() {
         <div className="grid gap-4 sm:grid-cols-3">
           <button
             onClick={() => setWizardOpen(true)}
-            className="animate-fade-in-up group flex flex-col items-center justify-center gap-4 rounded-xl rounded-xl border border-border/60 border-t-4 border-t-primary shadow-sm bg-card p-6 text-center aspect-square transition-all hover:border-primary/30 hover:shadow-md hover:-translate-y-0.5 duration-200"
+            className="animate-fade-in-up group flex flex-col items-center justify-center gap-4 rounded-xl rounded-xl border border-border/60 border-t-4 border-t-primary shadow-sm bg-card p-6 text-center min-h-[200px] sm:aspect-square sm:min-h-0 transition-all hover:border-primary/30 hover:shadow-md hover:-translate-y-0.5 duration-200"
             style={{ animationDelay: '300ms' }}
           >
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-sm group-hover:scale-110 transition-all duration-200">
@@ -261,7 +261,7 @@ export default function DashboardPage() {
 
           <Link
             href="/templates"
-            className="animate-fade-in-up group flex flex-col items-center justify-center gap-4 rounded-xl rounded-xl border border-border/60 border-t-4 border-t-violet-500 shadow-sm bg-card p-6 text-center aspect-square transition-all hover:border-primary/30 hover:shadow-md hover:-translate-y-0.5 duration-200"
+            className="animate-fade-in-up group flex flex-col items-center justify-center gap-4 rounded-xl rounded-xl border border-border/60 border-t-4 border-t-violet-500 shadow-sm bg-card p-6 text-center min-h-[200px] sm:aspect-square sm:min-h-0 transition-all hover:border-primary/30 hover:shadow-md hover:-translate-y-0.5 duration-200"
             style={{ animationDelay: '375ms' }}
           >
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-violet-600 text-white shadow-sm group-hover:scale-110 transition-all duration-200">
@@ -279,7 +279,7 @@ export default function DashboardPage() {
           </Link>
 
           <div
-            className="animate-fade-in-up group relative flex flex-col items-center justify-center gap-4 rounded-xl rounded-xl border border-border/60 border-t-4 border-t-emerald-500 shadow-sm bg-card p-6 text-center aspect-square opacity-60"
+            className="animate-fade-in-up group relative flex flex-col items-center justify-center gap-4 rounded-xl rounded-xl border border-border/60 border-t-4 border-t-emerald-500 shadow-sm bg-card p-6 text-center min-h-[200px] sm:aspect-square sm:min-h-0 opacity-60"
             style={{ animationDelay: '450ms' }}
           >
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-sm">
@@ -338,7 +338,7 @@ export default function DashboardPage() {
                 you in minutes.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Button onClick={handleCreate} disabled={creating} size="lg" className="gap-2">
+                <Button onClick={handleCreate} disabled={creating} size="lg" className="w-full sm:w-auto gap-2">
                   {creating ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
@@ -349,7 +349,7 @@ export default function DashboardPage() {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="gap-2"
+                  className="w-full sm:w-auto gap-2"
                   onClick={() => router.push('/templates')}
                 >
                   <LayoutGrid className="h-4 w-4" />

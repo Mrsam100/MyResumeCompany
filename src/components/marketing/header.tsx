@@ -36,7 +36,7 @@ export async function MarketingHeader() {
         </nav>
 
         {/* Auth CTA */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {isLoggedIn ? (
             <Link href="/dashboard">
               <Button size="sm">Dashboard</Button>
@@ -47,7 +47,7 @@ export async function MarketingHeader() {
                 <Button variant="ghost" size="sm">Log in</Button>
               </Link>
               <Link href="/signup">
-                <Button size="sm">Get Started Free</Button>
+                <Button size="sm" className="text-xs sm:text-sm">Get Started</Button>
               </Link>
             </>
           )}

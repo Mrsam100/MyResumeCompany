@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FileText, Loader2, Copy, RotateCcw } from 'lucide-react'
+import { FileText, Loader2, Copy, RotateCcw, Download } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -92,8 +92,13 @@ export function CoverLetterGenerator() {
       })
 
       if (res.status === 402) { toast.error('Not enough credits (20 required)'); return }
-      if (res.status === 429) { toast.error('Rate limit exceeded'); return }
-      if (!res.ok) { toast.error('Generation failed. Please try again.'); return }
+      if (res.status === 429) { toast.error('Rate limit exceeded. Please try again later.'); return }
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null)
+        const errMsg = errData?.error || 'Generation failed. Please try again.'
+        toast.error(errMsg)
+        return
+      }
 
       const data = await res.json()
       if (data.result?.coverLetter) {
@@ -117,6 +122,22 @@ export function CoverLetterGenerator() {
     } catch {
       toast.error('Failed to copy')
     }
+  }
+
+  function handleDownload() {
+    if (!editedContent) return
+    const subject = result?.subject || 'Cover Letter'
+    const fullText = `Subject: ${subject}\n\n${editedContent}`
+    const blob = new Blob([fullText], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `Cover Letter - ${companyName || 'Company'} - ${jobTitle || 'Position'}.txt`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+    toast.success('Downloaded!')
   }
 
   return (
@@ -231,11 +252,14 @@ export function CoverLetterGenerator() {
               />
 
               {/* Actions */}
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button onClick={handleCopy} variant="outline" size="sm" className="flex-1 gap-1.5">
-                  <Copy className="h-4 w-4" /> Copy to Clipboard
+                  <Copy className="h-4 w-4" /> Copy
                 </Button>
-                <Button onClick={() => { setResult(null); setEditedContent('') }} variant="outline" size="sm" className="gap-1.5">
+                <Button onClick={handleDownload} variant="outline" size="sm" className="flex-1 gap-1.5">
+                  <Download className="h-4 w-4" /> Download
+                </Button>
+                <Button onClick={() => { setResult(null); setEditedContent('') }} variant="outline" size="sm" className="w-full gap-1.5">
                   <RotateCcw className="h-4 w-4" /> Regenerate (20 credits)
                 </Button>
               </div>

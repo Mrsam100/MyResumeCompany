@@ -34,14 +34,14 @@ export default function PrivacyPage() {
         <h2>3. AI Processing</h2>
         <p>
           When you use our AI features (bullet point writer, summary generator, ATS scanner, etc.),
-          your resume content and job descriptions are sent to Google&apos;s Gemini API for processing.
+          your resume content and job descriptions are sent to Anthropic&apos;s Claude API for processing.
           This data is used solely to generate your results and is not used to train AI models.
         </p>
 
         <h2>4. Data Sharing</h2>
         <p>We do not sell your personal information. We share data only with:</p>
         <ul>
-          <li>Google (AI processing via Gemini API) — resume content for AI features</li>
+          <li>Anthropic (AI processing via Claude API) — resume content for AI features</li>
           <li>Stripe (payment processing) — payment and billing information</li>
           <li>Supabase (database hosting) — all account and resume data</li>
           <li>Vercel (hosting) — server logs and performance data</li>

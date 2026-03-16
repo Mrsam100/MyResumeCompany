@@ -184,7 +184,8 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
       if (!aiRes.ok) {
         // Clean up orphaned resume
         await fetch(`/api/resumes/${resume.id}`, { method: 'DELETE' }).catch(() => {})
-        toast.error('AI generation failed. Please try again.')
+        const errData = await aiRes.json().catch(() => null)
+        toast.error(errData?.error || 'AI generation failed. Please try again.')
         return
       }
 

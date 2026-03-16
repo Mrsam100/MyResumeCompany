@@ -457,14 +457,14 @@ export function LandingPageClient({ isLoggedIn }: Props) {
           </p>
           <h1
             ref={heroH1Ref}
-            className="mt-4 text-[2.5rem] font-extrabold leading-[1.1] tracking-tight sm:text-6xl"
+            className="mt-4 text-3xl font-extrabold leading-[1.1] tracking-tight sm:text-[2.5rem] md:text-6xl"
             style={{ opacity: 0 }}
           >
             Your resume is costing you interviews.
           </h1>
           <p
             ref={heroSubRef}
-            className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground"
+            className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg"
             style={{ opacity: 0 }}
           >
             75% of resumes get rejected by ATS before a human sees them.
@@ -492,7 +492,7 @@ export function LandingPageClient({ isLoggedIn }: Props) {
           <h2 className="section-heading text-center text-3xl font-bold sm:text-4xl">
             The resume process is broken
           </h2>
-          <div className="mt-16 grid gap-10 sm:grid-cols-3">
+          <div className="mt-12 grid gap-6 sm:mt-16 sm:gap-10 sm:grid-cols-3">
             <div className="problem-card space-y-4 text-center">
               <div className="problem-icon mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
                 <Clock className="h-8 w-8 text-destructive" />
@@ -606,7 +606,7 @@ export function LandingPageClient({ isLoggedIn }: Props) {
 
           <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border bg-border sm:grid-cols-2" style={{ perspective: '1000px' }}>
             {TOOLS.map((tool) => (
-              <div key={tool.label} className="tool-card flex gap-4 bg-card p-6 cursor-default">
+              <div key={tool.label} className="tool-card flex gap-3 bg-card p-4 cursor-default sm:gap-4 sm:p-6">
                 <div className="tool-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                   <tool.icon className="h-5 w-5 text-primary" />
                 </div>

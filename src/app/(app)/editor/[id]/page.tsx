@@ -140,7 +140,7 @@ export default function EditorPage() {
   }
 
   return (
-    <div className="-m-4 flex h-[calc(100vh-3.5rem)] flex-col md:-m-6">
+    <div className="-m-4 flex h-[calc(100dvh-3.5rem)] flex-col md:-m-6">
       {/* ── Toolbar ── */}
       <div className="flex h-12 shrink-0 items-center justify-between border-b bg-card px-3">
         <div className="flex items-center gap-2 min-w-0">
@@ -236,7 +236,7 @@ export default function EditorPage() {
         <div className={`relative border-l bg-muted/20 lg:w-1/2 ${showPreview ? 'block' : 'hidden lg:block'}`}>
           <div className="flex h-full items-start justify-center overflow-y-auto p-6">
             <div
-              className="w-full max-w-[420px] overflow-hidden rounded-md border bg-white shadow-sm"
+              className="w-full max-w-[min(100%,420px)] overflow-hidden rounded-md border bg-white shadow-sm"
               style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'top center', minHeight: '594px' }}
             >
               <TemplateRenderer templateSlug={templateId} content={content} />

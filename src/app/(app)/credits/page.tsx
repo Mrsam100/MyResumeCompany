@@ -219,7 +219,7 @@ function CreditsPageInner() {
   const credits = user?.credits ?? 0
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8">
+    <div className="mx-auto max-w-5xl space-y-6 sm:space-y-8">
       {/* Header */}
       <div className="animate-fade-in-up">
         <h1 className="text-2xl font-bold tracking-tight">Credits & Billing</h1>
@@ -232,13 +232,13 @@ function CreditsPageInner() {
       <Card className="animate-fade-in-up bg-gradient-to-br from-amber-500/8 via-transparent to-orange-500/5 border-amber-500/15" style={{ animationDelay: '50ms' }}>
         <CardContent className="p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-xl shadow-md bg-gradient-to-br from-amber-400/20 to-orange-400/20">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-xl shadow-md bg-gradient-to-br from-amber-400/20 to-orange-400/20">
                 <Coins className="h-7 w-7 text-amber-500" />
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Current Balance</p>
-                <p className={cn('text-4xl font-bold tabular-nums', credits < 20 && !isPro && 'text-destructive')}>
+                <p className={cn('text-3xl sm:text-4xl font-bold tabular-nums', credits < 20 && !isPro && 'text-destructive')}>
                   {isPro ? (
                     <span className="flex items-center gap-2">
                       {credits} <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white"><Crown className="mr-1 h-3 w-3" />PRO</Badge>
@@ -258,7 +258,7 @@ function CreditsPageInner() {
               <Button
                 variant="outline"
                 onClick={handleManageBilling}
-                className="gap-2"
+                className="w-full sm:w-auto gap-2"
                 aria-label="Open Stripe billing portal to manage your subscription"
               >
                 <CreditCard className="h-4 w-4" />
@@ -277,7 +277,7 @@ function CreditsPageInner() {
               <Crown className="h-5 w-5 text-amber-500" />
               Upgrade to Pro
             </h2>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
               {/* Monthly */}
               <Card className="relative overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                 <CardHeader className="pb-3">
@@ -286,7 +286,7 @@ function CreditsPageInner() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <span className="text-3xl font-bold">${(SUBSCRIPTION_PLANS.PRO_MONTHLY.price / 100).toFixed(0)}</span>
+                    <span className="text-2xl sm:text-3xl font-bold">${(SUBSCRIPTION_PLANS.PRO_MONTHLY.price / 100).toFixed(0)}</span>
                     <span className="text-muted-foreground">/month</span>
                   </div>
                   <ul className="space-y-2 text-sm">
@@ -323,7 +323,7 @@ function CreditsPageInner() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <span className="text-3xl font-bold">${(SUBSCRIPTION_PLANS.PRO_YEARLY.price / 100).toFixed(0)}</span>
+                    <span className="text-2xl sm:text-3xl font-bold">${(SUBSCRIPTION_PLANS.PRO_YEARLY.price / 100).toFixed(0)}</span>
                     <span className="text-muted-foreground">/year</span>
                     {/* (#12) Dynamic per-month calculation */}
                     <span className="ml-2 text-sm text-muted-foreground">
@@ -363,7 +363,7 @@ function CreditsPageInner() {
           <Package className="h-5 w-5 text-primary" />
           Buy Credit Packs
         </h2>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 sm:grid-cols-3">
           {CREDIT_PACKS.map((pack) => (
             <Card
               key={pack.id}
@@ -380,7 +380,7 @@ function CreditsPageInner() {
               )}
               <CardContent className="p-5 space-y-4">
                 <div>
-                  <p className="font-semibold text-lg">{pack.label}</p>
+                  <p className="font-semibold text-lg truncate">{pack.label}</p>
                   <p className="text-sm text-muted-foreground">{pack.credits} credits</p>
                 </div>
                 <div>
@@ -420,7 +420,7 @@ function CreditsPageInner() {
               {Object.entries(CREDIT_COSTS).map(([key, cost]) => (
                 <div
                   key={key}
-                  className="border-b border-r p-4 [&:nth-child(2n)]:border-r-0 sm:[&:nth-child(2n)]:border-r sm:[&:nth-child(4n)]:border-r-0"
+                  className="border-b border-r p-3 sm:p-4 [&:nth-child(2n)]:border-r-0 sm:[&:nth-child(2n)]:border-r sm:[&:nth-child(4n)]:border-r-0"
                 >
                   <p className="text-xs font-medium text-muted-foreground">
                     {COST_LABELS[key] ?? key}
@@ -489,13 +489,13 @@ function CreditsPageInner() {
           <Card>
             <CardContent className="divide-y p-0">
               {transactions.map((tx) => (
-                <div key={tx.id} className="flex items-center justify-between px-5 py-3.5 hover:bg-muted/30 transition-colors duration-150">
+                <div key={tx.id} className="flex items-center justify-between px-4 sm:px-5 py-3.5 hover:bg-muted/30 transition-colors duration-150">
                   <div>
                     <p className="text-sm font-medium">
                       {COST_LABELS[tx.type] ?? tx.type}
                     </p>
                     {tx.description && (
-                      <p className="text-xs text-muted-foreground truncate max-w-[300px]">
+                      <p className="text-xs text-muted-foreground truncate max-w-[200px] sm:max-w-[300px]">
                         {tx.description}
                       </p>
                     )}

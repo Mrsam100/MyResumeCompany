@@ -17,14 +17,14 @@ export function MarketingFooter() {
   return (
     <footer className="border-t bg-muted/30">
       <div className="mx-auto max-w-6xl px-4 py-12">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 sm:gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-2">
             <Link href="/" className="flex items-center gap-2">
               <Image src="/file.svg" alt="" width={20} height={20} className="h-5 w-5" />
               <span className="font-bold">TheResumeCompany</span>
             </Link>
-            <p className="mt-3 max-w-sm text-sm text-muted-foreground">
+            <p className="mt-3 max-w-xs text-sm text-muted-foreground sm:max-w-sm">
               Build professional, ATS-optimized resumes in minutes with the power of AI.
               Land more interviews with less effort.
             </p>
@@ -65,9 +65,12 @@ export function MarketingFooter() {
           </div>
         </div>
 
-        <div className="mt-10 border-t pt-6">
+        <div className="mt-10 border-t pt-6 space-y-1">
           <p className="text-center text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} TheResumeCompany. All rights reserved.
+          </p>
+          <p className="text-center text-xs text-muted-foreground/60">
+            A Schroeder Technologies Company
           </p>
         </div>
       </div>

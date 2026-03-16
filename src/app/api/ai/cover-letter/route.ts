@@ -91,8 +91,20 @@ export async function POST(req: Request) {
     return NextResponse.json({ result })
   } catch (err) {
     const isTimeout = err instanceof Error && err.name === 'AbortError'
-    console.error('Cover letter error:', isTimeout ? 'Request timed out' : err)
+    const isQuota = err instanceof Error && err.name === 'QuotaError'
+    const isAuth = err instanceof Error && err.name === 'AuthError'
+    console.error('Cover letter error:', err instanceof Error ? `[${err.name}] ${err.message}` : err)
     await refundCredits(userId, CREDIT_COSTS.AI_COVER_LETTER, 'AI_COVER_LETTER', isTimeout ? 'AI request timed out' : 'Cover letter generation failed')
-    return NextResponse.json({ error: isTimeout ? 'AI request timed out. Please try again.' : 'Cover letter generation failed' }, { status: isTimeout ? 504 : 500 })
+
+    if (isTimeout) {
+      return NextResponse.json({ error: 'AI request timed out. Please try again.' }, { status: 504 })
+    }
+    if (isQuota) {
+      return NextResponse.json({ error: 'AI service is temporarily unavailable due to quota limits. Please try again later.' }, { status: 503 })
+    }
+    if (isAuth) {
+      return NextResponse.json({ error: 'AI service configuration error. Please contact support.' }, { status: 503 })
+    }
+    return NextResponse.json({ error: 'Cover letter generation failed. Please try again.' }, { status: 500 })
   }
 }
