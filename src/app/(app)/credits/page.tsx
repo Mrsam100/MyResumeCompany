@@ -221,7 +221,7 @@ function CreditsPageInner() {
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       {/* Header */}
-      <div>
+      <div className="animate-fade-in-up">
         <h1 className="text-2xl font-bold tracking-tight">Credits & Billing</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Manage your credits, subscription, and billing
@@ -229,16 +229,16 @@ function CreditsPageInner() {
       </div>
 
       {/* Balance Card */}
-      <Card>
+      <Card className="animate-fade-in-up bg-gradient-to-br from-amber-500/8 via-transparent to-orange-500/5 border-amber-500/15" style={{ animationDelay: '50ms' }}>
         <CardContent className="p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-amber-500/10">
+              <div className="flex h-16 w-16 items-center justify-center rounded-xl shadow-md bg-gradient-to-br from-amber-400/20 to-orange-400/20">
                 <Coins className="h-7 w-7 text-amber-500" />
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Current Balance</p>
-                <p className={cn('text-3xl font-bold', credits < 20 && !isPro && 'text-destructive')}>
+                <p className={cn('text-4xl font-bold tabular-nums', credits < 20 && !isPro && 'text-destructive')}>
                   {isPro ? (
                     <span className="flex items-center gap-2">
                       {credits} <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white"><Crown className="mr-1 h-3 w-3" />PRO</Badge>
@@ -272,14 +272,14 @@ function CreditsPageInner() {
       {/* Pro Plan Section — only show for non-Pro users */}
       {!isPro && (
         <>
-          <div>
+          <div className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
             <h2 className="mb-4 text-lg font-semibold flex items-center gap-2">
               <Crown className="h-5 w-5 text-amber-500" />
               Upgrade to Pro
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
               {/* Monthly */}
-              <Card className="relative overflow-hidden">
+              <Card className="relative overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg">Pro Monthly</CardTitle>
                   <CardDescription>Unlimited AI, billed monthly</CardDescription>
@@ -290,10 +290,10 @@ function CreditsPageInner() {
                     <span className="text-muted-foreground">/month</span>
                   </div>
                   <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" />Unlimited AI features</li>
-                    <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" />500 credits/month</li>
-                    <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" />Unlimited PDF exports</li>
-                    <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" />Priority support</li>
+                    <li className="flex items-center gap-2"><div className="bg-green-500/10 rounded-full p-0.5"><Check className="h-4 w-4 text-green-500" /></div>Unlimited AI features</li>
+                    <li className="flex items-center gap-2"><div className="bg-green-500/10 rounded-full p-0.5"><Check className="h-4 w-4 text-green-500" /></div>500 credits/month</li>
+                    <li className="flex items-center gap-2"><div className="bg-green-500/10 rounded-full p-0.5"><Check className="h-4 w-4 text-green-500" /></div>Unlimited PDF exports</li>
+                    <li className="flex items-center gap-2"><div className="bg-green-500/10 rounded-full p-0.5"><Check className="h-4 w-4 text-green-500" /></div>Priority support</li>
                   </ul>
                   <Button
                     onClick={() => handleSubscribe('monthly')}
@@ -311,7 +311,7 @@ function CreditsPageInner() {
               </Card>
 
               {/* Yearly */}
-              <Card className="relative overflow-hidden border-amber-500/50">
+              <Card className="relative overflow-hidden border-2 border-amber-500/40 shadow-lg shadow-amber-500/5 bg-gradient-to-br from-amber-500/5 to-orange-500/3 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                 <div className="absolute right-3 top-3">
                   <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
                     Save 31%
@@ -331,10 +331,10 @@ function CreditsPageInner() {
                     </span>
                   </div>
                   <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" />Everything in Monthly</li>
-                    <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" />500 credits/month</li>
-                    <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" />2 months free</li>
-                    <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" />Best value</li>
+                    <li className="flex items-center gap-2"><div className="bg-green-500/10 rounded-full p-0.5"><Check className="h-4 w-4 text-green-500" /></div>Everything in Monthly</li>
+                    <li className="flex items-center gap-2"><div className="bg-green-500/10 rounded-full p-0.5"><Check className="h-4 w-4 text-green-500" /></div>500 credits/month</li>
+                    <li className="flex items-center gap-2"><div className="bg-green-500/10 rounded-full p-0.5"><Check className="h-4 w-4 text-green-500" /></div>2 months free</li>
+                    <li className="flex items-center gap-2"><div className="bg-green-500/10 rounded-full p-0.5"><Check className="h-4 w-4 text-green-500" /></div>Best value</li>
                   </ul>
                   <Button
                     onClick={() => handleSubscribe('yearly')}
@@ -358,14 +358,21 @@ function CreditsPageInner() {
       )}
 
       {/* Credit Packs */}
-      <div>
+      <div className="animate-fade-in-up" style={{ animationDelay: '150ms' }}>
         <h2 className="mb-4 text-lg font-semibold flex items-center gap-2">
           <Package className="h-5 w-5 text-primary" />
           Buy Credit Packs
         </h2>
         <div className="grid gap-4 sm:grid-cols-3">
           {CREDIT_PACKS.map((pack) => (
-            <Card key={pack.id} className={cn('relative', pack.popular && 'border-primary/50')}>
+            <Card
+              key={pack.id}
+              className={cn(
+                'relative overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200',
+                pack.popular && 'border-primary/50 ring-2 ring-primary/20 shadow-md',
+              )}
+            >
+              <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-primary to-primary/50" />
               {pack.popular && (
                 <div className="absolute right-3 top-3">
                   <Badge variant="default" className="text-xs">Most Popular</Badge>
@@ -404,7 +411,7 @@ function CreditsPageInner() {
       <Separator />
 
       {/* Credit Costs Reference */}
-      <div>
+      <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
         <h2 className="mb-4 text-lg font-semibold">Credit Costs</h2>
         <Card>
           <CardContent className="p-0">
@@ -435,7 +442,7 @@ function CreditsPageInner() {
       <Separator />
 
       {/* Transaction History */}
-      <div>
+      <div className="animate-fade-in-up" style={{ animationDelay: '250ms' }}>
         <h2 className="mb-4 text-lg font-semibold flex items-center gap-2">
           <Clock className="h-5 w-5 text-muted-foreground" />
           Transaction History
@@ -482,7 +489,7 @@ function CreditsPageInner() {
           <Card>
             <CardContent className="divide-y p-0">
               {transactions.map((tx) => (
-                <div key={tx.id} className="flex items-center justify-between px-5 py-3.5">
+                <div key={tx.id} className="flex items-center justify-between px-5 py-3.5 hover:bg-muted/30 transition-colors duration-150">
                   <div>
                     <p className="text-sm font-medium">
                       {COST_LABELS[tx.type] ?? tx.type}
@@ -503,15 +510,32 @@ function CreditsPageInner() {
                     </p>
                   </div>
                   {/* (#16) Screen reader context for transaction amounts */}
-                  <span
-                    className={cn(
-                      'font-semibold text-sm tabular-nums',
-                      tx.amount > 0 ? 'text-green-600' : tx.amount < 0 ? 'text-red-500' : 'text-muted-foreground',
-                    )}
-                    aria-label={`${tx.amount > 0 ? 'Added' : tx.amount < 0 ? 'Used' : ''} ${Math.abs(tx.amount)} credits`}
-                  >
-                    {tx.amount > 0 ? '+' : ''}{tx.amount}
-                  </span>
+                  {tx.amount > 0 ? (
+                    <span className="bg-green-500/10 rounded-full px-2 py-0.5">
+                      <span
+                        className="font-semibold text-sm tabular-nums text-green-600"
+                        aria-label={`Added ${Math.abs(tx.amount)} credits`}
+                      >
+                        +{tx.amount}
+                      </span>
+                    </span>
+                  ) : tx.amount < 0 ? (
+                    <span className="bg-red-500/10 rounded-full px-2 py-0.5">
+                      <span
+                        className="font-semibold text-sm tabular-nums text-red-500"
+                        aria-label={`Used ${Math.abs(tx.amount)} credits`}
+                      >
+                        {tx.amount}
+                      </span>
+                    </span>
+                  ) : (
+                    <span
+                      className="font-semibold text-sm tabular-nums text-muted-foreground"
+                      aria-label={`${Math.abs(tx.amount)} credits`}
+                    >
+                      {tx.amount}
+                    </span>
+                  )}
                 </div>
               ))}
             </CardContent>

@@ -6,7 +6,7 @@ import { signOut } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Loader2, CreditCard, Crown, ExternalLink } from 'lucide-react'
+import { Loader2, CreditCard, Crown, ExternalLink, User, Lock, AlertTriangle, Settings } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -147,15 +147,18 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Manage your account and preferences</p>
+      <div className="flex items-center gap-2">
+        <Settings className="h-6 w-6 text-muted-foreground" />
+        <div>
+          <h1 className="text-2xl font-bold">Settings</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Manage your account and preferences</p>
+        </div>
       </div>
 
       {/* Profile */}
-      <Card>
+      <Card className="border-l-[3px] border-l-primary hover:shadow-sm transition-shadow duration-200 animate-fade-in-up" style={{ animationDelay: '0ms' }}>
         <CardHeader>
-          <CardTitle>Profile</CardTitle>
+          <CardTitle><User className="inline h-4 w-4 text-muted-foreground mr-2" />Profile</CardTitle>
           <CardDescription>Your personal information</CardDescription>
         </CardHeader>
         <CardContent>
@@ -179,9 +182,9 @@ export default function SettingsPage() {
       </Card>
 
       {/* Subscription */}
-      <Card>
+      <Card className="border-l-[3px] border-l-amber-500 hover:shadow-sm transition-shadow duration-200 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
         <CardHeader>
-          <CardTitle>Subscription</CardTitle>
+          <CardTitle><CreditCard className="inline h-4 w-4 text-muted-foreground mr-2" />Subscription</CardTitle>
           <CardDescription>Your current plan and billing</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -223,9 +226,9 @@ export default function SettingsPage() {
 
       {/* Password Change — only for email/password accounts */}
       {user?.hasPassword && (
-        <Card>
+        <Card className="border-l-[3px] border-l-blue-500 hover:shadow-sm transition-shadow duration-200 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
           <CardHeader>
-            <CardTitle>Password</CardTitle>
+            <CardTitle><Lock className="inline h-4 w-4 text-muted-foreground mr-2" />Password</CardTitle>
             <CardDescription>Change your account password</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -273,13 +276,13 @@ export default function SettingsPage() {
       <Separator />
 
       {/* Danger Zone */}
-      <Card className="border-destructive/50">
+      <Card className="border-destructive/50 border-l-[3px] border-l-destructive bg-gradient-to-br from-destructive/3 to-transparent hover:shadow-sm transition-shadow duration-200 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
         <CardHeader>
-          <CardTitle className="text-destructive">Danger Zone</CardTitle>
+          <CardTitle className="text-destructive"><AlertTriangle className="inline h-4 w-4 text-destructive mr-2" />Danger Zone</CardTitle>
           <CardDescription>Irreversible actions on your account</CardDescription>
         </CardHeader>
         <CardContent>
-          <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
+          <Button variant="destructive" onClick={() => setDeleteOpen(true)} className="hover:shadow-[0_0_20px_oklch(0.577_0.245_27.325/15%)]">
             Delete Account
           </Button>
           <Dialog open={deleteOpen} onOpenChange={handleDeleteDialogChange}>

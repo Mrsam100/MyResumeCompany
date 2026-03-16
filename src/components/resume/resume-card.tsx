@@ -67,25 +67,29 @@ export function ResumeCard({
 
   return (
     <>
-      <Card className="group relative overflow-hidden transition-shadow hover:shadow-md">
+      <Card className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
         <Link href={`/editor/${id}`} className="block">
-          <div className="flex h-48 items-center justify-center bg-muted/50">
-            <FileText className="h-12 w-12 text-muted-foreground/30" />
+          <div className="flex h-48 items-center justify-center bg-gradient-to-br from-muted/60 to-muted/30">
+            <FileText className="h-12 w-12 text-muted-foreground/30 transition-transform duration-200 group-hover:scale-105" />
           </div>
         </Link>
+
+        {/* Bottom accent bar */}
+        <div className="h-0.5 bg-gradient-to-r from-primary/40 via-primary/20 to-transparent" />
 
         <CardContent className="p-4">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0 flex-1">
               <h3 className="truncate font-medium">{title}</h3>
-              <p className="mt-0.5 text-xs text-muted-foreground">
+              <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary/40" />
                 {templateId.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">Edited {timeAgo}</p>
             </div>
 
             <DropdownMenu>
-              <DropdownMenuTrigger className="h-8 w-8 shrink-0 rounded-md opacity-0 hover:bg-muted group-hover:opacity-100">
+              <DropdownMenuTrigger className="h-8 w-8 shrink-0 rounded-md opacity-0 transition-all duration-200 hover:bg-muted/80 group-hover:opacity-100 backdrop-blur-sm">
                 <MoreHorizontal className="mx-auto h-4 w-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">

@@ -145,10 +145,11 @@ export default function TemplatesPage() {
             return (
               <div
                 key={template.id}
-                className="group relative overflow-hidden rounded-xl border bg-card transition-all hover:shadow-lg hover:-translate-y-1"
+                className="animate-fade-in-up group relative overflow-hidden rounded-xl border bg-card transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                style={{ animationDelay: `${filtered.indexOf(template) * 50}ms` }}
               >
                 {/* Resume preview — aspect ratio like real A4 paper */}
-                <div className="relative aspect-[3/4] overflow-hidden border-b bg-gray-50">
+                <div className="relative aspect-[3/4] overflow-hidden border-b bg-gradient-to-b from-gray-50 to-gray-100/50">
                   <div className="absolute inset-3">
                     <TemplatePreview slug={template.slug} />
                   </div>
@@ -161,12 +162,12 @@ export default function TemplatesPage() {
                   )}
 
                   {/* Hover overlay */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/60 opacity-0 transition-all duration-200 group-hover:opacity-100">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/50 opacity-0 backdrop-blur-[2px] transition-all duration-300 group-hover:opacity-100">
                     <Button
                       size="lg"
                       onClick={() => handleUseTemplate(template.slug)}
                       disabled={isCreating}
-                      className="gap-2 shadow-lg"
+                      className="gap-2 shadow-lg scale-95 transition-transform duration-200 group-hover:scale-100"
                     >
                       {isCreating ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                       {isCreating ? 'Creating...' : 'Use This Template'}
@@ -175,7 +176,7 @@ export default function TemplatesPage() {
                 </div>
 
                 {/* Template info */}
-                <div className="p-4">
+                <div className="p-4 transition-colors duration-200 group-hover:bg-muted/30">
                   <div className="flex items-center justify-between">
                     <h3 className="font-semibold">{template.name}</h3>
                     <Badge variant="outline" className={cn('text-[10px] border', catColor)}>

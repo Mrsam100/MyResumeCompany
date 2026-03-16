@@ -43,12 +43,14 @@ export function Topbar() {
       .toUpperCase()
       .slice(0, 2) ?? '?'
 
+  const isLowCredits = (user?.credits ?? 0) < 20
+
   return (
-    <header className="flex h-14 items-center justify-between border-b bg-card px-4">
+    <header className="flex h-14 items-center justify-between border-b border-border/50 bg-card/80 px-4 backdrop-blur-xl">
       {/* Left: Mobile menu + Breadcrumb */}
       <div className="flex items-center gap-3">
         <Sheet>
-          <SheetTrigger className="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground">
+          <SheetTrigger className="lg:hidden inline-flex items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground">
             <Menu className="h-5 w-5" />
           </SheetTrigger>
           <SheetContent side="left" className="w-64 p-0">
@@ -56,29 +58,29 @@ export function Topbar() {
           </SheetContent>
         </Sheet>
 
-        <h1 className="text-lg font-semibold">{breadcrumb}</h1>
+        <h1 className="text-lg font-semibold tracking-tight text-foreground/90">{breadcrumb}</h1>
       </div>
 
       {/* Right: Actions */}
-      <div className="flex items-center gap-2">
-        {/* Credit balance */}
+      <div className="flex items-center gap-2.5">
+        {/* Credit balance pill */}
         <Link href="/credits">
-          <Button variant="ghost" size="sm" className="gap-1.5">
-            <Coins className="h-4 w-4" />
-            <span
-              className={cn(
-                'font-semibold',
-                (user?.credits ?? 0) < 20 && 'text-destructive',
-              )}
-            >
-              {user?.credits ?? 0}
-            </span>
-          </Button>
+          <div
+            className={cn(
+              'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition-all duration-200',
+              isLowCredits
+                ? 'bg-destructive/10 text-destructive animate-pulse'
+                : 'bg-amber-500/10 text-amber-600 hover:bg-amber-500/15',
+            )}
+          >
+            <Coins className="h-3.5 w-3.5" />
+            <span className="tabular-nums">{user?.credits ?? 0}</span>
+          </div>
         </Link>
 
-        {/* New Resume — navigates to dashboard where create logic lives */}
+        {/* New Resume */}
         <Link href="/dashboard">
-          <Button size="sm" className="gap-1.5">
+          <Button size="sm" className="gap-1.5 bg-gradient-to-r from-primary to-primary/80 shadow-sm transition-all duration-200 hover:shadow-md hover:from-primary/90 hover:to-primary/70">
             <Plus className="h-4 w-4" />
             <span className="hidden sm:inline">New Resume</span>
           </Button>
@@ -87,10 +89,10 @@ export function Topbar() {
         {/* User avatar — desktop only */}
         <div className="hidden lg:block">
           <DropdownMenu>
-            <DropdownMenuTrigger className="rounded-full">
+            <DropdownMenuTrigger className="rounded-full ring-2 ring-transparent transition-all hover:ring-primary/20">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={user?.image ?? undefined} />
-                <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+                <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-xs font-semibold">{initials}</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
