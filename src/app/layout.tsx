@@ -1,19 +1,19 @@
 import type { Metadata } from 'next'
-import { Inter, Space_Grotesk } from 'next/font/google'
+import { Nunito, Poppins } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { SessionProvider } from '@/components/providers/session-provider'
 import './globals.css'
 
-const inter = Inter({
-  variable: '--font-inter',
+const nunito = Nunito({
+  variable: '--font-body',
   subsets: ['latin'],
 })
 
-const spaceGrotesk = Space_Grotesk({
+const poppins = Poppins({
   variable: '--font-heading',
   subsets: ['latin'],
-  weight: ['500', '600', '700'],
+  weight: ['500', '600', '700', '800'],
 })
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'
@@ -57,7 +57,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
+      <body className={`${nunito.variable} ${poppins.variable} font-sans antialiased`}>
         <SessionProvider>
           <TooltipProvider>
             {children}

@@ -487,38 +487,38 @@ export function LandingPageClient({ isLoggedIn }: Props) {
       </section>
 
       {/* ─── The problem ─── */}
-      <section ref={problemRef} className="relative border-y bg-muted/40 px-4 py-20 overflow-hidden">
-        <div className="mx-auto max-w-4xl">
-          <h2 className="section-heading text-center text-2xl font-bold sm:text-3xl">
+      <section ref={problemRef} className="relative border-y bg-muted/40 px-4 py-28 overflow-hidden">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="section-heading text-center text-3xl font-bold sm:text-4xl">
             The resume process is broken
           </h2>
-          <div className="mt-12 grid gap-8 sm:grid-cols-3">
-            <div className="problem-card space-y-3 text-center">
-              <div className="problem-icon mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-                <Clock className="h-6 w-6 text-destructive" />
+          <div className="mt-16 grid gap-10 sm:grid-cols-3">
+            <div className="problem-card space-y-4 text-center">
+              <div className="problem-icon mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
+                <Clock className="h-8 w-8 text-destructive" />
               </div>
-              <p className="font-semibold">Hours wasted formatting</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-lg font-semibold">Hours wasted formatting</p>
+              <p className="text-base text-muted-foreground">
                 Fiddling with margins in Word. Googling &ldquo;how to write a bullet point.&rdquo;
                 Copy-pasting from templates that look like 2009.
               </p>
             </div>
-            <div className="problem-card space-y-3 text-center">
-              <div className="problem-icon mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-                <X className="h-6 w-6 text-destructive" />
+            <div className="problem-card space-y-4 text-center">
+              <div className="problem-icon mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
+                <X className="h-8 w-8 text-destructive" />
               </div>
-              <p className="font-semibold">Rejected by robots</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-lg font-semibold">Rejected by robots</p>
+              <p className="text-base text-muted-foreground">
                 ATS software filters you out before anyone reads your name.
                 Wrong format, missing keywords, game over.
               </p>
             </div>
-            <div className="problem-card space-y-3 text-center">
-              <div className="problem-icon mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-                <MessageSquareText className="h-6 w-6 text-destructive" />
+            <div className="problem-card space-y-4 text-center">
+              <div className="problem-icon mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
+                <MessageSquareText className="h-8 w-8 text-destructive" />
               </div>
-              <p className="font-semibold">Generic &ldquo;responsible for&rdquo;</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-lg font-semibold">Generic &ldquo;responsible for&rdquo;</p>
+              <p className="text-base text-muted-foreground">
                 Your bullet points sound like everyone else&apos;s.
                 No impact. No numbers. No reason to call you back.
               </p>
