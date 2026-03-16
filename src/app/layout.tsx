@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Space_Grotesk } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { SessionProvider } from '@/components/providers/session-provider'
@@ -8,6 +8,12 @@ import './globals.css'
 const inter = Inter({
   variable: '--font-inter',
   subsets: ['latin'],
+})
+
+const spaceGrotesk = Space_Grotesk({
+  variable: '--font-heading',
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
 })
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'
@@ -51,7 +57,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
         <SessionProvider>
           <TooltipProvider>
             {children}

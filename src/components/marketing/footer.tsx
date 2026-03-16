@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { FileText } from 'lucide-react'
+import Image from 'next/image'
 
 const PRODUCT_LINKS = [
   { href: '/pricing', label: 'Pricing' },
@@ -21,7 +21,7 @@ export function MarketingFooter() {
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-2">
             <Link href="/" className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-primary" />
+              <Image src="/file.svg" alt="" width={20} height={20} className="h-5 w-5" />
               <span className="font-bold">TheResumeCompany</span>
             </Link>
             <p className="mt-3 max-w-sm text-sm text-muted-foreground">

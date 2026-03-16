@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -20,6 +20,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { LogoIntro } from '@/components/marketing/logo-intro'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -30,6 +31,9 @@ interface Props {
 export function LandingPageClient({ isLoggedIn }: Props) {
   const ctaHref = isLoggedIn ? '/dashboard' : '/signup'
   const ctaLabel = isLoggedIn ? 'Go to Dashboard' : "Start building — it's free"
+
+  const [introComplete, setIntroComplete] = useState(false)
+  const handleIntroComplete = useCallback(() => setIntroComplete(true), [])
 
   const mainRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLElement>(null)
@@ -46,6 +50,8 @@ export function LandingPageClient({ isLoggedIn }: Props) {
   const finalCtaRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
+    if (!introComplete) return
+
     const ctx = gsap.context(() => {
       // ─── HERO: Split text stagger reveal ───
       const heroTl = gsap.timeline({ defaults: { ease: 'power4.out' } })
@@ -428,10 +434,13 @@ export function LandingPageClient({ isLoggedIn }: Props) {
     }, mainRef)
 
     return () => ctx.revert()
-  }, [])
+  }, [introComplete])
 
   return (
     <div ref={mainRef}>
+      {/* Logo intro animation */}
+      {!introComplete && <LogoIntro onComplete={handleIntroComplete} />}
+
       {/* ─── Hero ─── */}
       <section ref={heroRef} className="relative overflow-hidden px-4 pb-24 pt-16 sm:pt-24">
         {/* Animated gradient orbs */}

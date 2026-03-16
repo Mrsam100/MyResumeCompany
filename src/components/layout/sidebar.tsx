@@ -1,11 +1,11 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import {
   LayoutDashboard,
-  FileText,
   LayoutGrid,
   Coins,
   Settings,
@@ -48,7 +48,7 @@ export function Sidebar() {
     <aside className="flex h-full w-64 flex-col border-r bg-card">
       {/* Logo */}
       <div className="flex h-14 items-center gap-2 border-b px-4">
-        <FileText className="h-5 w-5 text-primary" />
+        <Image src="/file.svg" alt="" width={20} height={20} className="h-5 w-5" />
         <span className="font-bold">TheResumeCompany</span>
       </div>
 

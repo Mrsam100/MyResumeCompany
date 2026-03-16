@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { FileText } from 'lucide-react'
+import Image from 'next/image'
 
 import { auth } from '@/auth'
 import { Button } from '@/components/ui/button'
@@ -18,8 +18,8 @@ export async function MarketingHeader() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <FileText className="h-6 w-6 text-primary" />
-          <span className="text-lg font-bold">TheResumeCompany</span>
+          <Image src="/file.svg" alt="" width={24} height={24} className="h-6 w-6" />
+          <span className="text-lg font-bold tracking-tight">TheResumeCompany</span>
         </Link>
 
         {/* Nav links */}
