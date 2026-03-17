@@ -488,6 +488,89 @@ RULES:
 Return ONLY the JSON object. No explanation, no markdown fences.`
 }
 
+// ── Resume Import & Enhance ──
+
+export function buildResumeImportPrompt(input: { resumeText: string; enhanceLevel: 'light' | 'full' }) {
+  const text = sanitizeLong(input.resumeText, 10000)
+  const isFullEnhance = input.enhanceLevel === 'full'
+
+  return `You are a world-class resume expert. Parse this existing resume and ${isFullEnhance ? 'COMPLETELY REWRITE it to be significantly stronger' : 'clean it up with light improvements'}.
+
+<user_data>
+${text}
+</user_data>
+
+${isFullEnhance ? `FULL ENHANCEMENT — Rewrite every bullet point to be dramatically better:
+- Transform vague duties into quantified STAR-format achievements
+- "Responsible for managing team" → "Led cross-functional team of 12 engineers, delivering 3 major product launches ahead of schedule"
+- "Helped increase sales" → "Drove 34% YoY revenue growth ($2.1M) by implementing data-driven pricing strategy"
+- Add realistic metrics where missing (use [X%], [X+] as placeholders if you must estimate)
+- Make every bullet start with a powerful action verb (Spearheaded, Architected, Orchestrated, Accelerated)
+- Rewrite the professional summary to be compelling and specific
+- Organize skills into clear, logical groups` : `LIGHT CLEANUP — Preserve the original voice but improve:
+- Fix grammar, spelling, and formatting issues
+- Strengthen weak action verbs (managed → led, helped → collaborated)
+- Add minor structure improvements
+- Keep the same achievements and metrics, just better phrased
+- Clean up the professional summary`}
+
+Generate a complete resume JSON with this EXACT structure:
+{
+  "personalInfo": {
+    "fullName": "Extracted full name",
+    "title": "Most recent/primary job title",
+    "summary": "${isFullEnhance ? 'Rewritten compelling 3-4 sentence professional summary' : 'Cleaned up professional summary'}"
+  },
+  "sections": [
+    {
+      "type": "experience",
+      "title": "Work Experience",
+      "entries": [
+        {
+          "fields": { "jobTitle": "...", "company": "...", "location": "..." },
+          "bulletPoints": ["${isFullEnhance ? 'Completely rewritten achievement' : 'Lightly improved bullet'}", ...],
+          "startDate": "Mon YYYY",
+          "endDate": "Mon YYYY",
+          "current": false
+        }
+      ]
+    },
+    {
+      "type": "education",
+      "title": "Education",
+      "entries": [
+        {
+          "fields": { "school": "...", "degree": "...", "fieldOfStudy": "..." },
+          "bulletPoints": [],
+          "startDate": "...",
+          "endDate": "..."
+        }
+      ]
+    },
+    {
+      "type": "skills",
+      "title": "Skills",
+      "entries": [
+        { "fields": { "groupName": "Category Name", "skills": "skill1, skill2, ..." }, "bulletPoints": [] }
+      ]
+    }
+  ]
+}
+
+RULES:
+- Preserve ALL factual information exactly: names, dates, companies, schools, degrees
+- NEVER fabricate companies, roles, or credentials — only enhance descriptions
+- ${isFullEnhance ? 'Generate 3-5 powerful bullet points per position' : 'Keep the same number of bullets, just improve phrasing'}
+- Extract ALL sections present: experience, education, skills, certifications, projects, volunteer, languages, publications, awards
+- For certifications: fields { "name", "issuer", "date" }; projects: fields { "name", "description" }
+- Group skills into 2-4 logical categories
+- Use date format "Mon YYYY" (e.g., "Jan 2020")
+- Mark the most recent position as "current": true if it appears current
+- Order entries chronologically (most recent first)
+
+Return ONLY the JSON object. No explanation, no markdown fences.`
+}
+
 // ── Helper: Extract plain text from ResumeContent ──
 
 export function resumeToPlainText(content: {

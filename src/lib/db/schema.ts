@@ -36,6 +36,7 @@ export const creditTransactionTypeEnum = pgEnum('credit_transaction_type', [
   'AI_ATS_OPTIMIZE',
   'AI_COVER_LETTER',
   'AI_LINKEDIN_IMPORT',
+  'AI_RESUME_IMPORT',
   'PDF_EXPORT',
   'SUBSCRIPTION_MONTHLY',
   'REFUND',

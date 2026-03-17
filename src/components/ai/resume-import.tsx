@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Linkedin, Upload, FileText, Loader2, X, ClipboardPaste } from 'lucide-react'
+import { Upload, FileText, Loader2, X, ClipboardPaste, Wand2, Sparkles, PenLine } from 'lucide-react'
 import { toast } from 'sonner'
 import { nanoid } from 'nanoid'
 
@@ -19,26 +19,29 @@ import {
 import { cn } from '@/lib/utils'
 import { CREDIT_COSTS } from '@/constants/credit-costs'
 
-interface LinkedInImportProps {
+interface ResumeImportProps {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
 type Tab = 'upload' | 'paste'
+type EnhanceLevel = 'light' | 'full'
 
-export function LinkedInImport({ open, onOpenChange }: LinkedInImportProps) {
+export function ResumeImport({ open, onOpenChange }: ResumeImportProps) {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<Tab>('upload')
-  const [profileText, setProfileText] = useState('')
+  const [resumeText, setResumeText] = useState('')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [enhanceLevel, setEnhanceLevel] = useState<EnhanceLevel>('full')
   const [importing, setImporting] = useState(false)
   const [dragging, setDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   function reset() {
     setActiveTab('upload')
-    setProfileText('')
+    setResumeText('')
     setSelectedFile(null)
+    setEnhanceLevel('full')
     setDragging(false)
   }
 
@@ -57,16 +60,9 @@ export function LinkedInImport({ open, onOpenChange }: LinkedInImportProps) {
     setSelectedFile(file)
   }
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    setDragging(false)
-    const file = e.dataTransfer.files[0]
-    if (file) handleFileSelect(file)
-  }, [])
-
   const canImport = activeTab === 'upload'
     ? !!selectedFile
-    : profileText.trim().length >= 100
+    : resumeText.trim().length >= 100
 
   async function handleImport() {
     setImporting(true)
@@ -76,20 +72,21 @@ export function LinkedInImport({ open, onOpenChange }: LinkedInImportProps) {
       if (activeTab === 'upload' && selectedFile) {
         const formData = new FormData()
         formData.append('file', selectedFile)
-        res = await fetch('/api/ai/linkedin-import', {
+        formData.append('enhanceLevel', enhanceLevel)
+        res = await fetch('/api/ai/resume-import', {
           method: 'POST',
           body: formData,
         })
       } else {
-        res = await fetch('/api/ai/linkedin-import', {
+        res = await fetch('/api/ai/resume-import', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ profileText }),
+          body: JSON.stringify({ resumeText, enhanceLevel }),
         })
       }
 
       if (res.status === 402) {
-        toast.error(`Not enough credits (${CREDIT_COSTS.AI_LINKEDIN_IMPORT} required)`)
+        toast.error(`Not enough credits (${CREDIT_COSTS.AI_RESUME_IMPORT} required)`)
         return
       }
 
@@ -106,12 +103,12 @@ export function LinkedInImport({ open, onOpenChange }: LinkedInImportProps) {
 
       const { resume: aiResume } = await res.json()
 
-      // Create a new resume with the imported content
+      // Create a new resume
       const createRes = await fetch('/api/resumes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: `${aiResume.personalInfo.title || 'Imported'} Resume`,
+          title: `${aiResume.personalInfo.title || 'Enhanced'} Resume`,
         }),
       })
 
@@ -122,7 +119,6 @@ export function LinkedInImport({ open, onOpenChange }: LinkedInImportProps) {
 
       const { resume } = await createRes.json()
 
-      // Build the content structure
       const content = {
         personalInfo: {
           fullName: aiResume.personalInfo.fullName || 'Your Name',
@@ -148,7 +144,6 @@ export function LinkedInImport({ open, onOpenChange }: LinkedInImportProps) {
         })),
       }
 
-      // Save the AI content
       const saveRes = await fetch(`/api/resumes/${resume.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -156,13 +151,15 @@ export function LinkedInImport({ open, onOpenChange }: LinkedInImportProps) {
       })
 
       if (!saveRes.ok) {
-        // Clean up orphaned resume
         await fetch(`/api/resumes/${resume.id}`, { method: 'DELETE' }).catch(() => {})
-        toast.error('Failed to save imported resume')
+        toast.error('Failed to save enhanced resume')
         return
       }
 
-      toast.success('Resume imported! Review and edit your details.')
+      toast.success(enhanceLevel === 'full'
+        ? 'Resume enhanced! Review your upgraded resume.'
+        : 'Resume imported! Review your cleaned-up resume.'
+      )
       router.push(`/editor/${resume.id}`)
       onOpenChange(false)
     } catch {
@@ -185,13 +182,54 @@ export function LinkedInImport({ open, onOpenChange }: LinkedInImportProps) {
       <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Linkedin className="h-5 w-5 text-[#0A66C2]" />
-            Import from LinkedIn
+            <Wand2 className="h-5 w-5 text-amber-500" />
+            Import & Enhance Resume
           </DialogTitle>
           <DialogDescription>
-            Upload your LinkedIn PDF or paste your profile text. AI will structure it into a resume ({CREDIT_COSTS.AI_LINKEDIN_IMPORT} credits).
+            Upload your old resume and our AI expert will make it significantly better ({CREDIT_COSTS.AI_RESUME_IMPORT} credits).
           </DialogDescription>
         </DialogHeader>
+
+        {/* Enhance Level Toggle */}
+        <div>
+          <Label className="mb-2 text-xs font-semibold">Enhancement Level</Label>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => setEnhanceLevel('full')}
+              className={cn(
+                'rounded-lg border-2 p-3 text-left transition-all',
+                enhanceLevel === 'full'
+                  ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                  : 'border-muted hover:border-muted-foreground/30',
+              )}
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-amber-500" />
+                <span className="text-sm font-medium">Full Rewrite</span>
+              </div>
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Transform weak bullets into powerful achievements with STAR format and metrics
+              </p>
+            </button>
+            <button
+              onClick={() => setEnhanceLevel('light')}
+              className={cn(
+                'rounded-lg border-2 p-3 text-left transition-all',
+                enhanceLevel === 'light'
+                  ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                  : 'border-muted hover:border-muted-foreground/30',
+              )}
+            >
+              <div className="flex items-center gap-2">
+                <PenLine className="h-4 w-4 text-blue-500" />
+                <span className="text-sm font-medium">Light Cleanup</span>
+              </div>
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Fix grammar, strengthen verbs, and polish phrasing while keeping your voice
+              </p>
+            </button>
+          </div>
+        </div>
 
         {/* Tab Switcher */}
         <div className="flex gap-1 rounded-lg bg-muted p-1">
@@ -227,7 +265,7 @@ export function LinkedInImport({ open, onOpenChange }: LinkedInImportProps) {
             <div
               onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
               onDragLeave={() => setDragging(false)}
-              onDrop={handleDrop}
+              onDrop={(e) => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files[0]; if (f) handleFileSelect(f) }}
               onClick={() => fileInputRef.current?.click()}
               className={cn(
                 'flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors',
@@ -239,9 +277,7 @@ export function LinkedInImport({ open, onOpenChange }: LinkedInImportProps) {
                 <>
                   <FileText className="h-8 w-8 text-green-600" />
                   <p className="mt-2 text-sm font-medium">{selectedFile.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {(selectedFile.size / 1024).toFixed(0)} KB
-                  </p>
+                  <p className="text-xs text-muted-foreground">{(selectedFile.size / 1024).toFixed(0)} KB</p>
                   <button
                     onClick={(e) => { e.stopPropagation(); setSelectedFile(null) }}
                     className="mt-2 flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive"
@@ -252,10 +288,8 @@ export function LinkedInImport({ open, onOpenChange }: LinkedInImportProps) {
               ) : (
                 <>
                   <Upload className="h-8 w-8 text-muted-foreground" />
-                  <p className="mt-2 text-sm font-medium">
-                    {dragging ? 'Drop your PDF here' : 'Click or drag to upload'}
-                  </p>
-                  <p className="text-xs text-muted-foreground">LinkedIn PDF export (max 5MB)</p>
+                  <p className="mt-2 text-sm font-medium">{dragging ? 'Drop your resume here' : 'Click or drag to upload'}</p>
+                  <p className="text-xs text-muted-foreground">PDF resume file (max 5MB)</p>
                 </>
               )}
               <input
@@ -263,38 +297,27 @@ export function LinkedInImport({ open, onOpenChange }: LinkedInImportProps) {
                 type="file"
                 accept=".pdf"
                 className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0]
-                  if (file) handleFileSelect(file)
-                  e.target.value = ''
-                }}
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFileSelect(f); e.target.value = '' }}
               />
             </div>
-            <p className="text-[11px] text-muted-foreground">
-              To export from LinkedIn: Go to your profile → Click &quot;More&quot; → &quot;Save to PDF&quot;
-            </p>
           </div>
         )}
 
         {/* Paste Tab */}
         {activeTab === 'paste' && (
           <div className="space-y-2">
-            <Label className="text-xs">Paste your LinkedIn profile text</Label>
+            <Label className="text-xs">Paste your resume text</Label>
             <Textarea
-              value={profileText}
-              onChange={(e) => setProfileText(e.target.value)}
-              placeholder="Copy all text from your LinkedIn profile page and paste here..."
+              value={resumeText}
+              onChange={(e) => setResumeText(e.target.value)}
+              placeholder="Copy all text from your existing resume and paste here..."
               rows={10}
               maxLength={15000}
               className="resize-none text-sm"
             />
             <div className="flex items-center justify-between">
-              <p className="text-[11px] text-muted-foreground">
-                Min 100 characters required
-              </p>
-              <p className="text-[10px] text-muted-foreground">
-                {profileText.length.toLocaleString()}/15,000
-              </p>
+              <p className="text-[11px] text-muted-foreground">Min 100 characters required</p>
+              <p className="text-[10px] text-muted-foreground">{resumeText.length.toLocaleString()}/15,000</p>
             </div>
           </div>
         )}
@@ -308,12 +331,12 @@ export function LinkedInImport({ open, onOpenChange }: LinkedInImportProps) {
           {importing ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
-              Importing...
+              {enhanceLevel === 'full' ? 'Enhancing your resume...' : 'Cleaning up your resume...'}
             </>
           ) : (
             <>
-              <Linkedin className="h-4 w-4" />
-              Import Resume ({CREDIT_COSTS.AI_LINKEDIN_IMPORT} credits)
+              <Wand2 className="h-4 w-4" />
+              {enhanceLevel === 'full' ? `Enhance Resume (${CREDIT_COSTS.AI_RESUME_IMPORT} credits)` : `Clean Up Resume (${CREDIT_COSTS.AI_RESUME_IMPORT} credits)`}
             </>
           )}
         </Button>
