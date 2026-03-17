@@ -77,6 +77,7 @@ export const updateResumeSchema = z.object({
   templateId: z.string().min(1).max(50).optional(),
   content: resumeContentSchema.optional(),
   isPublic: z.boolean().optional(),
+  targetJobDescription: z.string().max(5000).nullable().optional(),
 })
 
 // ==================== Inferred Types ====================

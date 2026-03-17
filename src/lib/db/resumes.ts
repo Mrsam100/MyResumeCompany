@@ -119,6 +119,7 @@ export async function updateResume(
     templateId?: string
     content?: ResumeContent
     isPublic?: boolean
+    targetJobDescription?: string | null
   },
 ) {
   const [updated] = await db

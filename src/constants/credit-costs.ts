@@ -5,6 +5,7 @@ export const CREDIT_COSTS = {
   AI_ATS_SCAN: 15,
   AI_ATS_OPTIMIZE: 15,
   AI_COVER_LETTER: 20,
+  AI_LINKEDIN_IMPORT: 20,
   PDF_EXPORT: 30,
 } as const
 

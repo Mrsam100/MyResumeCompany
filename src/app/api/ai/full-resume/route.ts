@@ -28,6 +28,10 @@ const inputSchema = z.object({
   }),
   skills: z.array(z.string().max(100)).min(1).max(30),
   goals: z.string().max(1000).optional(),
+  tone: z.enum(['professional', 'conversational', 'technical', 'creative']).optional(),
+  contentDensity: z.enum(['concise', 'balanced', 'detailed']).optional(),
+  templateCategory: z.string().max(50).optional(),
+  jobDescription: z.string().max(2000).optional(),
 })
 
 const resumeSectionSchema = z.object({
@@ -74,12 +78,16 @@ export async function POST(req: Request) {
     const prompt = buildFullResumePrompt({
       ...parsed,
       education: { ...parsed.education, field: parsed.education.field ?? '' },
+      tone: parsed.tone,
+      contentDensity: parsed.contentDensity,
+      templateCategory: parsed.templateCategory,
+      jobDescription: parsed.jobDescription,
     })
 
     const text = await generateAIResponse({
       system: RESUME_SYSTEM_PROMPT,
       prompt,
-      maxTokens: 4096,
+      maxTokens: parsed.jobDescription ? 6144 : 4096,
       timeoutMs: AI_TIMEOUT_MS,
     })
 

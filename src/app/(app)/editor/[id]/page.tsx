@@ -12,6 +12,9 @@ import {
   ZoomIn,
   ZoomOut,
   LayoutGrid,
+  Target,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -37,7 +40,11 @@ import { useEditorStore } from '@/stores/editor-store'
 import { useAutosave } from '@/hooks/use-autosave'
 import { usePdfExport } from '@/hooks/use-pdf-export'
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts'
+import { useLiveATSScore } from '@/hooks/use-live-ats-score'
 import { TEMPLATE_NAMES } from '@/constants/template-names'
+import { Badge } from '@/components/ui/badge'
+import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
 import type { ResumeContent } from '@/types/resume'
 
 export default function EditorPage() {
@@ -46,11 +53,15 @@ export default function EditorPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const { loadResume, resetStore, content, title, templateId, setTemplate, canUndo, canRedo, undo, redo } =
+  const { loadResume, resetStore, content, title, templateId, setTemplate, canUndo, canRedo, undo, redo, targetJobDescription, setTargetJobDescription } =
     useResumeStore()
   const { showPreview, togglePreview, zoom, setZoom } = useEditorStore()
   const { save } = useAutosave()
   const { exportPdf, exporting } = usePdfExport()
+  const { score: atsScore, matched: atsMatched, total: atsTotal, hasJobDescription } = useLiveATSScore()
+  const [jdExpanded, setJdExpanded] = useState(false)
+  const [jdInput, setJdInput] = useState('')
+  const [atsScannerOpen, setAtsScannerOpen] = useState(false)
 
   useKeyboardShortcuts(save)
 
@@ -88,7 +99,9 @@ export default function EditorPage() {
           title: data.resume.title ?? 'Untitled Resume',
           templateId: data.resume.templateId ?? 'classic-professional',
           content: safeContent,
+          targetJobDescription: data.resume.targetJobDescription ?? null,
         })
+        setJdInput(data.resume.targetJobDescription ?? '')
       } catch {
         setError('Failed to load resume')
       } finally {
@@ -196,7 +209,34 @@ export default function EditorPage() {
           <Separator orientation="vertical" className="mx-1 hidden h-5 lg:block" />
 
           <div className="flex items-center gap-1">
-            <ATSScanner />
+            {hasJobDescription && atsScore !== null && (
+              <Tooltip>
+                <TooltipTrigger>
+                  <button
+                    onClick={() => setAtsScannerOpen(true)}
+                    className="mr-1"
+                  >
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        'text-[11px] font-bold tabular-nums',
+                        atsScore >= 75 ? 'border-green-500 text-green-600' :
+                        atsScore >= 50 ? 'border-amber-500 text-amber-600' :
+                        'border-red-500 text-red-600',
+                      )}
+                    >
+                      ATS {atsScore}
+                    </Badge>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>{atsMatched.length}/{atsTotal} keywords matched. Click for full AI scan.</TooltipContent>
+              </Tooltip>
+            )}
+            <ATSScanner
+              externalOpen={atsScannerOpen}
+              onExternalOpenChange={setAtsScannerOpen}
+              prefillJobDescription={targetJobDescription || undefined}
+            />
             <CoverLetterGenerator />
           </div>
 
@@ -216,6 +256,53 @@ export default function EditorPage() {
             <TooltipContent>Download as PDF (30 credits)</TooltipContent>
           </Tooltip>
         </div>
+      </div>
+
+      {/* ── Job Description Panel (collapsible) ── */}
+      <div className="shrink-0 border-b bg-muted/30">
+        {jdExpanded ? (
+          <div className="px-4 py-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-medium flex items-center gap-1.5">
+                <Target className="h-3.5 w-3.5 text-primary" />
+                Target Job Description
+              </label>
+              <button onClick={() => setJdExpanded(false)} className="text-muted-foreground hover:text-foreground">
+                <ChevronUp className="h-4 w-4" />
+              </button>
+            </div>
+            <Textarea
+              value={jdInput}
+              onChange={(e) => setJdInput(e.target.value)}
+              onBlur={() => setTargetJobDescription(jdInput.trim() || null)}
+              placeholder="Paste the job description here for live ATS keyword matching..."
+              rows={4}
+              maxLength={5000}
+              className="resize-none text-xs"
+            />
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] text-muted-foreground">
+                {hasJobDescription ? `Live scoring active — ${atsMatched.length}/${atsTotal} keywords matched` : 'Paste a job description to enable live ATS scoring'}
+              </p>
+              <p className="text-[10px] text-muted-foreground">{jdInput.length}/5,000</p>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setJdExpanded(true)}
+            className="flex w-full items-center justify-between px-4 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <span className="flex items-center gap-1.5">
+              <Target className="h-3 w-3" />
+              {hasJobDescription ? (
+                <>Job description set — <span className={cn('font-medium', atsScore !== null && atsScore >= 75 ? 'text-green-600' : atsScore !== null && atsScore >= 50 ? 'text-amber-600' : 'text-red-600')}>{atsMatched.length}/{atsTotal} keywords matched</span></>
+              ) : (
+                'Add job description for live ATS scoring'
+              )}
+            </span>
+            <ChevronDown className="h-3.5 w-3.5" />
+          </button>
+        )}
       </div>
 
       {/* ── Two-panel layout ── */}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Search, Loader2, Sparkles, ChevronDown, ChevronUp } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -101,8 +101,16 @@ function getEntryLabel(sectionIndex: number, entryIndex: number): string {
   return `${section.title} — Entry ${entryIndex + 1}`
 }
 
-export function ATSScanner() {
-  const [open, setOpen] = useState(false)
+interface ATSScannerProps {
+  externalOpen?: boolean
+  onExternalOpenChange?: (open: boolean) => void
+  prefillJobDescription?: string
+}
+
+export function ATSScanner({ externalOpen, onExternalOpenChange, prefillJobDescription }: ATSScannerProps = {}) {
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = externalOpen ?? internalOpen
+  const setOpen = onExternalOpenChange ?? setInternalOpen
   const [scanning, setScanning] = useState(false)
   const [optimizing, setOptimizing] = useState(false)
   const [jobDescription, setJobDescription] = useState('')
@@ -110,6 +118,18 @@ export function ATSScanner() {
   const [optimizeResult, setOptimizeResult] = useState<OptimizeResult | null>(null)
   const [showDetails, setShowDetails] = useState(false)
   const [appliedEntries, setAppliedEntries] = useState<Set<string>>(new Set())
+
+  // Pre-fill JD once when dialog opens externally (not on every render)
+  const prefillAppliedRef = useRef(false)
+  useEffect(() => {
+    if (open && prefillJobDescription && !prefillAppliedRef.current) {
+      setJobDescription(prefillJobDescription)
+      prefillAppliedRef.current = true
+    }
+    if (!open) {
+      prefillAppliedRef.current = false
+    }
+  }, [open, prefillJobDescription])
 
   const content = useResumeStore((s) => s.content)
   const setBulletPoints = useResumeStore((s) => s.setBulletPoints)

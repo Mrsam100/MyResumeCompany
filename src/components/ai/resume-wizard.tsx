@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Sparkles, Loader2, ArrowLeft, ArrowRight, Plus, Trash2, GraduationCap, Briefcase, Target, Lightbulb, CheckCircle } from 'lucide-react'
+import { Sparkles, Loader2, ArrowLeft, ArrowRight, Plus, Trash2, GraduationCap, Briefcase, Target, Lightbulb, CheckCircle, Layout, Palette, Crown, Star } from 'lucide-react'
 import { toast } from 'sonner'
 import { nanoid } from 'nanoid'
 
@@ -26,6 +26,9 @@ import {
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import { TemplatePreview } from '@/components/templates/template-preview'
+import { getAllTemplateConfigs } from '@/templates/registry'
+import { TEMPLATE_NAMES } from '@/constants/template-names'
 
 interface Position {
   id: string
@@ -34,6 +37,9 @@ interface Position {
   duration: string
   description: string
 }
+
+type WritingTone = 'professional' | 'conversational' | 'technical' | 'creative'
+type ContentDensity = 'concise' | 'balanced' | 'detailed'
 
 interface WizardData {
   targetRole: string
@@ -48,6 +54,10 @@ interface WizardData {
   }
   skills: string[]
   goals: string
+  selectedTemplate: string
+  writingTone: WritingTone
+  contentDensity: ContentDensity
+  jobDescription: string
 }
 
 const STEPS = [
@@ -55,6 +65,8 @@ const STEPS = [
   { label: 'Experience', icon: Briefcase },
   { label: 'Education', icon: GraduationCap },
   { label: 'Skills', icon: Lightbulb },
+  { label: 'Template', icon: Layout },
+  { label: 'Style', icon: Palette },
   { label: 'Generate', icon: Sparkles },
 ]
 
@@ -66,8 +78,46 @@ const EXPERIENCE_LEVELS = [
   'Executive / Director',
 ]
 
+const TONE_OPTIONS: Array<{ value: WritingTone; label: string; desc: string }> = [
+  { value: 'professional', label: 'Professional', desc: 'Formal language, industry-standard phrasing' },
+  { value: 'conversational', label: 'Conversational', desc: 'Approachable and personable, yet polished' },
+  { value: 'technical', label: 'Technical', desc: 'Precise terminology, metrics-heavy, skills-focused' },
+  { value: 'creative', label: 'Creative', desc: 'Distinctive voice, storytelling-oriented, memorable' },
+]
+
+const DENSITY_OPTIONS: Array<{ value: ContentDensity; label: string; desc: string }> = [
+  { value: 'concise', label: 'Concise', desc: '2 bullets per entry — brief and punchy' },
+  { value: 'balanced', label: 'Balanced', desc: '3-4 bullets per entry — standard format' },
+  { value: 'detailed', label: 'Detailed', desc: '5-6 bullets per entry — comprehensive' },
+]
+
+const CATEGORY_FILTERS = [
+  { value: null, label: 'All' },
+  { value: 'PROFESSIONAL', label: 'Professional' },
+  { value: 'MODERN', label: 'Modern' },
+  { value: 'CREATIVE', label: 'Creative' },
+  { value: 'TECH', label: 'Tech' },
+  { value: 'ATS_OPTIMIZED', label: 'ATS' },
+  { value: 'ACADEMIC', label: 'Academic' },
+  { value: 'MINIMAL', label: 'Minimal' },
+] as const
+
 function createEmptyPosition(): Position {
   return { id: nanoid(10), title: '', company: '', duration: '', description: '' }
+}
+
+const INITIAL_DATA: WizardData = {
+  targetRole: '',
+  industry: '',
+  experienceLevel: '',
+  positions: [createEmptyPosition()],
+  education: { degree: '', school: '', field: '', graduationYear: '' },
+  skills: [],
+  goals: '',
+  selectedTemplate: 'classic-professional',
+  writingTone: 'professional',
+  contentDensity: 'balanced',
+  jobDescription: '',
 }
 
 interface ResumeWizardProps {
@@ -80,16 +130,29 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
   const [step, setStep] = useState(0)
   const [generating, setGenerating] = useState(false)
   const [skillInput, setSkillInput] = useState('')
+  const [templateFilter, setTemplateFilter] = useState<string | null>(null)
 
-  const [data, setData] = useState<WizardData>({
-    targetRole: '',
-    industry: '',
-    experienceLevel: '',
-    positions: [createEmptyPosition()],
-    education: { degree: '', school: '', field: '', graduationYear: '' },
-    skills: [],
-    goals: '',
-  })
+  const [data, setData] = useState<WizardData>({ ...INITIAL_DATA, positions: [createEmptyPosition()] })
+
+  const allTemplates = useMemo(() => getAllTemplateConfigs(), [])
+
+  const filteredTemplates = useMemo(() => {
+    if (!templateFilter) return allTemplates
+    return allTemplates.filter((t) => t.category === templateFilter)
+  }, [allTemplates, templateFilter])
+
+  function getRecommendedTemplate(): string {
+    const role = data.targetRole.toLowerCase()
+    const industry = data.industry.toLowerCase()
+    const level = data.experienceLevel.toLowerCase()
+
+    if (/engineer|developer|programmer|devops|sre|data scien/i.test(role)) return 'developer'
+    if (/executive|director|vp |vice president|c-suite|cto|ceo|cfo/i.test(level + ' ' + role)) return 'executive'
+    if (/design|creative|art|ux|ui|brand|market/i.test(role)) return 'creative-bold'
+    if (/professor|researcher|phd|postdoc|academ/i.test(role + ' ' + industry)) return 'academic-cv'
+    if (/finance|consult|bank|legal|law|account/i.test(industry)) return 'ats-professional'
+    return 'classic-professional'
+  }
 
   function updateField<K extends keyof WizardData>(key: K, value: WizardData[K] | ((prev: WizardData[K]) => WizardData[K])) {
     setData((prev) => ({
@@ -132,6 +195,8 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
       case 1: return data.positions.some((p) => p.title.trim() && p.company.trim())
       case 2: return !!data.education.degree.trim() && !!data.education.school.trim()
       case 3: return data.skills.length >= 3
+      case 4: return true // template always selected (default)
+      case 5: return true // tone/density always have defaults
       default: return true
     }
   }
@@ -139,11 +204,14 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
   async function handleGenerate() {
     setGenerating(true)
     try {
-      // Create a blank resume first
+      // Create a blank resume with the selected template
       const createRes = await fetch('/api/resumes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: `${data.targetRole} Resume` }),
+        body: JSON.stringify({
+          title: `${data.targetRole} Resume`,
+          templateId: data.selectedTemplate,
+        }),
       })
 
       if (!createRes.ok) {
@@ -153,7 +221,8 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
 
       const { resume } = await createRes.json()
 
-      // Generate AI content
+      // Generate AI content with style preferences
+      const selectedConfig = allTemplates.find((t) => t.slug === data.selectedTemplate)
       const aiRes = await fetch('/api/ai/full-resume', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -165,11 +234,14 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
           education: data.education,
           skills: data.skills,
           goals: data.goals || undefined,
+          tone: data.writingTone,
+          contentDensity: data.contentDensity,
+          templateCategory: selectedConfig?.category,
+          jobDescription: data.jobDescription || undefined,
         }),
       })
 
       if (aiRes.status === 402) {
-        // Clean up orphaned resume
         await fetch(`/api/resumes/${resume.id}`, { method: 'DELETE' }).catch(() => {})
         toast.error('Not enough credits (40 required)')
         return
@@ -182,7 +254,6 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
       }
 
       if (!aiRes.ok) {
-        // Clean up orphaned resume
         await fetch(`/api/resumes/${resume.id}`, { method: 'DELETE' }).catch(() => {})
         const errData = await aiRes.json().catch(() => null)
         toast.error(errData?.error || 'AI generation failed. Please try again.')
@@ -241,17 +312,12 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
 
   function resetWizard() {
     setStep(0)
-    setData({
-      targetRole: '',
-      industry: '',
-      experienceLevel: '',
-      positions: [createEmptyPosition()],
-      education: { degree: '', school: '', field: '', graduationYear: '' },
-      skills: [],
-      goals: '',
-    })
+    setData({ ...INITIAL_DATA, positions: [createEmptyPosition()] })
     setSkillInput('')
+    setTemplateFilter(null)
   }
+
+  const recommendedTemplate = step === 4 ? getRecommendedTemplate() : ''
 
   return (
     <Dialog
@@ -263,7 +329,10 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
         }
       }}
     >
-      <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+      <DialogContent className={cn(
+        'max-h-[85vh] overflow-y-auto transition-all duration-300',
+        step === 4 ? 'max-w-3xl' : 'max-w-lg',
+      )}>
         <DialogHeader>
           <DialogTitle>Create Resume with AI</DialogTitle>
           <DialogDescription>
@@ -272,22 +341,22 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
         </DialogHeader>
 
         {/* Progress Steps */}
-        <div className="flex items-center justify-between px-2">
+        <div className="flex items-center justify-between px-1 overflow-x-auto">
           {STEPS.map((s, i) => {
             const Icon = s.icon
             return (
-              <div key={i} className="flex flex-col items-center gap-1">
+              <div key={i} className="flex flex-col items-center gap-1 min-w-0">
                 <div
                   className={cn(
-                    'flex h-8 w-8 items-center justify-center rounded-full transition-colors',
+                    'flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full transition-colors shrink-0',
                     i < step ? 'bg-green-500 text-white' :
                     i === step ? 'bg-primary text-primary-foreground' :
                     'bg-muted text-muted-foreground',
                   )}
                 >
-                  {i < step ? <CheckCircle className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
+                  {i < step ? <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> : <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
                 </div>
-                <span className={cn('text-[10px]', i === step ? 'font-semibold text-primary' : 'text-muted-foreground')}>
+                <span className={cn('text-[9px] sm:text-[10px] hidden sm:inline', i === step ? 'font-semibold text-primary' : 'text-muted-foreground')}>
                   {s.label}
                 </span>
               </div>
@@ -454,8 +523,147 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
             </>
           )}
 
-          {/* Step 4: Review & Generate */}
+          {/* Step 4: Choose Template */}
           {step === 4 && (
+            <>
+              {/* Recommendation banner */}
+              {recommendedTemplate && recommendedTemplate !== data.selectedTemplate && (
+                <div className="flex items-center justify-between rounded-lg border border-primary/30 bg-primary/5 p-3">
+                  <div className="flex items-center gap-2">
+                    <Star className="h-4 w-4 text-primary shrink-0" />
+                    <span className="text-xs">
+                      <span className="font-medium">Recommended for your role:</span>{' '}
+                      {TEMPLATE_NAMES[recommendedTemplate]}
+                    </span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={() => updateField('selectedTemplate', recommendedTemplate)}
+                  >
+                    Use
+                  </Button>
+                </div>
+              )}
+
+              {/* Category filters */}
+              <div className="flex gap-1.5 overflow-x-auto pb-1">
+                {CATEGORY_FILTERS.map((cat) => (
+                  <button
+                    key={cat.label}
+                    onClick={() => setTemplateFilter(cat.value)}
+                    className={cn(
+                      'shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors',
+                      templateFilter === cat.value
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80',
+                    )}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Template grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {filteredTemplates.map((template) => (
+                  <button
+                    key={template.slug}
+                    onClick={() => updateField('selectedTemplate', template.slug)}
+                    className={cn(
+                      'group relative rounded-lg border-2 p-1.5 transition-all text-left',
+                      data.selectedTemplate === template.slug
+                        ? 'border-primary ring-2 ring-primary/20'
+                        : 'border-transparent hover:border-muted-foreground/20',
+                    )}
+                  >
+                    <div className="relative aspect-[3/4] overflow-hidden rounded-md bg-white">
+                      <TemplatePreview slug={template.slug} />
+                      {template.isPremium && (
+                        <div className="absolute top-1 right-1 flex items-center gap-0.5 rounded-full bg-amber-500 px-1.5 py-0.5">
+                          <Crown className="h-2.5 w-2.5 text-white" />
+                          <span className="text-[9px] font-bold text-white">PRO</span>
+                        </div>
+                      )}
+                      {data.selectedTemplate === template.slug && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-primary/10">
+                          <CheckCircle className="h-6 w-6 text-primary" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-1.5 px-0.5">
+                      <p className="text-xs font-medium truncate">{template.name}</p>
+                      <p className="text-[10px] text-muted-foreground capitalize">{template.category.toLowerCase().replace('_', ' ')}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* Step 5: Writing Style */}
+          {step === 5 && (
+            <>
+              <div>
+                <Label className="mb-2 text-xs font-semibold">Writing Tone</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {TONE_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => updateField('writingTone', opt.value)}
+                      className={cn(
+                        'rounded-lg border-2 p-3 text-left transition-all',
+                        data.writingTone === opt.value
+                          ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                          : 'border-muted hover:border-muted-foreground/30',
+                      )}
+                    >
+                      <p className="text-sm font-medium">{opt.label}</p>
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">{opt.desc}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <Label className="mb-2 text-xs font-semibold">Content Density</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {DENSITY_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => updateField('contentDensity', opt.value)}
+                      className={cn(
+                        'rounded-lg border-2 p-3 text-left transition-all',
+                        data.contentDensity === opt.value
+                          ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                          : 'border-muted hover:border-muted-foreground/30',
+                      )}
+                    >
+                      <p className="text-sm font-medium">{opt.label}</p>
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">{opt.desc}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <Label className="mb-1.5 text-xs">Paste a job description to tailor your resume (optional)</Label>
+                <Textarea
+                  value={data.jobDescription}
+                  onChange={(e) => updateField('jobDescription', e.target.value)}
+                  placeholder="Paste the job posting here to tailor your resume to this specific role..."
+                  rows={4}
+                  maxLength={2000}
+                  className="resize-none text-sm"
+                />
+                <p className="mt-1 text-[10px] text-muted-foreground text-right">{data.jobDescription.length}/2,000</p>
+              </div>
+            </>
+          )}
+
+          {/* Step 6: Review & Generate */}
+          {step === 6 && (
             <>
               <div>
                 <Label className="mb-1.5 text-xs">Career Goals (optional)</Label>
@@ -475,6 +683,11 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
                   <p><span className="font-medium text-foreground">Positions:</span> {data.positions.filter(p => p.title.trim()).length}</p>
                   <p><span className="font-medium text-foreground">Education:</span> {data.education.degree} — {data.education.school}</p>
                   <p><span className="font-medium text-foreground">Skills:</span> {data.skills.length}</p>
+                  <p><span className="font-medium text-foreground">Template:</span> {TEMPLATE_NAMES[data.selectedTemplate] || data.selectedTemplate}</p>
+                  <p><span className="font-medium text-foreground">Style:</span> {TONE_OPTIONS.find(t => t.value === data.writingTone)?.label} / {DENSITY_OPTIONS.find(d => d.value === data.contentDensity)?.label}</p>
+                  {data.jobDescription && (
+                    <p><span className="font-medium text-foreground">Job Description:</span> Provided ({data.jobDescription.length} chars)</p>
+                  )}
                 </div>
               </div>
             </>
@@ -493,7 +706,7 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
             <ArrowLeft className="h-4 w-4" /> Back
           </Button>
 
-          {step < 4 ? (
+          {step < 6 ? (
             <Button
               size="sm"
               onClick={() => setStep((s) => s + 1)}

@@ -37,6 +37,7 @@ interface ResumeState {
     title: string
     templateId: string
     content: ResumeContent
+    targetJobDescription?: string | null
   }) => void
   resetStore: () => void
 
@@ -93,6 +94,10 @@ interface ResumeState {
   markSaving: () => void
   markSaved: () => void
   markSaveError: (error: string) => void
+
+  // ── Actions: Job Description (for live ATS) ──
+  targetJobDescription: string | null
+  setTargetJobDescription: (jd: string | null) => void
 }
 
 // ==================== Default Content ====================
@@ -149,6 +154,7 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
   lastSavedAt: null,
   saveError: null,
   history: { past: [], future: [] },
+  targetJobDescription: null,
 
   // ── Lifecycle ──
 
@@ -158,6 +164,7 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
       title: data.title,
       templateId: data.templateId,
       content: data.content,
+      targetJobDescription: data.targetJobDescription ?? null,
       isDirty: false,
       isSaving: false,
       lastSavedAt: null,
@@ -171,6 +178,7 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
       title: 'Untitled Resume',
       templateId: 'classic-professional',
       content: defaultContent,
+      targetJobDescription: null,
       isDirty: false,
       isSaving: false,
       lastSavedAt: null,
@@ -442,4 +450,8 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
   markSaving: () => set({ isSaving: true, saveError: null }),
   markSaved: () => set({ isSaving: false, isDirty: false, lastSavedAt: new Date(), saveError: null }),
   markSaveError: (error) => set({ isSaving: false, saveError: error }),
+
+  // ── Job Description (for live ATS) ──
+
+  setTargetJobDescription: (jd) => set({ targetJobDescription: jd, isDirty: true }),
 }))

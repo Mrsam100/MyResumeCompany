@@ -12,6 +12,7 @@ export function useAutosave() {
     title,
     templateId,
     content,
+    targetJobDescription,
     isDirty,
     isSaving,
     markSaving,
@@ -36,7 +37,7 @@ export function useAutosave() {
       const res = await fetch(`/api/resumes/${resumeId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, templateId, content }),
+        body: JSON.stringify({ title, templateId, content, targetJobDescription }),
         signal: abortRef.current.signal,
       })
 
@@ -60,7 +61,7 @@ export function useAutosave() {
         retryCountRef.current = 0
       }
     }
-  }, [resumeId, isDirty, isSaving, title, templateId, content, markSaving, markSaved, markSaveError])
+  }, [resumeId, isDirty, isSaving, title, templateId, content, targetJobDescription, markSaving, markSaved, markSaveError])
 
   // Debounced auto-save on changes
   useEffect(() => {
@@ -72,14 +73,14 @@ export function useAutosave() {
     return () => {
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
     }
-  }, [isDirty, resumeId, content, title, templateId, save])
+  }, [isDirty, resumeId, content, title, templateId, targetJobDescription, save])
 
   // Save on page unload
   useEffect(() => {
     function handleBeforeUnload(e: BeforeUnloadEvent) {
       if (isDirty && resumeId) {
         e.preventDefault()
-        const data = JSON.stringify({ title, templateId, content })
+        const data = JSON.stringify({ title, templateId, content, targetJobDescription })
         navigator.sendBeacon(
           `/api/resumes/${resumeId}/save`,
           new Blob([data], { type: 'application/json' }),
@@ -89,7 +90,7 @@ export function useAutosave() {
 
     window.addEventListener('beforeunload', handleBeforeUnload)
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
-  }, [isDirty, resumeId, title, templateId, content])
+  }, [isDirty, resumeId, title, templateId, content, targetJobDescription])
 
   // Cleanup on unmount
   useEffect(() => {

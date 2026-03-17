@@ -35,6 +35,7 @@ export const creditTransactionTypeEnum = pgEnum('credit_transaction_type', [
   'AI_ATS_SCAN',
   'AI_ATS_OPTIMIZE',
   'AI_COVER_LETTER',
+  'AI_LINKEDIN_IMPORT',
   'PDF_EXPORT',
   'SUBSCRIPTION_MONTHLY',
   'REFUND',
@@ -166,6 +167,7 @@ export const resumes = pgTable(
     isPublic: boolean('is_public').notNull().default(false),
     lastEditedAt: timestamp('last_edited_at', { mode: 'date' }).notNull().defaultNow(),
     thumbnailUrl: text('thumbnail_url'),
+    targetJobDescription: text('target_job_description'),
     createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { mode: 'date' })
       .notNull()
