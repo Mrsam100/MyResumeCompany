@@ -29,6 +29,7 @@ const REQUIRED_IN_PRODUCTION = [
   'PDF_SERVICE_SECRET',
   'SENTRY_DSN',
   'NEXT_PUBLIC_SENTRY_DSN',
+  'RESEND_API_KEY',
 ] as const
 
 // DATABASE_URL is only required on Node.js (Vercel/local).

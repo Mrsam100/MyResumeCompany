@@ -11,6 +11,7 @@ import { addCredits } from '@/lib/db/credits'
 import { getCachedSession, setCachedSession } from '@/lib/redis'
 import { loginSchema } from '@/lib/validations/auth'
 import { verifyPassword, needsHashUpgrade, hashPassword } from '@/lib/auth/password'
+import { sendWelcomeEmail } from '@/lib/email'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db, {
@@ -114,6 +115,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         await addCredits(user.id, 100, 'SIGNUP_BONUS', 'Welcome bonus — 100 free credits')
+
+        // Send welcome email (non-blocking — don't fail signup on email error)
+        if (user.email) {
+          sendWelcomeEmail(user.email, user.name || 'there').catch((err) =>
+            console.error('[auth] Welcome email failed:', err),
+          )
+        }
       }
     },
   },

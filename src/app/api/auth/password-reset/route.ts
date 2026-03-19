@@ -7,6 +7,7 @@ import { hashPassword } from '@/lib/auth/password'
 import { db } from '@/lib/db'
 import { users, passwordResetTokens } from '@/lib/db/schema'
 import { checkAuthRateLimit } from '@/lib/auth/rate-limit'
+import { sendPasswordResetEmail } from '@/lib/email'
 
 const requestSchema = z.object({
   email: z.string().email().transform((v) => v.toLowerCase().trim()),
@@ -63,8 +64,15 @@ export async function POST(req: Request) {
       })
     })
 
-    // TODO: Send email via Resend with reset link
-    // For now, log the token in development
+    // Send reset email via Resend
+    try {
+      await sendPasswordResetEmail(parsed.data.email, token)
+    } catch (emailErr) {
+      // Log but don't fail — user already got success response for security
+      console.error('[password-reset] Failed to send email:', emailErr)
+    }
+
+    // Also log in development for easier testing
     if (process.env.NODE_ENV !== 'production') {
       const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
       console.log(`[DEV] Password reset link: ${appUrl}/reset-password?token=${token}`)
