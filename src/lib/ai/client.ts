@@ -6,9 +6,7 @@ let _client: GoogleGenerativeAI | null = null
 
 function getClient(): GoogleGenerativeAI {
   const apiKey = process.env.GEMINI_API_KEY
-  console.log('[AI DEBUG] GEMINI_API_KEY present:', !!apiKey, '| length:', apiKey?.length ?? 0, '| first 10:', apiKey?.slice(0, 10), '| last 5:', apiKey?.slice(-5))
   if (!apiKey) {
-    console.warn('GEMINI_API_KEY not set — AI features will not work')
     const err = new Error('GEMINI_API_KEY is not configured.')
     err.name = 'ConfigError'
     throw err
@@ -56,9 +54,9 @@ export async function generateAIResponse(options: {
     // Re-throw timeout errors as-is
     if (err instanceof Error && err.name === 'AbortError') throw err
 
-    // Log the full error for debugging
-    if (err instanceof Error) {
-      console.error('Gemini API error [FULL]:', err.name, err.message, JSON.stringify(err, Object.getOwnPropertyNames(err)).slice(0, 500))
+    // Log error details in development only
+    if (process.env.NODE_ENV === 'development' && err instanceof Error) {
+      console.error('Gemini API error:', err.name, err.message)
     }
 
     // Handle Gemini API errors

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { hash } from 'bcryptjs'
+import { hashPassword } from '@/lib/auth/password'
 
 import { db } from '@/lib/db'
 import { users, creditTransactions } from '@/lib/db/schema'
@@ -10,7 +10,7 @@ import { sql } from 'drizzle-orm'
 export async function POST(req: Request) {
   // (#4) Rate limit: 10 signups per IP per hour
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
-  const rateLimitError = checkAuthRateLimit(ip, 'register')
+  const rateLimitError = await checkAuthRateLimit(ip, 'register')
   if (rateLimitError) return rateLimitError
 
   try {
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     // (#1) Explicit email normalization — don't rely on Zod transform alone
     const email = parsed.data.email.toLowerCase().trim()
 
-    const hashedPassword = await hash(password, 12)
+    const hashedPassword = await hashPassword(password)
 
     // (#6) Atomic: user creation + credit award in single transaction
     let newUser: { id: string }

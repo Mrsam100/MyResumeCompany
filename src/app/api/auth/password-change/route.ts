@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { compare, hash } from 'bcryptjs'
 import { eq } from 'drizzle-orm'
 import { auth } from '@/auth'
 import { db } from '@/lib/db'
 import { users } from '@/lib/db/schema'
+import { verifyPassword, hashPassword } from '@/lib/auth/password'
+import { invalidateSessionCache } from '@/lib/redis'
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
@@ -46,13 +47,16 @@ export async function POST(req: Request) {
       )
     }
 
-    const isValid = await compare(currentPassword, user.hashedPassword)
+    const isValid = await verifyPassword(currentPassword, user.hashedPassword)
     if (!isValid) {
       return NextResponse.json({ error: 'Current password is incorrect' }, { status: 403 })
     }
 
-    const newHash = await hash(newPassword, 12)
+    const newHash = await hashPassword(newPassword)
     await db.update(users).set({ hashedPassword: newHash }).where(eq(users.id, session.user.id))
+
+    // Invalidate session cache so next request fetches fresh data
+    await invalidateSessionCache(session.user.id)
 
     return NextResponse.json({ success: true })
   } catch {

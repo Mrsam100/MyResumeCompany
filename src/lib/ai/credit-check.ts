@@ -25,7 +25,7 @@ export async function checkAuth(rateLimitPrefix = 'ai'): Promise<AuthResult> {
   const tier = (session.user as { subscriptionTier?: string }).subscriptionTier ?? 'FREE'
 
   // Rate limit check
-  const rateLimitError = checkRateLimit(session.user.id, tier, rateLimitPrefix)
+  const rateLimitError = await checkRateLimit(session.user.id, tier, rateLimitPrefix)
   if (rateLimitError) {
     return { userId: session.user.id, tier, error: rateLimitError }
   }

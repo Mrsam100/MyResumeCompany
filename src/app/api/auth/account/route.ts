@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { compare } from 'bcryptjs'
 import { eq } from 'drizzle-orm'
 import { auth } from '@/auth'
 import { db } from '@/lib/db'
+import { verifyPassword } from '@/lib/auth/password'
 import { users } from '@/lib/db/schema'
 import { deleteUser } from '@/lib/db/users'
 
@@ -47,7 +47,7 @@ export async function DELETE(req: Request) {
         )
       }
 
-      const isValid = await compare(password, user.hashedPassword)
+      const isValid = await verifyPassword(password, user.hashedPassword)
       if (!isValid) {
         return NextResponse.json({ error: 'Incorrect password' }, { status: 403 })
       }

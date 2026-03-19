@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { eq, and, gt, isNull } from 'drizzle-orm'
-import { hash } from 'bcryptjs'
 import { nanoid } from 'nanoid'
+import { hashPassword } from '@/lib/auth/password'
 
 import { db } from '@/lib/db'
 import { users, passwordResetTokens } from '@/lib/db/schema'
@@ -25,7 +25,7 @@ const resetSchema = z.object({
 // POST /api/auth/password-reset — Request a reset token
 export async function POST(req: Request) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
-  const rateLimitError = checkAuthRateLimit(ip, 'password-reset')
+  const rateLimitError = await checkAuthRateLimit(ip, 'password-reset')
   if (rateLimitError) return rateLimitError
 
   try {
@@ -106,7 +106,7 @@ export async function PUT(req: Request) {
       )
     }
 
-    const hashedPassword = await hash(password, 12)
+    const hashedPassword = await hashPassword(password)
 
     // Atomic: update password + mark token as used
     await db.transaction(async (tx) => {

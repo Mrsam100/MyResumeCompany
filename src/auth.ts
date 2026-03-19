@@ -3,13 +3,14 @@ import Google from 'next-auth/providers/google'
 import GitHub from 'next-auth/providers/github'
 import Credentials from 'next-auth/providers/credentials'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
-import { compare } from 'bcryptjs'
 import { eq } from 'drizzle-orm'
 
 import { db } from '@/lib/db'
 import { users, accounts, sessions, verificationTokens } from '@/lib/db/schema'
 import { addCredits } from '@/lib/db/credits'
+import { getCachedSession, setCachedSession } from '@/lib/redis'
 import { loginSchema } from '@/lib/validations/auth'
+import { verifyPassword, needsHashUpgrade, hashPassword } from '@/lib/auth/password'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db, {
@@ -68,8 +69,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!user || !user.hashedPassword) return null
 
-        const isValid = await compare(password, user.hashedPassword)
+        const isValid = await verifyPassword(password, user.hashedPassword)
         if (!isValid) return null
+
+        // Upgrade legacy bcrypt hashes to PBKDF2 on successful login.
+        // Uses double-check pattern to prevent race conditions on concurrent logins.
+        if (needsHashUpgrade(user.hashedPassword)) {
+          try {
+            const newHash = await hashPassword(password)
+            await db.transaction(async (tx) => {
+              const current = await tx.query.users.findFirst({
+                where: eq(users.id, user.id),
+                columns: { hashedPassword: true },
+              })
+              // Only upgrade if still a bcrypt hash (another request may have already upgraded)
+              if (current?.hashedPassword && needsHashUpgrade(current.hashedPassword)) {
+                await tx.update(users).set({ hashedPassword: newHash }).where(eq(users.id, user.id))
+              }
+            })
+          } catch (err) {
+            // Hash upgrade failure is non-fatal — user can still log in
+            console.error('[auth] Hash upgrade failed:', err)
+          }
+        }
 
         return {
           id: user.id,
@@ -100,14 +122,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.id = user.id
 
-        const dbUser = await db.query.users.findFirst({
-          where: eq(users.id, user.id as string),
-          columns: { credits: true, subscriptionTier: true, hashedPassword: true },
-        })
-        if (dbUser) {
-          token.credits = dbUser.credits
-          token.subscriptionTier = dbUser.subscriptionTier
-          token.hasPassword = !!dbUser.hashedPassword
+        // Try Redis cache first, fall back to DB
+        const cached = await getCachedSession(user.id as string)
+        if (cached) {
+          token.credits = cached.credits
+          token.subscriptionTier = cached.subscriptionTier
+          token.hasPassword = cached.hasPassword
+        } else {
+          const dbUser = await db.query.users.findFirst({
+            where: eq(users.id, user.id as string),
+            columns: { credits: true, subscriptionTier: true, hashedPassword: true },
+          })
+          if (dbUser) {
+            token.credits = dbUser.credits
+            token.subscriptionTier = dbUser.subscriptionTier
+            token.hasPassword = !!dbUser.hashedPassword
+
+            // Populate cache for next time
+            await setCachedSession(user.id as string, {
+              credits: dbUser.credits,
+              subscriptionTier: dbUser.subscriptionTier,
+              hasPassword: !!dbUser.hashedPassword,
+            })
+          }
         }
       }
 

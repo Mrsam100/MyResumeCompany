@@ -6,6 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "build:cf": "npx @opennextjs/cloudflare build",
+    "deploy:cf": "npm run build:cf && npx wrangler deploy",
+    "dev:cf": "npx wrangler dev",
+    "preview:cf": "npm run build:cf && npx wrangler dev",
     "lint": "eslint",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
@@ -25,7 +29,11 @@
     "@google/generative-ai": "^0.24.1",
     "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^5.2.2",
+    "@opennextjs/cloudflare": "^1.17.1",
     "@react-pdf/renderer": "^4.3.2",
+    "@sentry/nextjs": "^10.45.0",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.37.0",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -33,6 +41,7 @@
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.45.1",
     "gsap": "^3.14.2",
+    "isomorphic-dompurify": "^3.5.1",
     "lucide-react": "^0.577.0",
     "nanoid": "^5.1.6",
     "next": "16.1.6",
@@ -70,6 +79,7 @@
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5",
-    "vitest": "^4.1.0"
+    "vitest": "^4.1.0",
+    "wrangler": "^4.75.0"
   }
 }

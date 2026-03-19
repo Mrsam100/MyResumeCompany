@@ -1,9 +1,10 @@
 import { eq, and, asc } from 'drizzle-orm'
+import { unstable_cache } from 'next/cache'
 import { db } from '@/lib/db'
 import { templates } from './schema'
 import type { TemplateCategory } from './schema'
 
-export async function getTemplates(onlyActive = true) {
+async function fetchTemplates(onlyActive: boolean) {
   if (onlyActive) {
     return db.query.templates.findMany({
       where: eq(templates.isActive, true),
@@ -13,6 +14,23 @@ export async function getTemplates(onlyActive = true) {
   return db.query.templates.findMany({
     orderBy: asc(templates.sortOrder),
   })
+}
+
+// Cache template queries for 1 hour — templates rarely change
+const getCachedTemplates = unstable_cache(
+  () => fetchTemplates(true),
+  ['templates-active'],
+  { revalidate: 3600 },
+)
+
+const getCachedAllTemplates = unstable_cache(
+  () => fetchTemplates(false),
+  ['templates-all'],
+  { revalidate: 3600 },
+)
+
+export async function getTemplates(onlyActive = true) {
+  return onlyActive ? getCachedTemplates() : getCachedAllTemplates()
 }
 
 export async function getTemplateBySlug(slug: string) {

@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   }
 
   // (#5) Rate limit
-  const rateLimitError = checkStripeRateLimit(session.user.id)
+  const rateLimitError = await checkStripeRateLimit(session.user.id)
   if (rateLimitError) return rateLimitError
 
   const subscription = await db.query.subscriptions.findFirst({

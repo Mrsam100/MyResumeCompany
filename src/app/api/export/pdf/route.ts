@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { renderToBuffer } from '@react-pdf/renderer'
 import { auth } from '@/auth'
 import { getResumeById } from '@/lib/db/resumes'
 import { deductCredits } from '@/lib/db/credits'
 import { getTemplateConfig } from '@/templates/registry'
-import { PDFResume } from '@/lib/pdf/pdf-template'
 import { CREDIT_COSTS } from '@/constants/credit-costs'
 import { checkRateLimit } from '@/lib/ai/rate-limiter'
+import { renderPdf } from '@/lib/services/pdf-client'
 import type { ResumeContent } from '@/types/resume'
 
 const inputSchema = z.object({
@@ -22,7 +21,7 @@ export async function POST(req: Request) {
 
   // Rate limit check
   const tier = (session.user as { subscriptionTier?: string }).subscriptionTier ?? 'FREE'
-  const rateLimitError = checkRateLimit(session.user.id, tier, 'pdf')
+  const rateLimitError = await checkRateLimit(session.user.id, tier, 'pdf')
   if (rateLimitError) return rateLimitError
 
   // 1. Validate input
@@ -45,13 +44,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Resume not found' }, { status: 404 })
     }
 
-    // 3. Generate PDF FIRST (before charging credits)
+    // 3. Generate PDF via PDF service (before charging credits)
     const config = getTemplateConfig(resume.templateId)
     const content = resume.content as ResumeContent
 
-    let pdfBuffer: Buffer
+    let pdfBuffer: ArrayBuffer
     try {
-      pdfBuffer = await renderToBuffer(PDFResume({ content, config }))
+      const result = await renderPdf(content, config, resumeId)
+      pdfBuffer = result.buffer
     } catch (renderErr) {
       console.error('PDF render error:', renderErr)
       return NextResponse.json({ error: 'Failed to render PDF' }, { status: 500 })
@@ -83,11 +83,12 @@ export async function POST(req: Request) {
       .replace(/\s+/g, '-')
     const filename = `${rawName || 'resume'}.pdf`
 
-    return new Response(new Uint8Array(pdfBuffer), {
+    // Don't set Content-Length manually — let the runtime handle it
+    // to avoid mismatches with compression or middleware
+    return new Response(pdfBuffer, {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${filename}"`,
-        'Content-Length': String(pdfBuffer.length),
       },
     })
   } catch (err) {

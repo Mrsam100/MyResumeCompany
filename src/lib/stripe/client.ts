@@ -6,6 +6,8 @@ export function getStripe(): Stripe {
   if (_stripe) return _stripe
   const secretKey = process.env.STRIPE_SECRET_KEY
   if (!secretKey) throw new Error('STRIPE_SECRET_KEY is not configured.')
+  // Stripe v20+ automatically uses global fetch when available (Workers + Node 18+).
+  // No custom httpClient needed — the SDK detects the environment.
   _stripe = new Stripe(secretKey, { apiVersion: '2026-02-25.clover' })
   return _stripe
 }

@@ -1,10 +1,13 @@
 /**
  * Environment variable validation.
  * Call validateEnv() at app startup to catch missing config early.
+ *
+ * Works on both Vercel (process.env) and Cloudflare Workers (secrets in env bindings).
+ * On Workers, most secrets are set via `wrangler secret put` and accessed differently,
+ * but process.env still works for vars defined in wrangler.toml [vars].
  */
 
 const REQUIRED_VARS = [
-  'DATABASE_URL',
   'NEXTAUTH_SECRET',
   'NEXTAUTH_URL',
 ] as const
@@ -20,11 +23,24 @@ const REQUIRED_IN_PRODUCTION = [
   'STRIPE_PRO_MONTHLY_PRICE_ID',
   'STRIPE_PRO_YEARLY_PRICE_ID',
   'NEXT_PUBLIC_APP_URL',
+  'UPSTASH_REDIS_REST_URL',
+  'UPSTASH_REDIS_REST_TOKEN',
+  'PDF_SERVICE_URL',
+  'PDF_SERVICE_SECRET',
+  'SENTRY_DSN',
+  'NEXT_PUBLIC_SENTRY_DSN',
+] as const
+
+// DATABASE_URL is only required on Node.js (Vercel/local).
+// On Cloudflare Workers, the database is accessed via Hyperdrive bindings.
+const NODE_ONLY_VARS = [
+  'DATABASE_URL',
 ] as const
 
 export function validateEnv() {
   const missing: string[] = []
   const isProduction = process.env.NODE_ENV === 'production'
+  const isCloudflare = !process.env.DATABASE_URL && process.env.ENVIRONMENT === 'production'
 
   for (const key of REQUIRED_VARS) {
     if (!process.env[key]) missing.push(key)
@@ -36,8 +52,19 @@ export function validateEnv() {
     }
   }
 
+  // Only check DATABASE_URL on Node.js (not Cloudflare Workers)
+  if (!isCloudflare) {
+    for (const key of NODE_ONLY_VARS) {
+      if (!process.env[key]) missing.push(key)
+    }
+  }
+
   if (missing.length > 0) {
     const msg = `Missing environment variables:\n${missing.map((k) => `  - ${k}`).join('\n')}`
-    console.warn(`[env] ${msg}`)
+    if (isProduction) {
+      console.error(`[env] ${msg}`)
+    } else {
+      console.warn(`[env] ${msg}`)
+    }
   }
 }

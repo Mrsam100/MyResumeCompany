@@ -6,6 +6,7 @@ import { getStripe } from '@/lib/stripe/client'
 import { db } from '@/lib/db'
 import { users, subscriptions, stripeEvents, creditTransactions } from '@/lib/db/schema'
 import { addCredits } from '@/lib/db/credits'
+import { invalidateSessionCache } from '@/lib/redis'
 import { SIGNUP_CREDITS } from '@/constants/credit-costs'
 
 export const dynamic = 'force-dynamic'
@@ -183,6 +184,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
           `Subscription activated for user ${userId}, credits: ${updatedUser?.credits}`,
         )
       })
+
+      await invalidateSessionCache(userId)
     }
   }
 }
@@ -249,6 +252,8 @@ async function handleSubscriptionUpdated(sub: Stripe.Subscription) {
       await tx.update(users).set({ subscriptionTier: 'PRO' }).where(eq(users.id, existing.userId))
     }
   })
+
+  await invalidateSessionCache(existing.userId)
 }
 
 // ─── Subscription deleted (cancellation finalized) ───
@@ -272,6 +277,7 @@ async function handleSubscriptionDeleted(sub: Stripe.Subscription) {
     await tx.update(users).set({ subscriptionTier: 'FREE' }).where(eq(users.id, existing.userId))
   })
 
+  await invalidateSessionCache(existing.userId)
   console.log(`Subscription deleted, user ${existing.userId} downgraded to FREE`)
 }
 
@@ -293,6 +299,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
     .set({ status: 'PAST_DUE' })
     .where(eq(subscriptions.stripeCustomerId, customerId))
 
+  await invalidateSessionCache(existing.userId)
   console.log(`Payment failed for user ${existing.userId}, status set to PAST_DUE`)
 }
 

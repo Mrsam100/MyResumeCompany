@@ -1,0 +1,61 @@
+# ─── TheResumeCompany — Cloudflare Workers Config ───
+# Used by @opennextjs/cloudflare to deploy Next.js on Workers
+
+name = "the-resume-company"
+main = ".open-next/worker.js"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat_v2"]
+
+# ─── Assets (static files served by Cloudflare CDN) ───
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
+
+# ─── Hyperdrive (PostgreSQL connection pooling) ───
+# Uncomment after creating: wrangler hyperdrive create theresumecompany-db --connection-string="postgres://..."
+# [[hyperdrive]]
+# binding = "HYPERDRIVE"
+# id = "your-hyperdrive-id"
+
+# ─── KV Namespaces ───
+# Uncomment after creating: wrangler kv namespace create SESSION_CACHE
+# [[kv_namespaces]]
+# binding = "SESSION_CACHE"
+# id = "your-session-cache-id"
+
+# Uncomment after creating: wrangler kv namespace create RATE_LIMIT_KV
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT_KV"
+# id = "your-rate-limit-kv-id"
+
+# ─── R2 Bucket (PDFs, user uploads) ───
+# Uncomment after creating: wrangler r2 bucket create resume-assets
+# [[r2_buckets]]
+# binding = "R2_BUCKET"
+# bucket_name = "resume-assets"
+
+# ─── Environment Variables (non-secret) ───
+[vars]
+NEXT_PUBLIC_APP_URL = "https://theresumecompany.com"
+NEXTAUTH_URL = "https://theresumecompany.com"
+PDF_SERVICE_URL = "https://pdf.theresumecompany.com"
+ENVIRONMENT = "production"
+
+# ─── Secrets (never committed — set via CLI) ───
+# wrangler secret put NEXTAUTH_SECRET
+# wrangler secret put GOOGLE_CLIENT_ID
+# wrangler secret put GOOGLE_CLIENT_SECRET
+# wrangler secret put GITHUB_CLIENT_ID
+# wrangler secret put GITHUB_CLIENT_SECRET
+# wrangler secret put GEMINI_API_KEY
+# wrangler secret put STRIPE_SECRET_KEY
+# wrangler secret put STRIPE_WEBHOOK_SECRET
+# wrangler secret put STRIPE_PRO_MONTHLY_PRICE_ID
+# wrangler secret put STRIPE_PRO_YEARLY_PRICE_ID
+# wrangler secret put UPSTASH_REDIS_REST_URL
+# wrangler secret put UPSTASH_REDIS_REST_TOKEN
+# wrangler secret put PDF_SERVICE_SECRET
+
+# ─── Workers Limits ───
+[limits]
+cpu_ms = 50000  # 50s max CPU time (covers AI + PDF operations)

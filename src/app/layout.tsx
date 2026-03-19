@@ -8,12 +8,15 @@ import './globals.css'
 const nunito = Nunito({
   variable: '--font-body',
   subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  display: 'swap',
 })
 
 const poppins = Poppins({
   variable: '--font-heading',
   subsets: ['latin'],
   weight: ['600', '700'],
+  display: 'swap',
 })
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'

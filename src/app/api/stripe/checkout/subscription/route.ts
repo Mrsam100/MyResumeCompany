@@ -26,7 +26,7 @@ export async function POST(req: Request) {
   }
 
   // (#5) Rate limit
-  const rateLimitError = checkStripeRateLimit(session.user.id)
+  const rateLimitError = await checkStripeRateLimit(session.user.id)
   if (rateLimitError) return rateLimitError
 
   // (#3) Query DB directly instead of trusting stale JWT session

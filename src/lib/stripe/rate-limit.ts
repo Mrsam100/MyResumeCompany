@@ -1,35 +1,35 @@
 import { NextResponse } from 'next/server'
+import { Ratelimit } from '@upstash/ratelimit'
+import { redis } from '@/lib/redis'
 
-// Simple in-memory rate limiter for Stripe checkout/portal routes
-// 10 requests per minute per user
-const WINDOW_MS = 60_000
-const MAX_REQUESTS = 10
+const stripeLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, '1 m'),
+  prefix: '@app/stripe-ratelimit',
+  analytics: true,
+})
 
-const requestCounts = new Map<string, number[]>()
+/**
+ * Redis-backed rate limiter for Stripe checkout/portal routes.
+ * 10 requests per minute per user.
+ * Fails open on Redis errors (allows request through).
+ */
+export async function checkStripeRateLimit(
+  userId: string,
+): Promise<NextResponse | null> {
+  try {
+    const { success } = await stripeLimiter.limit(userId)
 
-// Cleanup every 5 minutes
-setInterval(() => {
-  const now = Date.now()
-  for (const [key, timestamps] of requestCounts) {
-    const valid = timestamps.filter((t) => now - t < WINDOW_MS)
-    if (valid.length === 0) requestCounts.delete(key)
-    else requestCounts.set(key, valid)
+    if (!success) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please wait a moment.' },
+        { status: 429, headers: { 'Retry-After': '60' } },
+      )
+    }
+
+    return null
+  } catch (err) {
+    console.error('[stripe-rate-limit] Redis error, allowing request:', err instanceof Error ? err.message : err)
+    return null
   }
-}, 5 * 60_000)
-
-export function checkStripeRateLimit(userId: string): NextResponse | null {
-  const now = Date.now()
-  const timestamps = requestCounts.get(userId) ?? []
-  const recent = timestamps.filter((t) => now - t < WINDOW_MS)
-
-  if (recent.length >= MAX_REQUESTS) {
-    return NextResponse.json(
-      { error: 'Too many requests. Please wait a moment.' },
-      { status: 429, headers: { 'Retry-After': '60' } },
-    )
-  }
-
-  recent.push(now)
-  requestCounts.set(userId, recent)
-  return null
 }

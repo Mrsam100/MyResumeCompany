@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import pdfParse from 'pdf-parse'
+import { parsePdf } from '@/lib/services/pdf-client'
 import { generateAIResponse } from '@/lib/ai/client'
 import { RESUME_SYSTEM_PROMPT, buildResumeImportPrompt } from '@/lib/ai/prompts'
 import { checkAuth, deductCreditsForAI, refundCredits } from '@/lib/ai/credit-check'
@@ -60,13 +60,13 @@ async function extractTextFromRequest(req: Request): Promise<{ text?: string; en
       return { error: NextResponse.json({ error: 'File too large (max 5MB)' }, { status: 400 }) }
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer())
-
-    if (buffer.length < 4 || buffer[0] !== 0x25 || buffer[1] !== 0x50 || buffer[2] !== 0x44 || buffer[3] !== 0x46) {
+    // Validate PDF magic bytes
+    const header = new Uint8Array(await file.slice(0, 4).arrayBuffer())
+    if (header.length < 4 || header[0] !== 0x25 || header[1] !== 0x50 || header[2] !== 0x44 || header[3] !== 0x46) {
       return { error: NextResponse.json({ error: 'Invalid PDF file' }, { status: 400 }) }
     }
 
-    const parsed = await pdfParse(buffer)
+    const parsed = await parsePdf(file)
 
     if (!parsed.text || parsed.text.length < 100) {
       return { error: NextResponse.json({ error: 'PDF contains too little text. Try pasting your resume text instead.' }, { status: 400 }) }

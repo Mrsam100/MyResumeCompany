@@ -1,46 +1,88 @@
 import { NextResponse } from 'next/server'
+import { Ratelimit } from '@upstash/ratelimit'
+import { redis } from '@/lib/redis'
 
-// Per-IP rate limiting for auth endpoints
-// register: 10/hour, login: 20/hour, password-reset: 5/hour
-const LIMITS: Record<string, { max: number; windowMs: number }> = {
-  register: { max: 10, windowMs: 60 * 60 * 1000 },
-  login: { max: 20, windowMs: 60 * 60 * 1000 },
-  'password-reset': { max: 5, windowMs: 60 * 60 * 1000 },
+/**
+ * Redis-backed rate limiting for auth endpoints.
+ * Distributed and Workers-compatible (no in-memory state, no setInterval).
+ *
+ * Limits:
+ *   register:       10/hour per IP
+ *   login:          20/hour per IP
+ *   password-reset:  5/hour per IP
+ *   password-change: 5/hour per user
+ */
+
+const registerLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, '1 h'),
+  prefix: '@app/auth/register',
+})
+
+const loginLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(20, '1 h'),
+  prefix: '@app/auth/login',
+})
+
+const passwordResetLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, '1 h'),
+  prefix: '@app/auth/password-reset',
+})
+
+const passwordChangeLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, '1 h'),
+  prefix: '@app/auth/password-change',
+})
+
+const limiters: Record<string, Ratelimit> = {
+  register: registerLimiter,
+  login: loginLimiter,
+  'password-reset': passwordResetLimiter,
+  'password-change': passwordChangeLimiter,
 }
 
-const requestCounts = new Map<string, number[]>()
+/**
+ * Check auth rate limit for a given IP/action.
+ * Returns NextResponse 429 if exceeded, null if allowed.
+ * Fails open on Redis errors (allows request through).
+ */
+export async function checkAuthRateLimit(
+  identifier: string,
+  action: string,
+): Promise<NextResponse | null> {
+  const limiter = limiters[action]
+  if (!limiter) return null
 
-// Cleanup every 10 minutes
-setInterval(() => {
-  const now = Date.now()
-  for (const [key, timestamps] of requestCounts) {
-    const valid = timestamps.filter((t) => now - t < 60 * 60 * 1000)
-    if (valid.length === 0) requestCounts.delete(key)
-    else requestCounts.set(key, valid)
-  }
-}, 10 * 60_000)
-
-export function checkAuthRateLimit(
-  ip: string,
-  action: keyof typeof LIMITS,
-): NextResponse | null {
-  const config = LIMITS[action]
-  if (!config) return null
-
-  const key = `${action}:${ip}`
-  const now = Date.now()
-  const timestamps = requestCounts.get(key) ?? []
-  const recent = timestamps.filter((t) => now - t < config.windowMs)
-
-  if (recent.length >= config.max) {
-    const retryAfter = Math.ceil((recent[0] + config.windowMs - now) / 1000)
-    return NextResponse.json(
-      { error: 'Too many requests. Please try again later.' },
-      { status: 429, headers: { 'Retry-After': String(retryAfter) } },
+  try {
+    const { success, limit, remaining, reset } = await limiter.limit(
+      `${action}:${identifier}`,
     )
-  }
 
-  recent.push(now)
-  requestCounts.set(key, recent)
-  return null
+    if (!success) {
+      const retryAfter = Math.max(1, Math.ceil((reset - Date.now()) / 1000))
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(retryAfter),
+            'X-RateLimit-Limit': String(limit),
+            'X-RateLimit-Remaining': String(remaining),
+            'X-RateLimit-Reset': String(Math.ceil(reset / 1000)),
+          },
+        },
+      )
+    }
+
+    return null
+  } catch (err) {
+    console.error(
+      '[auth-rate-limit] Redis error, allowing request:',
+      err instanceof Error ? err.message : err,
+    )
+    return null
+  }
 }

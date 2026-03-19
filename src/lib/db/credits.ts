@@ -2,6 +2,7 @@ import { eq, desc, and, count, sql } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { users, creditTransactions } from './schema'
 import type { CreditTransactionType } from './schema'
+import { invalidateSessionCache } from '@/lib/redis'
 
 export async function checkSufficientCredits(userId: string, cost: number) {
   const user = await db.query.users.findFirst({
@@ -25,7 +26,7 @@ export async function deductCredits(
 ) {
   if (amount <= 0) throw new Error('Deduction amount must be positive')
 
-  return db.transaction(async (tx) => {
+  const result = await db.transaction(async (tx) => {
     const [user] = await tx
       .select({ credits: users.credits, subscriptionTier: users.subscriptionTier })
       .from(users)
@@ -65,6 +66,9 @@ export async function deductCredits(
 
     return { credits: updatedUser.credits, charged: amount }
   })
+
+  await invalidateSessionCache(userId)
+  return result
 }
 
 export async function addCredits(
@@ -75,7 +79,7 @@ export async function addCredits(
 ) {
   if (amount <= 0) throw new Error('Credit amount must be positive')
 
-  return db.transaction(async (tx) => {
+  const result = await db.transaction(async (tx) => {
     const [updatedUser] = await tx
       .update(users)
       .set({ credits: sql`${users.credits} + ${amount}` })
@@ -93,6 +97,9 @@ export async function addCredits(
 
     return { credits: updatedUser.credits }
   })
+
+  await invalidateSessionCache(userId)
+  return result
 }
 
 export async function getTransactionHistory(
