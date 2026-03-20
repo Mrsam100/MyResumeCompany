@@ -44,14 +44,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Resume not found' }, { status: 404 })
     }
 
-    // 3. Generate PDF via PDF service (before charging credits)
+    // 3. Render PDF inline (nodejs_compat enables @react-pdf/renderer on Workers)
     const config = getTemplateConfig(resume.templateId)
     const content = resume.content as ResumeContent
 
-    let pdfBuffer: ArrayBuffer
+    let pdfResult: { buffer: Buffer; size: number }
     try {
-      const result = await renderPdf(content, config, resumeId)
-      pdfBuffer = result.buffer
+      pdfResult = await renderPdf(content, config, resumeId)
     } catch (renderErr) {
       console.error('PDF render error:', renderErr)
       return NextResponse.json({ error: 'Failed to render PDF' }, { status: 500 })
@@ -83,9 +82,8 @@ export async function POST(req: Request) {
       .replace(/\s+/g, '-')
     const filename = `${rawName || 'resume'}.pdf`
 
-    // Don't set Content-Length manually — let the runtime handle it
-    // to avoid mismatches with compression or middleware
-    return new Response(pdfBuffer, {
+    // Buffer is a valid BodyInit in Node.js / Workers with nodejs_compat
+    return new Response(pdfResult.buffer as never, {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${filename}"`,

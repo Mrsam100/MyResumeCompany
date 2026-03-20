@@ -81,40 +81,14 @@ async function verifyPBKDF2(password: string, stored: string): Promise<boolean> 
   return diff === 0
 }
 
-// ─── Internal: bcrypt verification via PDF microservice ───
+// ─── Internal: bcrypt verification (nodejs_compat enables bcryptjs on Workers) ───
 
 async function verifyBcryptViaService(password: string, hash: string): Promise<boolean> {
-  const serviceUrl = process.env.PDF_SERVICE_URL
-  const serviceSecret = process.env.PDF_SERVICE_SECRET
-
-  if (!serviceUrl || !serviceSecret) {
-    console.error('[password] PDF_SERVICE_URL or PDF_SERVICE_SECRET not configured for bcrypt fallback')
-    return false
-  }
-
   try {
-    // Use Authorization header (not custom header) for better security
-    const credentials = Buffer.from(`service:${serviceSecret}`).toString('base64')
-
-    const response = await fetch(`${serviceUrl}/verify-password`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${credentials}`,
-      },
-      body: JSON.stringify({ password, hash }),
-      signal: AbortSignal.timeout(10_000), // 10s timeout
-    })
-
-    if (!response.ok) {
-      console.error('[password] PDF service returned', response.status)
-      return false
-    }
-
-    const { valid } = (await response.json()) as { valid: boolean }
-    return valid
+    const { compare } = await import('bcryptjs')
+    return await compare(password, hash)
   } catch (err) {
-    console.error('[password] bcrypt verification via service failed:', err)
+    console.error('[password] bcrypt verification failed:', err)
     return false
   }
 }
