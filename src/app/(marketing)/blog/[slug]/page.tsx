@@ -22,7 +22,7 @@ const ARTICLES: Record<string, Article> = {
     description:
       'Learn the STAR method for writing achievement-focused bullet points with metrics. Stop writing "responsible for" and start writing results.',
     category: 'Resume Writing',
-    date: '2026-03-16',
+    date: '2026-02-24',
     content: (
       <>
         <p>
@@ -202,7 +202,7 @@ const ARTICLES: Record<string, Article> = {
     description:
       'Understand how ATS software works, why most resumes get rejected, and what you can do to get past the automated filters.',
     category: 'Job Search',
-    date: '2026-03-16',
+    date: '2026-03-03',
     content: (
       <>
         <p>
@@ -382,7 +382,7 @@ const ARTICLES: Record<string, Article> = {
     description:
       'Which resume format should you use? Compare chronological, functional, and hybrid formats with pros, cons, and examples for each.',
     category: 'Resume Writing',
-    date: '2026-03-16',
+    date: '2026-03-07',
     content: (
       <>
         <p>
@@ -559,7 +559,7 @@ const ARTICLES: Record<string, Article> = {
     description:
       'AI can write your resume, but should it? Learn how to use AI as a writing partner while keeping your resume authentic and personal.',
     category: 'AI & Technology',
-    date: '2026-03-16',
+    date: '2026-03-12',
     content: (
       <>
         <p>
@@ -712,7 +712,7 @@ const ARTICLES: Record<string, Article> = {
     description:
       'Objective statements are dead. Learn how to write a professional summary that hooks recruiters in the first 6 seconds.',
     category: 'Resume Writing',
-    date: '2026-03-16',
+    date: '2026-03-18',
     content: (
       <>
         <p>

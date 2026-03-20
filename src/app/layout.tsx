@@ -3,6 +3,7 @@ import { Nunito, Poppins } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { JsonLd } from '@/components/schema/json-ld'
+import { PostHogProvider } from '@/components/posthog-provider'
 import './globals.css'
 
 const nunito = Nunito({
@@ -118,10 +119,12 @@ export default function RootLayout({
             },
           }}
         />
-        <TooltipProvider>
-          {children}
-          <Toaster richColors position="bottom-right" />
-        </TooltipProvider>
+        <PostHogProvider>
+          <TooltipProvider>
+            {children}
+            <Toaster richColors position="bottom-right" />
+          </TooltipProvider>
+        </PostHogProvider>
       </body>
     </html>
   )
