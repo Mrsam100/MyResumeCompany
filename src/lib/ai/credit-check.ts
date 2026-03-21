@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 import { auth } from '@/auth'
 import { deductCredits, addCredits } from '@/lib/db/credits'
 import type { CreditTransactionType } from '@/lib/db/schema'
@@ -71,6 +72,11 @@ export async function refundCredits(
       return
     } catch (err) {
       if (attempt === maxRetries) {
+        Sentry.captureException(err, {
+          level: 'fatal',
+          tags: { component: 'credits', reason: 'refund_failed' },
+          extra: { userId, amount, type, description, attempts: maxRetries },
+        })
         console.error(
           `CRITICAL: Refund failed after ${maxRetries} attempts. userId=${userId} amount=${amount} type=${type} description="${description}"`,
           err,

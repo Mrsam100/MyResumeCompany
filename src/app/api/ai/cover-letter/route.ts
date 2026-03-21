@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 import { z } from 'zod'
 import { generateAIResponse } from '@/lib/ai/client'
 import { buildCoverLetterPrompt, resumeToPlainText } from '@/lib/ai/prompts'
@@ -94,6 +95,7 @@ export async function POST(req: Request) {
     const isQuota = err instanceof Error && err.name === 'QuotaError'
     const isAuth = err instanceof Error && err.name === 'AuthError'
     const isConfig = err instanceof Error && err.name === 'ConfigError'
+    Sentry.captureException(err, { tags: { component: 'ai', feature: 'cover-letter' } })
     console.error('Cover letter error:', err instanceof Error ? `[${err.name}] ${err.message}` : err)
     await refundCredits(userId, CREDIT_COSTS.AI_COVER_LETTER, 'AI_COVER_LETTER', isTimeout ? 'AI request timed out' : 'Cover letter generation failed')
 

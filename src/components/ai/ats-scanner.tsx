@@ -165,7 +165,7 @@ export function ATSScanner({ externalOpen, onExternalOpenChange, prefillJobDescr
 
       const data = await res.json()
       if (data.result) {
-        trackEvent('ai_ats_scan', { score: data.result.score })
+        trackEvent('ai_ats_scan', { score: data.result.overallScore })
         setResult(data.result)
       } else toast.error('Invalid scan response')
     } catch {

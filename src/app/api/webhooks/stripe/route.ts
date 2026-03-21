@@ -2,6 +2,7 @@ import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { eq, sql } from 'drizzle-orm'
 import Stripe from 'stripe'
+import * as Sentry from '@sentry/nextjs'
 import { getStripe } from '@/lib/stripe/client'
 import { db } from '@/lib/db'
 import { users, subscriptions, stripeEvents, creditTransactions } from '@/lib/db/schema'
@@ -31,7 +32,7 @@ export async function POST(req: Request) {
   try {
     event = getStripe().webhooks.constructEvent(body, signature, webhookSecret)
   } catch (err) {
-    console.error('Webhook signature verification failed:', err)
+    Sentry.captureException(err, { tags: { component: 'stripe-webhook', reason: 'invalid_signature' } })
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
@@ -44,7 +45,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ received: true, duplicate: true })
     }
   } catch (err) {
-    console.error('Idempotency check failed — rejecting to prevent duplicates:', err)
+    Sentry.captureException(err, { tags: { component: 'stripe-webhook', reason: 'idempotency_check_failed' } })
     return NextResponse.json({ error: 'Idempotency check failed' }, { status: 500 })
   }
 
@@ -88,7 +89,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ received: true })
   } catch (err) {
-    console.error(`Webhook handler error for ${event.type}:`, err)
+    Sentry.captureException(err, { tags: { component: 'stripe-webhook', event_type: event.type, event_id: event.id } })
 
     // Distinguish transient vs permanent errors
     const isPermanent =
@@ -96,7 +97,7 @@ export async function POST(req: Request) {
       (err.message === 'User not found' || err.message === 'Credit amount must be positive')
 
     if (isPermanent) {
-      console.error(`PERMANENT webhook failure for event ${event.id} — stopping retries`)
+      Sentry.captureMessage(`PERMANENT webhook failure for event ${event.id}`, { level: 'fatal', tags: { component: 'stripe-webhook', event_type: event.type } })
       return NextResponse.json({ received: true, error: 'permanent failure' })
     }
 
@@ -109,7 +110,7 @@ export async function POST(req: Request) {
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.userId
   if (!userId) {
-    console.error('Checkout session missing userId metadata:', session.id)
+    Sentry.captureMessage('Checkout session missing userId metadata', { level: 'error', extra: { sessionId: session.id } })
     return
   }
 
@@ -118,7 +119,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   if (type === 'credit_pack') {
     const credits = parseInt(session.metadata?.credits ?? '0', 10)
     if (credits <= 0 || isNaN(credits)) {
-      console.error('Invalid credit amount in checkout metadata:', session.id)
+      Sentry.captureMessage('Invalid credit amount in checkout metadata', { level: 'error', extra: { sessionId: session.id } })
       return
     }
 
@@ -204,7 +205,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   })
 
   if (!subscription) {
-    console.error('No subscription found for customer:', customerId)
+    Sentry.captureMessage('No subscription found for customer', { level: 'warning', extra: { customerId } })
     return
   }
 

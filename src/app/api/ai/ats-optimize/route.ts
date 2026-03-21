@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 import { z } from 'zod'
 import { generateAIResponse } from '@/lib/ai/client'
 import { buildATSOptimizePrompt, resumeToPlainText } from '@/lib/ai/prompts'
@@ -97,6 +98,7 @@ export async function POST(req: Request) {
     const isQuota = err instanceof Error && err.name === 'QuotaError'
     const isAuth = err instanceof Error && err.name === 'AuthError'
     const isConfig = err instanceof Error && err.name === 'ConfigError'
+    Sentry.captureException(err, { tags: { component: 'ai', feature: 'ats-optimize' } })
     console.error('ATS optimize error:', err instanceof Error ? `[${err.name}] ${err.message}` : err)
     await refundCredits(userId, CREDIT_COSTS.AI_ATS_OPTIMIZE, 'AI_ATS_OPTIMIZE', isTimeout ? 'AI request timed out' : 'ATS optimization failed')
 

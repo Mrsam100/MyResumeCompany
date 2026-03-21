@@ -16,6 +16,13 @@ Sentry.init({
   // Don't send PII (emails, passwords, resume content)
   sendDefaultPii: false,
 
+  integrations: [
+    Sentry.replayIntegration({
+      maskAllText: true,
+      blockAllMedia: true,
+    }),
+  ],
+
   // Filter out noisy errors
   ignoreErrors: [
     'ResizeObserver loop',

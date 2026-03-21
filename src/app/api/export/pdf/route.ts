@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 import { z } from 'zod'
 import { auth } from '@/auth'
 import { getResumeById } from '@/lib/db/resumes'
@@ -52,6 +53,7 @@ export async function POST(req: Request) {
     try {
       pdfResult = await renderPdf(content, config, resumeId)
     } catch (renderErr) {
+      Sentry.captureException(renderErr, { tags: { component: 'pdf', feature: 'render' } })
       console.error('PDF render error:', renderErr)
       return NextResponse.json({ error: 'Failed to render PDF' }, { status: 500 })
     }
@@ -90,6 +92,7 @@ export async function POST(req: Request) {
       },
     })
   } catch (err) {
+    Sentry.captureException(err, { tags: { component: 'pdf', feature: 'export' } })
     console.error('PDF generation error:', err)
     return NextResponse.json({ error: 'Failed to generate PDF' }, { status: 500 })
   }

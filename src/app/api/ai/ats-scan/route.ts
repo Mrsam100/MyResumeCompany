@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 import { z } from 'zod'
 import { generateAIResponse } from '@/lib/ai/client'
 import { buildATSScanPrompt, resumeToPlainText } from '@/lib/ai/prompts'
@@ -113,6 +114,7 @@ export async function POST(req: Request) {
     const isQuota = err instanceof Error && err.name === 'QuotaError'
     const isAuth = err instanceof Error && err.name === 'AuthError'
     const isConfig = err instanceof Error && err.name === 'ConfigError'
+    Sentry.captureException(err, { tags: { component: 'ai', feature: 'ats-scan' } })
     console.error('ATS scan error:', err instanceof Error ? `[${err.name}] ${err.message}` : err)
     await refundCredits(userId, CREDIT_COSTS.AI_ATS_SCAN, 'AI_ATS_SCAN', isTimeout ? 'AI request timed out' : 'ATS scan failed')
 

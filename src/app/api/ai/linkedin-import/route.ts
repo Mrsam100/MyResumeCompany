@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import * as Sentry from '@sentry/nextjs'
 import { z } from 'zod'
 import { parsePdf } from '@/lib/services/pdf-client'
 import { generateAIResponse } from '@/lib/ai/client'
@@ -141,6 +142,7 @@ export async function POST(req: Request) {
     const isQuota = err instanceof Error && err.name === 'QuotaError'
     const isAuth = err instanceof Error && err.name === 'AuthError'
     const isConfig = err instanceof Error && err.name === 'ConfigError'
+    Sentry.captureException(err, { tags: { component: 'ai', feature: 'linkedin-import' } })
     console.error('LinkedIn import error:', err instanceof Error ? `[${err.name}] ${err.message}` : err)
     await refundCredits(userId, CREDIT_COSTS.AI_LINKEDIN_IMPORT, 'AI_LINKEDIN_IMPORT', isTimeout ? 'AI request timed out' : 'AI generation failed')
 

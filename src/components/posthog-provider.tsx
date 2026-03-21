@@ -2,7 +2,7 @@
 
 import posthog from 'posthog-js'
 import { PostHogProvider as PHProvider, usePostHog } from 'posthog-js/react'
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
@@ -25,15 +25,19 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <PHProvider client={posthog}>
-      <PostHogIdentifier />
-      <PostHogPageview />
+      <Suspense fallback={null}>
+        <PostHogPageview />
+      </Suspense>
       {children}
     </PHProvider>
   )
 }
 
-/** Identifies the user in PostHog when they log in, resets on logout */
-function PostHogIdentifier() {
+/**
+ * Identifies the user in PostHog when they log in, resets on logout.
+ * Must be rendered inside SessionProvider (i.e. within (app) routes).
+ */
+export function PostHogIdentifier() {
   const ph = usePostHog()
   const { data: session, status } = useSession()
 

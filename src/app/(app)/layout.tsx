@@ -1,12 +1,14 @@
 'use client'
 
 import { SessionProvider } from '@/components/providers/session-provider'
+import { PostHogIdentifier } from '@/components/posthog-provider'
 import { Sidebar } from '@/components/layout/sidebar'
 import { Topbar } from '@/components/layout/topbar'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
+      <PostHogIdentifier />
       <div className="flex h-screen overflow-hidden">
         {/* Sidebar — desktop only */}
         <div className="hidden lg:block">
