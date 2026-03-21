@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Upload, FileText, Loader2, X, ClipboardPaste, Wand2, Sparkles, PenLine } from 'lucide-react'
+import { trackEvent } from '@/components/posthog-provider'
 import { toast } from 'sonner'
 import { nanoid } from 'nanoid'
 
@@ -156,6 +157,7 @@ export function ResumeImport({ open, onOpenChange }: ResumeImportProps) {
         return
       }
 
+      trackEvent('ai_resume_import', { enhanceLevel })
       toast.success(enhanceLevel === 'full'
         ? 'Resume enhanced! Review your upgraded resume.'
         : 'Resume imported! Review your cleaned-up resume.'

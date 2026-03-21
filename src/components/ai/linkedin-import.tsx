@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Linkedin, Upload, FileText, Loader2, X, ClipboardPaste } from 'lucide-react'
+import { trackEvent } from '@/components/posthog-provider'
 import { toast } from 'sonner'
 import { nanoid } from 'nanoid'
 
@@ -162,6 +163,7 @@ export function LinkedInImport({ open, onOpenChange }: LinkedInImportProps) {
         return
       }
 
+      trackEvent('ai_linkedin_import')
       toast.success('Resume imported! Review and edit your details.')
       router.push(`/editor/${resume.id}`)
       onOpenChange(false)

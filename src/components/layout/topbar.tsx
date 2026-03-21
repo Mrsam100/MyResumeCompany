@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { signOut } from 'next-auth/react'
+import posthog from 'posthog-js'
 import { Plus, Coins, Menu, LogOut, Settings } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -110,7 +111,7 @@ export function Topbar() {
                 Credits
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/login' })}>
+              <DropdownMenuItem onClick={() => { posthog.reset(); signOut({ callbackUrl: '/login' }) }}>
                 <LogOut className="mr-2 h-4 w-4" />
                 Sign out
               </DropdownMenuItem>

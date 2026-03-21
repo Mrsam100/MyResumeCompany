@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { FileText, Loader2, Copy, RotateCcw, Download } from 'lucide-react'
 import { toast } from 'sonner'
+import { trackEvent } from '@/components/posthog-provider'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -102,6 +103,7 @@ export function CoverLetterGenerator() {
 
       const data = await res.json()
       if (data.result?.coverLetter) {
+        trackEvent('ai_cover_letter')
         setResult(data.result)
         setEditedContent(data.result.coverLetter)
       } else {

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Search, Loader2, Sparkles, ChevronDown, ChevronUp } from 'lucide-react'
 import { toast } from 'sonner'
+import { trackEvent } from '@/components/posthog-provider'
 
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -163,8 +164,10 @@ export function ATSScanner({ externalOpen, onExternalOpenChange, prefillJobDescr
       if (!res.ok) { toast.error('Scan failed. Please try again.'); return }
 
       const data = await res.json()
-      if (data.result) setResult(data.result)
-      else toast.error('Invalid scan response')
+      if (data.result) {
+        trackEvent('ai_ats_scan', { score: data.result.score })
+        setResult(data.result)
+      } else toast.error('Invalid scan response')
     } catch {
       toast.error('Network error. Check your connection and try again.')
     } finally {
@@ -238,6 +241,7 @@ export function ATSScanner({ externalOpen, onExternalOpenChange, prefillJobDescr
 
     setBulletPoints(section.id, entry.id, bullets)
     setAppliedEntries((prev) => new Set(prev).add(`${sectionIndex}-${entryIndex}`))
+    trackEvent('ai_ats_optimize_applied')
     toast.success('Optimized bullets applied! (Ctrl+Z to undo)')
   }
 

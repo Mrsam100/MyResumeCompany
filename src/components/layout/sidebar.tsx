@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { signOut } from 'next-auth/react'
+import posthog from 'posthog-js'
 import {
   LayoutDashboard,
   LayoutGrid,
@@ -131,7 +132,7 @@ export function Sidebar() {
               Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/login' })}>
+            <DropdownMenuItem onClick={() => { posthog.reset(); signOut({ callbackUrl: '/login' }) }}>
               <LogOut className="mr-2 h-4 w-4" />
               Sign out
             </DropdownMenuItem>

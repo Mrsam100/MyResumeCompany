@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Sparkles, Loader2, Check } from 'lucide-react'
 import { toast } from 'sonner'
+import { trackEvent } from '@/components/posthog-provider'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -96,6 +97,7 @@ export function BulletGenerator({ sectionId, entryId, jobTitle, company }: Bulle
     setBulletPoints(sectionId, entryId, [...existing, ...newBullets])
     setOpen(false)
     setResults([])
+    trackEvent('ai_bullet_points', { count: newBullets.length })
     toast.success(`${newBullets.length} bullet points added`)
   }
 

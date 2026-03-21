@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Sparkles, Loader2, ArrowLeft, ArrowRight, Plus, Trash2, GraduationCap, Briefcase, Target, Lightbulb, CheckCircle, Layout, Palette, Crown, Star } from 'lucide-react'
+import { trackEvent } from '@/components/posthog-provider'
 import { toast } from 'sonner'
 import { nanoid } from 'nanoid'
 
@@ -300,6 +301,7 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
         return
       }
 
+      trackEvent('ai_full_resume')
       toast.success('Resume generated! Redirecting to editor...')
       onOpenChange(false)
       router.push(`/editor/${resume.id}`)

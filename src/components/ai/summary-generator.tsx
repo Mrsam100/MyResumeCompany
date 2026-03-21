@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Sparkles, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { trackEvent } from '@/components/posthog-provider'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -84,6 +85,7 @@ export function SummaryGenerator() {
     setPersonalInfo({ summary: results[variant] })
     setOpen(false)
     setResults(null)
+    trackEvent('ai_summary_applied')
     toast.success('Summary applied')
   }
 

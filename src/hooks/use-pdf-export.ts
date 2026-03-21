@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
 import { useResumeStore } from '@/stores/resume-store'
+import { trackEvent } from '@/components/posthog-provider'
 
 const PDF_TIMEOUT_MS = 30_000 // 30 seconds
 
@@ -81,6 +82,7 @@ export function usePdfExport() {
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
 
+      trackEvent('pdf_exported', { resumeId, templateId })
       toast.success('PDF downloaded!')
     } catch (err) {
       if (err instanceof DOMException && err.name === 'AbortError') {
