@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 import { users } from '@/lib/db/schema'
 import { verifyPassword, hashPassword } from '@/lib/auth/password'
 import { invalidateSessionCache } from '@/lib/redis'
+import { checkAuthRateLimit } from '@/lib/auth/rate-limit'
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
@@ -22,6 +23,10 @@ export async function POST(req: Request) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
+  // Rate limit: 5 attempts/hour per user
+  const rateLimitError = await checkAuthRateLimit(session.user.id, 'password-change')
+  if (rateLimitError) return rateLimitError
 
   try {
     const body = await req.json()

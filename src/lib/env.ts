@@ -61,7 +61,8 @@ export function validateEnv() {
   if (missing.length > 0) {
     const msg = `Missing environment variables:\n${missing.map((k) => `  - ${k}`).join('\n')}`
     if (isProduction) {
-      console.error(`[env] ${msg}`)
+      // Fail hard in production — do not start with missing critical config
+      throw new Error(`[env] FATAL: ${msg}`)
     } else {
       console.warn(`[env] ${msg}`)
     }

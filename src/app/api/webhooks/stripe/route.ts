@@ -241,8 +241,10 @@ async function handleSubscriptionUpdated(sub: Stripe.Subscription) {
         status,
         stripePriceId: priceId,
         stripeSubscriptionId: sub.id,
-        currentPeriodStart: sub.start_date ? new Date(sub.start_date * 1000) : null,
-        currentPeriodEnd: sub.cancel_at ? new Date(sub.cancel_at * 1000) : null,
+        currentPeriodStart: sub.items.data[0]?.current_period_start
+          ? new Date(sub.items.data[0].current_period_start * 1000) : null,
+        currentPeriodEnd: sub.items.data[0]?.current_period_end
+          ? new Date(sub.items.data[0].current_period_end * 1000) : null,
       })
       .where(eq(subscriptions.stripeCustomerId, customerId))
 
@@ -295,13 +297,21 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
 
   if (!existing) return
 
-  await db
-    .update(subscriptions)
-    .set({ status: 'PAST_DUE' })
-    .where(eq(subscriptions.stripeCustomerId, customerId))
+  // Atomic: mark subscription PAST_DUE + downgrade tier to prevent free Pro usage
+  await db.transaction(async (tx) => {
+    await tx
+      .update(subscriptions)
+      .set({ status: 'PAST_DUE' })
+      .where(eq(subscriptions.stripeCustomerId, customerId))
+
+    await tx
+      .update(users)
+      .set({ subscriptionTier: 'FREE' })
+      .where(eq(users.id, existing.userId))
+  })
 
   await invalidateSessionCache(existing.userId)
-  console.log(`Payment failed for user ${existing.userId}, status set to PAST_DUE`)
+  console.log(`Payment failed for user ${existing.userId}, downgraded to FREE + PAST_DUE`)
 }
 
 // ─── Map Stripe status to our enum ───
