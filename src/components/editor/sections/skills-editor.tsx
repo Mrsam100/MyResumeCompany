@@ -143,7 +143,13 @@ export function SkillsEditor({ sectionId }: { sectionId: string }) {
         onOpenChange={(open) => !open && setDeleteId(null)}
         title="Delete this skill group?"
         description="This group and all its skills will be removed."
-        onConfirm={() => { if (deleteId) removeEntry(sectionId, deleteId); setDeleteId(null) }}
+        onConfirm={() => {
+          if (deleteId) {
+            removeEntry(sectionId, deleteId)
+            setInputValues((prev) => { const next = { ...prev }; delete next[deleteId]; return next })
+          }
+          setDeleteId(null)
+        }}
       />
     </div>
   )

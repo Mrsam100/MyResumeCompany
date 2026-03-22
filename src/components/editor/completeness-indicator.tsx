@@ -102,7 +102,7 @@ export function CompletenessIndicator() {
             <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="3" className="text-muted/50" />
             <circle
               cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="3"
-              strokeDasharray={`${percentage * 0.94} 100`}
+              strokeDasharray={`${(percentage / 100) * 94.25} 94.25`}
               strokeLinecap="round"
               className={cn(
                 'transition-all duration-500',

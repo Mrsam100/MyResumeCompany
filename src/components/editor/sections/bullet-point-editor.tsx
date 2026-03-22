@@ -74,6 +74,7 @@ export function BulletPointEditor({
   function handleDrop(index: number) {
     if (dragIndex !== null && dragIndex !== index) {
       reorderBulletPoints(sectionId, entryId, dragIndex, index)
+      inputRefs.current.clear()
     }
     setDragIndex(null)
     setOverIndex(null)

@@ -30,12 +30,13 @@ export function useLiveATSScore(): KeywordMatchResult & { hasJobDescription: boo
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
+    // Always clear pending timer first
+    if (timerRef.current) clearTimeout(timerRef.current)
+
     if (keywords.length === 0) {
       setResult({ score: 0, matched: [], missing: [], total: 0 })
       return
     }
-
-    if (timerRef.current) clearTimeout(timerRef.current)
 
     timerRef.current = setTimeout(() => {
       const resumeText = resumeContentToText(content)

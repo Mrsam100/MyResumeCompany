@@ -47,13 +47,18 @@ export function usePdfExport() {
       // Set timeout for PDF generation
       const timeoutId = setTimeout(() => abortRef.current?.abort(), PDF_TIMEOUT_MS)
 
-      const res = await fetch('/api/export/pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ resumeId }),
-        signal,
-      })
-
+      let res: Response
+      try {
+        res = await fetch('/api/export/pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ resumeId }),
+          signal,
+        })
+      } catch (fetchErr) {
+        clearTimeout(timeoutId)
+        throw fetchErr
+      }
       clearTimeout(timeoutId)
 
       if (res.status === 402) {

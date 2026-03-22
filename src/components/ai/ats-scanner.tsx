@@ -234,9 +234,10 @@ export function ATSScanner({ externalOpen, onExternalOpenChange, prefillJobDescr
       return
     }
 
-    // Validate bullet count matches (warn if different)
+    // Block apply if user edited bullets since scan (prevents silent data loss)
     if (entry.bulletPoints.length > 0 && bullets.length !== entry.bulletPoints.length) {
-      console.warn(`Bullet count mismatch: original ${entry.bulletPoints.length}, optimized ${bullets.length}`)
+      toast.error(`Bullet count changed (${entry.bulletPoints.length} now, ${bullets.length} optimized). Re-scan to update.`)
+      return
     }
 
     setBulletPoints(section.id, entry.id, bullets)

@@ -75,7 +75,8 @@ export function useAutosave() {
     return () => {
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current)
     }
-  }, [isDirty, resumeId, content, title, templateId, targetJobDescription, save])
+    // eslint-disable-next-line react-hooks/exhaustive-deps — save reads fresh state via getState()
+  }, [isDirty, resumeId, content, title, templateId, targetJobDescription])
 
   // Save on page unload
   useEffect(() => {

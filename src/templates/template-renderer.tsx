@@ -14,6 +14,15 @@ interface TemplateRendererProps {
  * Sanitize all user-supplied text in resume content before rendering.
  * Prevents stored XSS from malicious resume data.
  */
+function sanitizeUrl(url: string): string | undefined {
+  const cleaned = sanitizeText(url)
+  if (!cleaned) return undefined
+  // Only allow http(s), data:image (for photo uploads), and relative paths
+  if (/^(https?:\/\/|data:image\/)/i.test(cleaned)) return cleaned
+  if (cleaned.startsWith('/')) return cleaned
+  return undefined
+}
+
 function sanitizeContent(content: ResumeContent): ResumeContent {
   const personalInfo: PersonalInfo = {
     ...content.personalInfo,
@@ -26,6 +35,7 @@ function sanitizeContent(content: ResumeContent): ResumeContent {
     website: content.personalInfo.website ? sanitizeText(content.personalInfo.website) : undefined,
     portfolio: content.personalInfo.portfolio ? sanitizeText(content.personalInfo.portfolio) : undefined,
     summary: content.personalInfo.summary ? sanitizeText(content.personalInfo.summary) : undefined,
+    photoUrl: content.personalInfo.photoUrl ? sanitizeUrl(content.personalInfo.photoUrl) : undefined,
   }
 
   const sections: ResumeSection[] = content.sections.map((section) => ({
