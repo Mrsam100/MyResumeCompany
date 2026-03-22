@@ -33,11 +33,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = content.personalInfo.title || ''
 
   return {
-    title: `${name}${title ? ` — ${title}` : ''} | TheResumeCompany`,
+    title: `${name}${title ? ` — ${title}` : ''} | MyResumeCompany`,
     description: content.personalInfo.summary?.slice(0, 160) ?? `Resume of ${name}`,
     openGraph: {
       title: `${name}'s Resume`,
-      description: title || 'Professional resume built with TheResumeCompany',
+      description: title || 'Professional resume built with MyResumeCompany',
       type: 'profile',
     },
   }
@@ -62,7 +62,7 @@ export default async function PublicResumePage({ params }: Props) {
         <p className="mt-4 text-center text-xs text-muted-foreground">
           Built with{' '}
           <Link href="/" className="font-medium text-primary hover:underline">
-            TheResumeCompany
+            MyResumeCompany
           </Link>
         </p>
       </div>

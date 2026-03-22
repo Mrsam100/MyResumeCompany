@@ -1,9 +1,9 @@
-# TheResumeCompany
+# MyResumeCompany
 
 > AI-powered resume builder with 15+ professional templates, ATS scanner, and cover letter generator.
 
 ## About
-TheResumeCompany is an online resume builder that combines professionally designed templates with AI writing tools. Users can create, edit, and export resumes as pixel-perfect PDFs. The platform includes an AI bullet point writer, professional summary generator, full resume wizard, ATS (Applicant Tracking System) scanner and optimizer, and cover letter generator.
+MyResumeCompany is an online resume builder that combines professionally designed templates with AI writing tools. Users can create, edit, and export resumes as pixel-perfect PDFs. The platform includes an AI bullet point writer, professional summary generator, full resume wizard, ATS (Applicant Tracking System) scanner and optimizer, and cover letter generator.
 
 ## Key Features
 - 15 resume templates: Classic, Modern, Creative, Tech, ATS-Optimized, Academic
@@ -23,17 +23,17 @@ TheResumeCompany is an online resume builder that combines professionally design
 - Credit packs: $4.99 (100), $9.99 (300), $19.99 (800)
 
 ## Pages
-- Homepage: https://theresumecompany.com
-- Pricing: https://theresumecompany.com/pricing
-- About: https://theresumecompany.com/about
-- Blog: https://theresumecompany.com/blog
-- Contact: https://theresumecompany.com/contact
-- Templates: https://theresumecompany.com/resume-templates
-- TheResumeCompany vs Zety: https://theresumecompany.com/compare/vs-zety
-- TheResumeCompany vs Resume.io: https://theresumecompany.com/compare/vs-resume-io
-- TheResumeCompany vs Canva: https://theresumecompany.com/compare/vs-canva
-- Privacy Policy: https://theresumecompany.com/privacy
-- Terms of Service: https://theresumecompany.com/terms
+- Homepage: https://myresumecompany.com
+- Pricing: https://myresumecompany.com/pricing
+- About: https://myresumecompany.com/about
+- Blog: https://myresumecompany.com/blog
+- Contact: https://myresumecompany.com/contact
+- Templates: https://myresumecompany.com/resume-templates
+- MyResumeCompany vs Zety: https://myresumecompany.com/compare/vs-zety
+- MyResumeCompany vs Resume.io: https://myresumecompany.com/compare/vs-resume-io
+- MyResumeCompany vs Canva: https://myresumecompany.com/compare/vs-canva
+- Privacy Policy: https://myresumecompany.com/privacy
+- Terms of Service: https://myresumecompany.com/terms
 
 ## Technical
 - Built with Next.js, React, TypeScript

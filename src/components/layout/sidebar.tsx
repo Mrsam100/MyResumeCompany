@@ -53,7 +53,7 @@ export function Sidebar() {
         <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 shadow-sm">
           <Image src="/file.svg" alt="" width={14} height={14} className="h-3.5 w-3.5 brightness-0 invert" />
         </div>
-        <span className="font-heading text-[15px] font-bold tracking-tight">TheResumeCompany</span>
+        <span className="font-heading text-[15px] font-bold tracking-tight">MyResumeCompany</span>
       </div>
 
       {/* Navigation */}

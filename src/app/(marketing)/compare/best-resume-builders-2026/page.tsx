@@ -30,7 +30,7 @@ interface Builder {
 
 const BUILDERS: Builder[] = [
   {
-    name: 'TheResumeCompany',
+    name: 'MyResumeCompany',
     rank: 1,
     verdict: 'Best overall for AI-powered resume building with ATS optimization',
     bestFor: 'Job seekers who want AI writing + ATS scoring in one tool',
@@ -98,7 +98,7 @@ const BUILDERS: Builder[] = [
       'No ATS scanner or optimizer',
       'No AI full resume generator',
       'Free tier is extremely limited (one resume, no export)',
-      'AI features are less advanced than TheResumeCompany or Zety',
+      'AI features are less advanced than MyResumeCompany or Zety',
     ],
     compareSlug: 'vs-resume-io',
   },
@@ -145,7 +145,7 @@ const BUILDERS: Builder[] = [
       'European-friendly (popular in EU markets)',
     ],
     cons: [
-      'Higher price than TheResumeCompany with fewer features',
+      'Higher price than MyResumeCompany with fewer features',
       'Limited AI capabilities',
       'Free tier is very restrictive (branding, one template)',
       'No ATS scoring or optimization',
@@ -186,7 +186,7 @@ const RANKING_CRITERIA = [
 ]
 
 export default function BestResumeBuildersPage() {
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
 
   return (
     <>
@@ -236,7 +236,7 @@ export default function BestResumeBuildersPage() {
           ATS optimization, templates, pricing, and ease of use. Here is how they stack up.
         </p>
         <p className="mt-2 text-xs text-muted-foreground">
-          Last updated: March 2026. Pricing verified as of March 10, 2026. TheResumeCompany is our product — we disclose this throughout.
+          Last updated: March 2026. Pricing verified as of March 10, 2026. MyResumeCompany is our product — we disclose this throughout.
         </p>
 
         {/* Quick rankings table */}
@@ -377,7 +377,7 @@ export default function BestResumeBuildersPage() {
                   href={`/compare/${builder.compareSlug}`}
                   className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
                 >
-                  Read full comparison: TheResumeCompany vs {builder.name}
+                  Read full comparison: MyResumeCompany vs {builder.name}
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
@@ -431,7 +431,7 @@ export default function BestResumeBuildersPage() {
           <h2 className="text-2xl font-bold">The Bottom Line</h2>
           <p className="mt-3 text-muted-foreground">
             If you want the most complete AI resume building experience with ATS optimization built in,{' '}
-            <strong>TheResumeCompany</strong> is the best choice in 2026. It is the only builder that combines
+            <strong>MyResumeCompany</strong> is the best choice in 2026. It is the only builder that combines
             an AI bullet writer, full resume generator, ATS scanner with a 0-100 score, and an ATS optimizer
             that rewrites your bullets to match specific job descriptions — all at the lowest Pro price ($12/mo)
             among dedicated resume builders.
@@ -439,17 +439,17 @@ export default function BestResumeBuildersPage() {
           <p className="mt-3 text-muted-foreground">
             If you prioritize template variety, <strong>Resume.io</strong> and <strong>Canva</strong> offer more
             options. If you want hands-on writing guidance, <strong>Zety</strong> excels. But for the AI + ATS
-            combination that actually helps you land interviews, TheResumeCompany leads the field.
+            combination that actually helps you land interviews, MyResumeCompany leads the field.
           </p>
           <p className="mt-2 text-xs text-muted-foreground italic">
-            Disclosure: TheResumeCompany is our product. We have done our best to present all builders
+            Disclosure: MyResumeCompany is our product. We have done our best to present all builders
             fairly and accurately. Competitor information is sourced from their public websites and documentation.
           </p>
         </section>
 
         {/* CTA */}
         <div className="mt-16 text-center">
-          <h2 className="text-2xl font-bold">Try TheResumeCompany Free</h2>
+          <h2 className="text-2xl font-bold">Try MyResumeCompany Free</h2>
           <p className="mt-2 text-muted-foreground">
             100 free credits. No credit card. Build a full resume with AI in minutes.
           </p>

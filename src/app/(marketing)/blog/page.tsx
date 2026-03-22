@@ -7,7 +7,7 @@ import { JsonLd } from '@/components/schema/json-ld'
 export const metadata: Metadata = {
   title: 'Blog',
   description:
-    'Resume writing tips, career advice, and job search strategies from TheResumeCompany. Learn how to build a better resume and land more interviews.',
+    'Resume writing tips, career advice, and job search strategies from MyResumeCompany. Learn how to build a better resume and land more interviews.',
   alternates: { canonical: '/blog' },
 }
 
@@ -55,7 +55,7 @@ const POSTS = [
 ]
 
 export default function BlogPage() {
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
   return (
     <>
     <JsonLd data={{ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl }, { '@type': 'ListItem', position: 2, name: 'Blog', item: `${siteUrl}/blog` }] }} />

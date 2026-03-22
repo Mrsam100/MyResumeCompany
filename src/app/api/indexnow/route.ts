@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Provide 1-100 URLs' }, { status: 400 })
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
   const allowedHost = new URL(baseUrl).host
 
   // Validate all URLs belong to our domain

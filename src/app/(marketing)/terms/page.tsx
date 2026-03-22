@@ -3,12 +3,12 @@ import { JsonLd } from '@/components/schema/json-ld'
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
-  description: 'TheResumeCompany terms of service — rules and guidelines for using our platform.',
+  description: 'MyResumeCompany terms of service — rules and guidelines for using our platform.',
   alternates: { canonical: '/terms' },
 }
 
 export default function TermsPage() {
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
   return (
     <>
     <JsonLd data={{ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl }, { '@type': 'ListItem', position: 2, name: 'Terms of Service', item: `${siteUrl}/terms` }] }} />
@@ -19,7 +19,7 @@ export default function TermsPage() {
       <div className="prose prose-sm mt-10 max-w-none text-muted-foreground [&_h2]:mt-10 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-foreground [&_p]:mt-3 [&_ul]:mt-3 [&_ul]:list-disc [&_ul]:pl-6">
         <h2>1. Acceptance of Terms</h2>
         <p>
-          By accessing or using TheResumeCompany (&ldquo;Service&rdquo;), you agree to be bound by these
+          By accessing or using MyResumeCompany (&ldquo;Service&rdquo;), you agree to be bound by these
           Terms of Service. If you do not agree, please do not use the Service.
         </p>
 
@@ -63,7 +63,7 @@ export default function TermsPage() {
         <h2>6. Intellectual Property</h2>
         <p>
           The Service, including its design, templates, and AI technology, is owned by
-          TheResumeCompany. Our templates are provided for personal use in creating resumes and
+          MyResumeCompany. Our templates are provided for personal use in creating resumes and
           may not be redistributed, resold, or used for commercial template distribution.
         </p>
 
@@ -95,7 +95,7 @@ export default function TermsPage() {
 
         <h2>11. Contact</h2>
         <p>
-          For questions about these terms, contact us at legal@theresumecompany.com.
+          For questions about these terms, contact us at legal@myresumecompany.com.
         </p>
       </div>
     </div>

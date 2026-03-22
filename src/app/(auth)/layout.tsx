@@ -31,7 +31,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="hidden flex-col justify-between bg-primary p-10 text-primary-foreground lg:flex">
         <Link href="/" className="flex items-center gap-2 text-lg font-bold">
           <FileText className="h-6 w-6" />
-          TheResumeCompany
+          MyResumeCompany
         </Link>
 
         <div className="space-y-8">
@@ -62,7 +62,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </div>
 
         <p className="text-sm text-primary-foreground/50">
-          &copy; {new Date().getFullYear()} TheResumeCompany. All rights reserved.
+          &copy; {new Date().getFullYear()} MyResumeCompany. All rights reserved.
         </p>
       </div>
 
@@ -75,7 +75,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             className="mb-8 flex items-center justify-center gap-2 text-lg font-bold lg:hidden"
           >
             <FileText className="h-6 w-6 text-primary" />
-            TheResumeCompany
+            MyResumeCompany
           </Link>
           {children}
         </div>

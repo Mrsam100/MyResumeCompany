@@ -20,12 +20,12 @@ const poppins = Poppins({
   display: 'swap',
 })
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
 
 export const metadata: Metadata = {
   title: {
-    default: 'TheResumeCompany — AI Resume Builder',
-    template: '%s | TheResumeCompany',
+    default: 'MyResumeCompany — AI Resume Builder',
+    template: '%s | MyResumeCompany',
   },
   description:
     'Build your perfect resume in minutes with AI. 15+ professional templates, ATS scanner, AI bullet writer, and cover letter generator. Free to start.',
@@ -34,15 +34,15 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: siteUrl,
-    siteName: 'TheResumeCompany',
-    title: 'TheResumeCompany — AI Resume Builder',
+    siteName: 'MyResumeCompany',
+    title: 'MyResumeCompany — AI Resume Builder',
     description:
       'Build your perfect resume in minutes with AI. 15+ professional templates, ATS scanner, and cover letter generator.',
     images: ['/opengraph-image'],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'TheResumeCompany — AI Resume Builder',
+    title: 'MyResumeCompany — AI Resume Builder',
     description:
       'Build your perfect resume in minutes with AI. Free to start with 100 credits.',
   },
@@ -68,7 +68,7 @@ export default function RootLayout({
       <body className={`${nunito.variable} ${poppins.variable} font-sans antialiased`}>
         <noscript>
           <div style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto', fontFamily: 'sans-serif' }}>
-            <h1>TheResumeCompany — AI Resume Builder</h1>
+            <h1>MyResumeCompany — AI Resume Builder</h1>
             <p>
               Build your perfect resume in minutes with AI. 15+ professional templates, ATS scanner,
               AI bullet writer, and cover letter generator.
@@ -89,7 +89,7 @@ export default function RootLayout({
             '@context': 'https://schema.org',
             '@type': 'Organization',
             '@id': `${siteUrl}/#organization`,
-            name: 'TheResumeCompany',
+            name: 'MyResumeCompany',
             url: siteUrl,
             logo: {
               '@type': 'ImageObject',
@@ -105,7 +105,7 @@ export default function RootLayout({
           data={{
             '@context': 'https://schema.org',
             '@type': 'WebSite',
-            name: 'TheResumeCompany',
+            name: 'MyResumeCompany',
             url: siteUrl,
             description:
               'Build your perfect resume in minutes with AI. 15+ professional templates, ATS scanner, AI bullet writer, and cover letter generator.',

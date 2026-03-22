@@ -30,7 +30,7 @@ export function MarketingFooter() {
           <div className="sm:col-span-2 lg:col-span-2">
             <Link href="/" className="flex items-center gap-2">
               <Image src="/file.svg" alt="" width={20} height={20} className="h-5 w-5" />
-              <span className="font-bold">TheResumeCompany</span>
+              <span className="font-bold">MyResumeCompany</span>
             </Link>
             <p className="mt-3 max-w-xs text-sm text-muted-foreground sm:max-w-sm">
               Build professional, ATS-optimized resumes in minutes with the power of AI.
@@ -92,7 +92,7 @@ export function MarketingFooter() {
 
         <div className="mt-10 border-t pt-6 space-y-1">
           <p className="text-center text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} TheResumeCompany. All rights reserved.
+            &copy; {new Date().getFullYear()} MyResumeCompany. All rights reserved.
           </p>
           <p className="text-center text-xs text-muted-foreground/60">
             A Schroeder Technologies Company

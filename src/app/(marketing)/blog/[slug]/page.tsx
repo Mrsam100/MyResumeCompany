@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { JsonLd } from '@/components/schema/json-ld'
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
 
 interface Article {
   title: string
@@ -189,7 +189,7 @@ const ARTICLES: Record<string, Article> = {
           explains how to use AI as a writing partner without sounding generic.
         </p>
         <p>
-          TheResumeCompany&apos;s AI bullet point writer generates role-specific, metrics-driven
+          MyResumeCompany&apos;s AI bullet point writer generates role-specific, metrics-driven
           bullets that you can customize before adding them to your resume. You choose which
           suggestions to keep, which to edit, and which to discard.
         </p>
@@ -342,7 +342,7 @@ const ARTICLES: Record<string, Article> = {
 
         <h2>Testing Your Resume Against an ATS</h2>
         <p>
-          The best way to know if your resume will pass is to test it. TheResumeCompany includes a
+          The best way to know if your resume will pass is to test it. MyResumeCompany includes a
           built-in{' '}
           <Link href="/signup" className="text-primary hover:underline">
             ATS scanner
@@ -623,7 +623,7 @@ const ARTICLES: Record<string, Article> = {
           context, and format your achievements consistently.
         </p>
         <p>
-          At TheResumeCompany, our AI bullet point writer generates multiple options for each entry.
+          At MyResumeCompany, our AI bullet point writer generates multiple options for each entry.
           You choose which suggestions to keep, edit, or discard. Nothing gets added to your resume
           without your explicit approval.
         </p>
@@ -700,7 +700,7 @@ const ARTICLES: Record<string, Article> = {
           invest that saved time into making every line specific, honest, and personal.
         </p>
         <p>
-          TheResumeCompany is built on this philosophy. Our AI generates suggestions, but you always
+          MyResumeCompany is built on this philosophy. Our AI generates suggestions, but you always
           have final say. Every feature is designed to keep you in control of your career narrative.
         </p>
       </>
@@ -866,7 +866,7 @@ const ARTICLES: Record<string, Article> = {
 
         <h2>Let AI Help You Get Started</h2>
         <p>
-          Staring at a blank summary field is daunting. TheResumeCompany&apos;s{' '}
+          Staring at a blank summary field is daunting. MyResumeCompany&apos;s{' '}
           <Link href="/signup" className="text-primary hover:underline">
             AI summary writer
           </Link>{' '}
@@ -884,7 +884,7 @@ function ArticleCTA() {
     <div className="mt-12 rounded-xl border bg-muted/40 p-8 text-center">
       <h2 className="text-2xl font-bold">Build Your Resume in Minutes</h2>
       <p className="mx-auto mt-3 max-w-lg text-muted-foreground">
-        TheResumeCompany gives you 15 professional templates, AI-powered writing tools, and a
+        MyResumeCompany gives you 15 professional templates, AI-powered writing tools, and a
         built-in ATS scanner. Start free with 100 credits.
       </p>
       <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -923,7 +923,7 @@ export async function generateMetadata({
       type: 'article',
       publishedTime: article.date,
       url: `${siteUrl}/blog/${slug}`,
-      siteName: 'TheResumeCompany',
+      siteName: 'MyResumeCompany',
     },
     twitter: {
       card: 'summary_large_image',
@@ -962,13 +962,13 @@ export default async function BlogArticlePage({
           author: {
             '@type': 'Organization',
             '@id': `${siteUrl}/#organization`,
-            name: 'TheResumeCompany',
+            name: 'MyResumeCompany',
             url: siteUrl,
           },
           publisher: {
             '@type': 'Organization',
             '@id': `${siteUrl}/#organization`,
-            name: 'TheResumeCompany',
+            name: 'MyResumeCompany',
             url: siteUrl,
             logo: {
               '@type': 'ImageObject',

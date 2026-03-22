@@ -15,7 +15,7 @@ function getResend(): Resend {
   return _resend
 }
 
-const FROM_EMAIL = 'TheResumeCompany <noreply@theresumecompany.com>'
+const FROM_EMAIL = 'MyResumeCompany <noreply@myresumecompany.com>'
 
 // ─── Password Reset Email ───
 
@@ -23,7 +23,7 @@ export async function sendPasswordResetEmail(
   to: string,
   token: string,
 ): Promise<void> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
   const resetUrl = `${appUrl}/reset-password?token=${token}`
 
   const resend = getResend()
@@ -31,7 +31,7 @@ export async function sendPasswordResetEmail(
   await resend.emails.send({
     from: FROM_EMAIL,
     to,
-    subject: 'Reset your password — TheResumeCompany',
+    subject: 'Reset your password — MyResumeCompany',
     html: `
 <!DOCTYPE html>
 <html>
@@ -44,7 +44,7 @@ export async function sendPasswordResetEmail(
 
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#0f172a,#1e293b); padding:32px 40px; text-align:center;">
-      <h1 style="margin:0; color:#f8fafc; font-size:22px; font-weight:700; letter-spacing:-0.5px;">TheResumeCompany</h1>
+      <h1 style="margin:0; color:#f8fafc; font-size:22px; font-weight:700; letter-spacing:-0.5px;">MyResumeCompany</h1>
     </div>
 
     <!-- Body -->
@@ -79,7 +79,7 @@ export async function sendPasswordResetEmail(
     <!-- Footer -->
     <div style="padding:20px 40px; background:#f8fafc; text-align:center;">
       <p style="margin:0; color:#94a3b8; font-size:12px;">
-        &copy; ${new Date().getFullYear()} TheResumeCompany. All rights reserved.
+        &copy; ${new Date().getFullYear()} MyResumeCompany. All rights reserved.
       </p>
     </div>
   </div>
@@ -94,14 +94,14 @@ export async function sendWelcomeEmail(
   to: string,
   name: string,
 ): Promise<void> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
 
   const resend = getResend()
 
   await resend.emails.send({
     from: FROM_EMAIL,
     to,
-    subject: 'Welcome to TheResumeCompany — your 100 free credits are ready',
+    subject: 'Welcome to MyResumeCompany — your 100 free credits are ready',
     html: `
 <!DOCTYPE html>
 <html>
@@ -114,7 +114,7 @@ export async function sendWelcomeEmail(
 
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#0f172a,#1e293b); padding:32px 40px; text-align:center;">
-      <h1 style="margin:0; color:#f8fafc; font-size:22px; font-weight:700; letter-spacing:-0.5px;">TheResumeCompany</h1>
+      <h1 style="margin:0; color:#f8fafc; font-size:22px; font-weight:700; letter-spacing:-0.5px;">MyResumeCompany</h1>
     </div>
 
     <!-- Body -->
@@ -149,7 +149,7 @@ export async function sendWelcomeEmail(
     <!-- Footer -->
     <div style="padding:20px 40px; background:#f8fafc; text-align:center;">
       <p style="margin:0; color:#94a3b8; font-size:12px;">
-        &copy; ${new Date().getFullYear()} TheResumeCompany. All rights reserved.
+        &copy; ${new Date().getFullYear()} MyResumeCompany. All rights reserved.
       </p>
     </div>
   </div>

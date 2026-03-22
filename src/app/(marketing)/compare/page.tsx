@@ -6,9 +6,9 @@ import { Badge } from '@/components/ui/badge'
 import { JsonLd } from '@/components/schema/json-ld'
 
 export const metadata: Metadata = {
-  title: 'Compare Resume Builders — TheResumeCompany vs Competitors',
+  title: 'Compare Resume Builders — MyResumeCompany vs Competitors',
   description:
-    'See how TheResumeCompany compares to Zety, Resume.io, and Canva for AI resume building, ATS optimization, templates, and pricing.',
+    'See how MyResumeCompany compares to Zety, Resume.io, and Canva for AI resume building, ATS optimization, templates, and pricing.',
   alternates: { canonical: '/compare' },
 }
 
@@ -19,7 +19,7 @@ const COMPARISONS = [
     tagline: 'Half the price, more AI features',
     highlight: '$12/mo vs $24.95/mo',
     description:
-      'Zety is a popular resume builder with 20+ templates and step-by-step writing tips. TheResumeCompany offers the same core features at roughly half the price, plus an ATS scanner, ATS optimizer, and AI full resume generator that Zety lacks.',
+      'Zety is a popular resume builder with 20+ templates and step-by-step writing tips. MyResumeCompany offers the same core features at roughly half the price, plus an ATS scanner, ATS optimizer, and AI full resume generator that Zety lacks.',
   },
   {
     slug: 'vs-resume-io',
@@ -27,7 +27,7 @@ const COMPARISONS = [
     tagline: 'More AI, better ATS tools',
     highlight: 'ATS scanner + optimizer included',
     description:
-      'Resume.io is a clean, straightforward builder with 30+ templates. TheResumeCompany matches its ease of use while adding a full ATS scanner (0-100 score), ATS optimizer that rewrites bullets to match job descriptions, and an AI wizard that generates complete resumes from scratch.',
+      'Resume.io is a clean, straightforward builder with 30+ templates. MyResumeCompany matches its ease of use while adding a full ATS scanner (0-100 score), ATS optimizer that rewrites bullets to match job descriptions, and an AI wizard that generates complete resumes from scratch.',
   },
   {
     slug: 'vs-canva',
@@ -35,12 +35,12 @@ const COMPARISONS = [
     tagline: 'Built for resumes, not just design',
     highlight: 'ATS-compatible output guaranteed',
     description:
-      'Canva is a powerful design tool, but its resume templates often fail ATS parsing because they use images and non-standard layouts. TheResumeCompany is purpose-built for job seekers with AI writing tools, ATS-tested templates, and structured PDF export that every ATS can read.',
+      'Canva is a powerful design tool, but its resume templates often fail ATS parsing because they use images and non-standard layouts. MyResumeCompany is purpose-built for job seekers with AI writing tools, ATS-tested templates, and structured PDF export that every ATS can read.',
   },
 ]
 
 export default function ComparePage() {
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
 
   return (
     <>
@@ -56,7 +56,7 @@ export default function ComparePage() {
       />
       <div className="mx-auto max-w-4xl px-4 py-16 sm:py-24">
         <h1 className="text-4xl font-bold tracking-tight">
-          How Does TheResumeCompany Compare?
+          How Does MyResumeCompany Compare?
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
           Honest, side-by-side comparisons with the most popular resume builders. We show where we
@@ -74,7 +74,7 @@ export default function ComparePage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-3">
                     <h2 className="text-xl font-bold group-hover:text-primary">
-                      TheResumeCompany vs {comp.name}
+                      MyResumeCompany vs {comp.name}
                     </h2>
                     <Badge variant="secondary" className="text-xs">
                       {comp.highlight}
@@ -106,7 +106,7 @@ export default function ComparePage() {
 
         {/* CTA */}
         <div className="mt-16 text-center">
-          <h2 className="text-2xl font-bold">Ready to try TheResumeCompany?</h2>
+          <h2 className="text-2xl font-bold">Ready to try MyResumeCompany?</h2>
           <p className="mt-2 text-muted-foreground">
             Free to start. 100 credits. No credit card required.
           </p>

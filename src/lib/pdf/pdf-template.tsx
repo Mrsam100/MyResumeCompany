@@ -237,7 +237,7 @@ export function PDFResume({ content, config }: PDFResumeProps) {
   const styles = createStyles(colors, spacing.margins)
 
   return (
-    <Document title={content.personalInfo.fullName || 'Resume'} author="TheResumeCompany">
+    <Document title={content.personalInfo.fullName || 'Resume'} author="MyResumeCompany">
       <Page size="A4" style={styles.page} wrap>
         <PDFHeader info={content.personalInfo} styles={styles} />
 

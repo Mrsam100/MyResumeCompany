@@ -6,12 +6,12 @@ import { JsonLd } from '@/components/schema/json-ld'
 export const metadata: Metadata = {
   title: 'Contact',
   description:
-    'Get in touch with TheResumeCompany. Contact us for support, feedback, or business inquiries.',
+    'Get in touch with MyResumeCompany. Contact us for support, feedback, or business inquiries.',
   alternates: { canonical: '/contact' },
 }
 
 export default function ContactPage() {
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
   return (
     <>
     <JsonLd data={{ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl }, { '@type': 'ListItem', position: 2, name: 'Contact', item: `${siteUrl}/contact` }] }} />
@@ -30,10 +30,10 @@ export default function ContactPage() {
             For general inquiries and support
           </p>
           <a
-            href="mailto:support@theresumecompany.com"
+            href="mailto:support@myresumecompany.com"
             className="mt-3 inline-block text-sm font-medium text-primary hover:underline"
           >
-            support@theresumecompany.com
+            support@myresumecompany.com
           </a>
         </div>
 
@@ -44,10 +44,10 @@ export default function ContactPage() {
             Data requests and privacy concerns
           </p>
           <a
-            href="mailto:privacy@theresumecompany.com"
+            href="mailto:privacy@myresumecompany.com"
             className="mt-3 inline-block text-sm font-medium text-primary hover:underline"
           >
-            privacy@theresumecompany.com
+            privacy@myresumecompany.com
           </a>
         </div>
 
@@ -55,7 +55,7 @@ export default function ContactPage() {
           <MapPin className="mx-auto h-8 w-8 text-primary" />
           <h2 className="mt-4 font-semibold">Address</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            TheResumeCompany
+            MyResumeCompany
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
             United States
@@ -81,21 +81,21 @@ export default function ContactPage() {
           <div>
             <h3 className="font-semibold">How do I get a refund?</h3>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              Email support@theresumecompany.com with your account email and we&apos;ll review
+              Email support@myresumecompany.com with your account email and we&apos;ll review
               your request. We typically respond within 24 hours.
             </p>
           </div>
           <div>
             <h3 className="font-semibold">I found a bug. Where do I report it?</h3>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              Email support@theresumecompany.com with a description of what happened and
+              Email support@myresumecompany.com with a description of what happened and
               screenshots if possible. We appreciate every report.
             </p>
           </div>
           <div>
-            <h3 className="font-semibold">Can I use TheResumeCompany for my team or company?</h3>
+            <h3 className="font-semibold">Can I use MyResumeCompany for my team or company?</h3>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              Enterprise and team features are on our roadmap. Email support@theresumecompany.com
+              Enterprise and team features are on our roadmap. Email support@myresumecompany.com
               to discuss your needs and get early access.
             </p>
           </div>

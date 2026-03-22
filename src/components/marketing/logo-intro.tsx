@@ -57,7 +57,7 @@ export function LogoIntro({ onComplete }: LogoIntroProps) {
       >
         <Image
           src="/logo-full.svg"
-          alt="TheResumeCompany"
+          alt="MyResumeCompany"
           width={200}
           height={160}
           priority

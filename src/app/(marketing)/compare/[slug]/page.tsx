@@ -30,7 +30,7 @@ const COMPETITORS: Record<string, Competitor> = {
     name: 'Zety',
     slug: 'vs-zety',
     description:
-      'See how TheResumeCompany compares to Zety for AI resume building, ATS optimization, and pricing.',
+      'See how MyResumeCompany compares to Zety for AI resume building, ATS optimization, and pricing.',
     features: [
       { name: 'AI bullet point writer', us: true, them: true },
       { name: 'AI full resume generator', us: true, them: false },
@@ -45,7 +45,7 @@ const COMPETITORS: Record<string, Competitor> = {
       { name: 'Drag-and-drop editor', us: true, them: true },
     ],
     summary:
-      "TheResumeCompany offers a more affordable Pro plan at $12/month vs Zety's $24.95/month, with unique features like an AI full resume generator, ATS optimizer that rewrites your bullets, and free PDF exports. Zety has a larger template library and strong brand recognition, but charges significantly more for a comparable feature set.",
+      "MyResumeCompany offers a more affordable Pro plan at $12/month vs Zety's $24.95/month, with unique features like an AI full resume generator, ATS optimizer that rewrites your bullets, and free PDF exports. Zety has a larger template library and strong brand recognition, but charges significantly more for a comparable feature set.",
     overview: [
       "Zety is one of the most recognized names in the online resume builder space. Founded in 2016, Zety has built a reputation for its polished user interface, wide template selection, and built-in writing tips that guide users through the resume creation process step by step. With over 20 templates spanning professional, modern, and creative styles, Zety appeals to a broad audience of job seekers, from recent graduates to experienced professionals switching careers.",
       "Zety's core product revolves around a form-based editor that walks users through each section of a resume. The platform offers pre-written phrases for common job titles, which can be helpful for people who struggle with resume writing. Zety also provides a cover letter builder and some basic resume checking features. Their builder is available in multiple languages, making it popular with international job seekers.",
@@ -58,33 +58,33 @@ const COMPETITORS: Record<string, Competitor> = {
       "Established brand with years of content marketing, including a popular career advice blog that provides useful resume writing tips and job search strategies."
     ],
     weaknesses: [
-      "Pricing is significantly higher at $24.95/month compared to TheResumeCompany's $12/month Pro plan. Over a year, that adds up to nearly $300 vs $99 with our annual plan.",
+      "Pricing is significantly higher at $24.95/month compared to MyResumeCompany's $12/month Pro plan. Over a year, that adds up to nearly $300 vs $99 with our annual plan.",
       "No AI full resume generator — Zety helps you fill in sections, but it cannot generate a complete, tailored resume from a job title and your experience in one step.",
       "No ATS optimizer that rewrites your bullet points to match a specific job description. Zety offers basic checking, but not the intelligent rewriting that helps your resume rank higher in applicant tracking systems.",
-      "Free tier is essentially a preview — you cannot download a PDF without paying. TheResumeCompany gives you 100 free credits, enough to generate AI content and export your resume without entering a credit card."
+      "Free tier is essentially a preview — you cannot download a PDF without paying. MyResumeCompany gives you 100 free credits, enough to generate AI content and export your resume without entering a credit card."
     ],
     whoShouldChoose: {
       them: "Choose Zety if you want a very guided, step-by-step resume building experience with pre-written content suggestions for your specific job title. If you prefer browsing a large template gallery and you value the hand-holding approach of having phrases suggested to you at each step, Zety's editor may appeal to you. Zety is also a reasonable choice if you need multilingual support for non-English resumes.",
-      us: "Choose TheResumeCompany if you want advanced AI capabilities at a lower price. Our AI full resume generator creates an entire resume tailored to your target role, our ATS scanner gives you a specific 0-100 score, and our ATS optimizer rewrites your bullet points to match the exact job description you are applying to. At $12/month (or $99/year), you get more AI power for less than half of what Zety charges. Our free tier also lets you actually export a PDF, so you can try before you buy."
+      us: "Choose MyResumeCompany if you want advanced AI capabilities at a lower price. Our AI full resume generator creates an entire resume tailored to your target role, our ATS scanner gives you a specific 0-100 score, and our ATS optimizer rewrites your bullet points to match the exact job description you are applying to. At $12/month (or $99/year), you get more AI power for less than half of what Zety charges. Our free tier also lets you actually export a PDF, so you can try before you buy."
     },
     pricingComparison:
-      "Zety's Pro plan is priced at $24.95 per month with no annual discount publicly available — that works out to roughly $300 per year if you stay subscribed. By comparison, TheResumeCompany Pro is $12 per month or $99 per year, saving you over $200 annually. On Zety's free tier, you can build a resume but cannot download it as a PDF, which many users find frustrating after spending time on their resume. TheResumeCompany's free tier includes 100 credits — enough to use AI features and export at least one complete resume as a PDF without paying anything. Zety does not offer credit packs or pay-as-you-go options; it is subscription-only. TheResumeCompany offers both subscriptions and credit packs starting at $4.99 for 100 credits, giving you flexibility to pay only when you need to. For active job seekers who need multiple resumes and cover letters, the cost difference is substantial.",
+      "Zety's Pro plan is priced at $24.95 per month with no annual discount publicly available — that works out to roughly $300 per year if you stay subscribed. By comparison, MyResumeCompany Pro is $12 per month or $99 per year, saving you over $200 annually. On Zety's free tier, you can build a resume but cannot download it as a PDF, which many users find frustrating after spending time on their resume. MyResumeCompany's free tier includes 100 credits — enough to use AI features and export at least one complete resume as a PDF without paying anything. Zety does not offer credit packs or pay-as-you-go options; it is subscription-only. MyResumeCompany offers both subscriptions and credit packs starting at $4.99 for 100 credits, giving you flexibility to pay only when you need to. For active job seekers who need multiple resumes and cover letters, the cost difference is substantial.",
     faq: [
       {
         question: 'Is Zety worth the price at $24.95/month?',
-        answer: 'Zety is a solid resume builder with good templates and writing guidance, but at $24.95/month it is one of the most expensive options on the market. If you primarily need AI-powered resume writing, ATS optimization, and PDF exports, TheResumeCompany offers all of those features at $12/month — less than half the cost. Zety may be worth it if you specifically value their pre-written phrase library and multilingual support.'
+        answer: 'Zety is a solid resume builder with good templates and writing guidance, but at $24.95/month it is one of the most expensive options on the market. If you primarily need AI-powered resume writing, ATS optimization, and PDF exports, MyResumeCompany offers all of those features at $12/month — less than half the cost. Zety may be worth it if you specifically value their pre-written phrase library and multilingual support.'
       },
       {
-        question: 'Can I switch from Zety to TheResumeCompany?',
+        question: 'Can I switch from Zety to MyResumeCompany?',
         answer: 'Yes. While there is no direct import from Zety, you can use our AI full resume generator to recreate your resume quickly. Simply provide your job title, experience, and skills, and our AI will generate a complete resume in under a minute. You can also manually copy your content into our editor, which supports all the same section types as Zety.'
       },
       {
-        question: 'Does Zety have an ATS scanner like TheResumeCompany?',
-        answer: 'Zety offers a basic resume check that flags general issues, but it does not provide a specific ATS compatibility score or rewrite your content to match a job description. TheResumeCompany\'s ATS scanner gives you a detailed 0-100 score with a breakdown of what is working and what needs improvement, plus an optimizer that rewrites your bullet points to include relevant keywords from the job posting.'
+        question: 'Does Zety have an ATS scanner like MyResumeCompany?',
+        answer: 'Zety offers a basic resume check that flags general issues, but it does not provide a specific ATS compatibility score or rewrite your content to match a job description. MyResumeCompany\'s ATS scanner gives you a detailed 0-100 score with a breakdown of what is working and what needs improvement, plus an optimizer that rewrites your bullet points to include relevant keywords from the job posting.'
       },
       {
         question: 'Is Zety free to use?',
-        answer: 'Zety lets you build a resume for free using their editor, but downloading your resume as a PDF requires a paid subscription. This is a common point of frustration for users who invest time creating their resume only to find they need to pay to download it. TheResumeCompany gives every new user 100 free credits — enough to use AI features and export your resume as a PDF without paying.'
+        answer: 'Zety lets you build a resume for free using their editor, but downloading your resume as a PDF requires a paid subscription. This is a common point of frustration for users who invest time creating their resume only to find they need to pay to download it. MyResumeCompany gives every new user 100 free credits — enough to use AI features and export your resume as a PDF without paying.'
       }
     ],
     lastVerified: '2026-03-10',
@@ -93,7 +93,7 @@ const COMPETITORS: Record<string, Competitor> = {
     name: 'Resume.io',
     slug: 'vs-resume-io',
     description:
-      'Compare TheResumeCompany and Resume.io — pricing, AI features, ATS optimization, and template quality.',
+      'Compare MyResumeCompany and Resume.io — pricing, AI features, ATS optimization, and template quality.',
     features: [
       { name: 'AI bullet point writer', us: true, them: true },
       { name: 'AI full resume generator', us: true, them: false },
@@ -108,11 +108,11 @@ const COMPETITORS: Record<string, Competitor> = {
       { name: 'Drag-and-drop editor', us: true, them: true },
     ],
     summary:
-      "TheResumeCompany stands out with its ATS scanner and optimizer — features Resume.io doesn't offer. Our AI can generate entire resumes from scratch and rewrite bullets to match specific job descriptions. Resume.io has more templates and a clean interface, but fewer AI capabilities and no ATS-specific tools.",
+      "MyResumeCompany stands out with its ATS scanner and optimizer — features Resume.io doesn't offer. Our AI can generate entire resumes from scratch and rewrite bullets to match specific job descriptions. Resume.io has more templates and a clean interface, but fewer AI capabilities and no ATS-specific tools.",
     overview: [
       "Resume.io is a popular resume builder known for its clean, intuitive interface and large collection of professionally designed templates. With over 30 templates organized by category, Resume.io has built a strong following among job seekers who value simplicity and visual polish. The platform launched in 2018 and has grown steadily, particularly among younger professionals and international users, as it supports multiple languages and regional resume formats.",
       "The Resume.io editing experience is straightforward: you pick a template, fill in your details through a form-based interface, and the preview updates in real time. The platform also includes AI-powered writing suggestions that help users craft bullet points for common job titles. Resume.io offers a cover letter builder as well, and the overall design aesthetic tends to be modern and clean. Their template library is one of the largest among dedicated resume builders.",
-      "Where Resume.io falls short is in advanced AI and ATS optimization features. The platform does not include an ATS scanner that scores your resume against a job description, nor does it offer an optimizer that rewrites your content to improve ATS compatibility. As applicant tracking systems become more sophisticated and more employers rely on them to screen candidates, the absence of these features is a notable gap. Resume.io's pricing at $15/month is competitive but still higher than TheResumeCompany's $12/month Pro plan, and the free tier is limited to building one resume without PDF export."
+      "Where Resume.io falls short is in advanced AI and ATS optimization features. The platform does not include an ATS scanner that scores your resume against a job description, nor does it offer an optimizer that rewrites your content to improve ATS compatibility. As applicant tracking systems become more sophisticated and more employers rely on them to screen candidates, the absence of these features is a notable gap. Resume.io's pricing at $15/month is competitive but still higher than MyResumeCompany's $12/month Pro plan, and the free tier is limited to building one resume without PDF export."
     ],
     strengths: [
       "One of the cleanest, most intuitive user interfaces in the resume builder category. The editor is uncluttered and easy to navigate, even for people who are not tech-savvy.",
@@ -123,31 +123,31 @@ const COMPETITORS: Record<string, Competitor> = {
     weaknesses: [
       "No ATS scanner or ATS optimizer — Resume.io does not give you a score for how well your resume will perform in applicant tracking systems, and it cannot rewrite your bullets to match a job description.",
       "No AI full resume generator. While Resume.io offers AI writing suggestions for individual bullet points, it cannot generate a complete resume from scratch based on your target role and experience.",
-      "Free tier is very limited — you can build one resume but cannot export it as a PDF. TheResumeCompany gives you 100 free credits to actually use AI features and download your finished resume.",
-      "No public shareable links. With TheResumeCompany, you can share your resume via a unique URL, which is useful for networking, portfolio sites, or sending to recruiters without attaching a file."
+      "Free tier is very limited — you can build one resume but cannot export it as a PDF. MyResumeCompany gives you 100 free credits to actually use AI features and download your finished resume.",
+      "No public shareable links. With MyResumeCompany, you can share your resume via a unique URL, which is useful for networking, portfolio sites, or sending to recruiters without attaching a file."
     ],
     whoShouldChoose: {
       them: "Choose Resume.io if your top priority is browsing a large library of beautifully designed templates and you want a very simple, no-frills editing experience. If you already know what to write on your resume and just need a clean tool to format it, Resume.io's straightforward editor and wide template selection may be all you need. Resume.io is also a good option if you need to create resumes in multiple languages or follow European CV conventions.",
-      us: "Choose TheResumeCompany if you want AI that goes beyond basic writing suggestions. Our AI full resume generator creates a complete, tailored resume from your experience and target role. Our ATS scanner gives you a specific score with actionable feedback, and our ATS optimizer rewrites your bullet points to match the job you are applying to — a feature no other builder in this price range offers. At $12/month vs $15/month, you get more features for less money, plus a free tier that actually lets you export a PDF."
+      us: "Choose MyResumeCompany if you want AI that goes beyond basic writing suggestions. Our AI full resume generator creates a complete, tailored resume from your experience and target role. Our ATS scanner gives you a specific score with actionable feedback, and our ATS optimizer rewrites your bullet points to match the job you are applying to — a feature no other builder in this price range offers. At $12/month vs $15/month, you get more features for less money, plus a free tier that actually lets you export a PDF."
     },
     pricingComparison:
-      "Resume.io charges $15 per month for their Pro plan, which includes unlimited resumes, PDF exports, and access to all templates. TheResumeCompany Pro is $12 per month or $99 per year — saving you $36 annually on monthly billing or $81 on annual billing compared to Resume.io's monthly rate. Resume.io's free tier allows you to build one resume but does not include PDF export, meaning you cannot actually use your resume without paying. TheResumeCompany's free tier includes 100 credits, which is enough to generate AI bullet points, run an ATS scan, and export a PDF — giving you a genuine trial of the full product. For users who need resumes occasionally rather than monthly, TheResumeCompany also offers credit packs starting at $4.99 for 100 credits, while Resume.io only offers subscription-based pricing with no pay-as-you-go option.",
+      "Resume.io charges $15 per month for their Pro plan, which includes unlimited resumes, PDF exports, and access to all templates. MyResumeCompany Pro is $12 per month or $99 per year — saving you $36 annually on monthly billing or $81 on annual billing compared to Resume.io's monthly rate. Resume.io's free tier allows you to build one resume but does not include PDF export, meaning you cannot actually use your resume without paying. MyResumeCompany's free tier includes 100 credits, which is enough to generate AI bullet points, run an ATS scan, and export a PDF — giving you a genuine trial of the full product. For users who need resumes occasionally rather than monthly, MyResumeCompany also offers credit packs starting at $4.99 for 100 credits, while Resume.io only offers subscription-based pricing with no pay-as-you-go option.",
     faq: [
       {
-        question: 'How does Resume.io compare to TheResumeCompany for ATS compatibility?',
-        answer: 'Resume.io templates are generally ATS-compatible in terms of formatting, but the platform does not include any tools to check or improve your ATS score. TheResumeCompany includes a dedicated ATS scanner that gives your resume a 0-100 compatibility score, identifies missing keywords, and highlights areas for improvement. Our ATS optimizer then rewrites your bullet points to incorporate relevant keywords from the specific job description you are targeting.'
+        question: 'How does Resume.io compare to MyResumeCompany for ATS compatibility?',
+        answer: 'Resume.io templates are generally ATS-compatible in terms of formatting, but the platform does not include any tools to check or improve your ATS score. MyResumeCompany includes a dedicated ATS scanner that gives your resume a 0-100 compatibility score, identifies missing keywords, and highlights areas for improvement. Our ATS optimizer then rewrites your bullet points to incorporate relevant keywords from the specific job description you are targeting.'
       },
       {
         question: 'Is Resume.io worth $15/month?',
-        answer: 'Resume.io offers a solid, clean resume builder with a good template library and cover letter support. At $15/month, it is reasonably priced compared to some competitors. However, TheResumeCompany offers more AI features — including a full resume generator and ATS optimizer — for $12/month, which is $3 less. If AI-powered resume writing and ATS optimization matter to you, TheResumeCompany provides better value.'
+        answer: 'Resume.io offers a solid, clean resume builder with a good template library and cover letter support. At $15/month, it is reasonably priced compared to some competitors. However, MyResumeCompany offers more AI features — including a full resume generator and ATS optimizer — for $12/month, which is $3 less. If AI-powered resume writing and ATS optimization matter to you, MyResumeCompany provides better value.'
       },
       {
-        question: 'Can I transfer my Resume.io resume to TheResumeCompany?',
+        question: 'Can I transfer my Resume.io resume to MyResumeCompany?',
         answer: 'There is no direct import feature, but transferring is simple. You can use our AI full resume generator to quickly recreate your resume by providing your job title, experience, and skills. Alternatively, you can copy your content section by section into our editor. Most users complete the transfer in under 10 minutes.'
       },
       {
         question: 'Does Resume.io have AI features?',
-        answer: 'Resume.io includes AI-powered writing suggestions that help you write bullet points for common job titles. However, it does not offer an AI full resume generator, ATS scanner, ATS optimizer, or AI-powered summary writer with multiple tone options. TheResumeCompany offers all of these AI features, giving you significantly more writing assistance and optimization tools.'
+        answer: 'Resume.io includes AI-powered writing suggestions that help you write bullet points for common job titles. However, it does not offer an AI full resume generator, ATS scanner, ATS optimizer, or AI-powered summary writer with multiple tone options. MyResumeCompany offers all of these AI features, giving you significantly more writing assistance and optimization tools.'
       }
     ],
     lastVerified: '2026-03-10',
@@ -156,7 +156,7 @@ const COMPETITORS: Record<string, Competitor> = {
     name: 'Canva',
     slug: 'vs-canva',
     description:
-      'TheResumeCompany vs Canva for resume building — why a dedicated resume builder beats a general design tool.',
+      'MyResumeCompany vs Canva for resume building — why a dedicated resume builder beats a general design tool.',
     features: [
       { name: 'AI bullet point writer', us: true, them: false },
       { name: 'AI full resume generator', us: true, them: false },
@@ -171,7 +171,7 @@ const COMPETITORS: Record<string, Competitor> = {
       { name: 'Drag-and-drop sections', us: true, them: true },
     ],
     summary:
-      "Canva is a powerful design tool, but it is not built for resumes. Canva resumes frequently fail ATS parsing because they rely on images, text boxes, and non-standard layouts that applicant tracking systems cannot read. TheResumeCompany is purpose-built for job seekers with AI writing, ATS optimization, and templates that are tested against real ATS systems. Canva is the better choice for visual design projects — TheResumeCompany is the better choice for actually getting hired.",
+      "Canva is a powerful design tool, but it is not built for resumes. Canva resumes frequently fail ATS parsing because they rely on images, text boxes, and non-standard layouts that applicant tracking systems cannot read. MyResumeCompany is purpose-built for job seekers with AI writing, ATS optimization, and templates that are tested against real ATS systems. Canva is the better choice for visual design projects — MyResumeCompany is the better choice for actually getting hired.",
     overview: [
       "Canva is one of the most popular online design tools in the world, used by millions of people to create everything from social media graphics and presentations to flyers and business cards. Canva also offers a large collection of resume templates, which has made it a go-to choice for job seekers who want visually striking resumes without hiring a graphic designer. The platform is free to use with ads, and Canva Pro ($12.99/month) removes watermarks and adds premium assets.",
       "Canva's appeal for resume building lies in its design flexibility. You can customize colors, fonts, layouts, and graphics with complete freedom using a drag-and-drop canvas. With thousands of resume templates created by both Canva's team and community designers, there is no shortage of visual options. For creative professionals — graphic designers, artists, marketers — a Canva resume can serve as a visual portfolio piece that showcases design sensibility alongside professional experience.",
@@ -191,26 +191,26 @@ const COMPETITORS: Record<string, Competitor> = {
     ],
     whoShouldChoose: {
       them: "Choose Canva if you are applying to roles where your resume will be reviewed directly by a human and not filtered through an ATS — for example, if you are handing your resume to someone in person, emailing it directly to a hiring manager, or applying to a small company that does not use applicant tracking software. Canva is also a reasonable choice for creative professionals (graphic designers, art directors, UX designers) who want their resume to double as a design portfolio piece and who know their application will be seen by a human reviewer.",
-      us: "Choose TheResumeCompany if you are applying to jobs online through company websites, job boards, or application portals — which is how the vast majority of jobs are filled today. Our templates are tested against real ATS systems to ensure your resume gets parsed correctly. Our ATS scanner gives you a specific compatibility score, and our optimizer rewrites your bullets to match the job description. Combined with AI writing tools that help you craft professional content, TheResumeCompany is built for the reality of modern job applications."
+      us: "Choose MyResumeCompany if you are applying to jobs online through company websites, job boards, or application portals — which is how the vast majority of jobs are filled today. Our templates are tested against real ATS systems to ensure your resume gets parsed correctly. Our ATS scanner gives you a specific compatibility score, and our optimizer rewrites your bullets to match the job description. Combined with AI writing tools that help you craft professional content, MyResumeCompany is built for the reality of modern job applications."
     },
     pricingComparison:
-      "Canva's free tier is genuinely free — you can create and download resumes as PDFs at no cost, though you will see ads and some premium templates and assets require Canva Pro ($12.99/month). TheResumeCompany's free tier includes 100 credits, which covers AI content generation and PDF export without ads. TheResumeCompany Pro at $12/month is slightly less than Canva Pro at $12.99/month, but the comparison is not entirely apples-to-apples: Canva Pro gives you access to the full Canva design suite (presentations, social media, etc.), while TheResumeCompany Pro is focused entirely on resume building with AI writing, ATS optimization, and professional templates. If you only need Canva for resumes, TheResumeCompany is the better investment because you get resume-specific AI tools and ATS compatibility that Canva simply does not offer. If you already pay for Canva Pro for other design needs, you still benefit from using TheResumeCompany for your actual job applications to ensure ATS compatibility.",
+      "Canva's free tier is genuinely free — you can create and download resumes as PDFs at no cost, though you will see ads and some premium templates and assets require Canva Pro ($12.99/month). MyResumeCompany's free tier includes 100 credits, which covers AI content generation and PDF export without ads. MyResumeCompany Pro at $12/month is slightly less than Canva Pro at $12.99/month, but the comparison is not entirely apples-to-apples: Canva Pro gives you access to the full Canva design suite (presentations, social media, etc.), while MyResumeCompany Pro is focused entirely on resume building with AI writing, ATS optimization, and professional templates. If you only need Canva for resumes, MyResumeCompany is the better investment because you get resume-specific AI tools and ATS compatibility that Canva simply does not offer. If you already pay for Canva Pro for other design needs, you still benefit from using MyResumeCompany for your actual job applications to ensure ATS compatibility.",
     faq: [
       {
         question: 'Are Canva resumes ATS-compatible?',
-        answer: 'In most cases, no. Canva exports resumes using image layers, text boxes, and non-standard PDF structures that applicant tracking systems struggle to parse. While some simpler Canva templates may fare better than heavily designed ones, there is no reliable way to verify ATS compatibility within Canva. TheResumeCompany templates are specifically built and tested for ATS compatibility, and our ATS scanner lets you verify your score before you apply.'
+        answer: 'In most cases, no. Canva exports resumes using image layers, text boxes, and non-standard PDF structures that applicant tracking systems struggle to parse. While some simpler Canva templates may fare better than heavily designed ones, there is no reliable way to verify ATS compatibility within Canva. MyResumeCompany templates are specifically built and tested for ATS compatibility, and our ATS scanner lets you verify your score before you apply.'
       },
       {
         question: 'Should I use Canva or a dedicated resume builder?',
-        answer: 'If you are submitting your resume through online job portals or company application systems (which use ATS software to screen candidates), you should use a dedicated resume builder like TheResumeCompany. Applicant tracking systems need to read your resume\'s text content accurately, and Canva\'s design-first approach often produces files that ATS cannot parse correctly. A dedicated resume builder ensures your content is structured for both human readers and automated systems.'
+        answer: 'If you are submitting your resume through online job portals or company application systems (which use ATS software to screen candidates), you should use a dedicated resume builder like MyResumeCompany. Applicant tracking systems need to read your resume\'s text content accurately, and Canva\'s design-first approach often produces files that ATS cannot parse correctly. A dedicated resume builder ensures your content is structured for both human readers and automated systems.'
       },
       {
         question: 'Can I make my Canva resume ATS-friendly?',
-        answer: 'It is very difficult. Even if you use a simple Canva template, the underlying PDF structure may still cause parsing issues with ATS software. Some people try to work around this by copying their text into a plain document, but that defeats the purpose of using Canva. A better approach is to use a purpose-built resume tool like TheResumeCompany, where every template is designed to be both visually professional and ATS-compatible from the start.'
+        answer: 'It is very difficult. Even if you use a simple Canva template, the underlying PDF structure may still cause parsing issues with ATS software. Some people try to work around this by copying their text into a plain document, but that defeats the purpose of using Canva. A better approach is to use a purpose-built resume tool like MyResumeCompany, where every template is designed to be both visually professional and ATS-compatible from the start.'
       },
       {
         question: 'Is Canva good enough for a simple resume?',
-        answer: 'Canva can produce a visually acceptable simple resume, but you miss out on AI writing assistance, ATS scanning, and ATS optimization — tools that can meaningfully improve your chances of getting interviews. If you are just formatting text you have already written and will hand the resume to someone directly, Canva works. If you are applying online and want AI help writing strong content, TheResumeCompany is the better tool for the job.'
+        answer: 'Canva can produce a visually acceptable simple resume, but you miss out on AI writing assistance, ATS scanning, and ATS optimization — tools that can meaningfully improve your chances of getting interviews. If you are just formatting text you have already written and will hand the resume to someone directly, Canva works. If you are applying online and want AI help writing strong content, MyResumeCompany is the better tool for the job.'
       }
     ],
     lastVerified: '2026-03-10',
@@ -232,7 +232,7 @@ export async function generateMetadata({
   const comp = COMPETITORS[slug]
   if (!comp) return {}
   return {
-    title: `TheResumeCompany vs ${comp.name} (2026) — Features, Pricing & Honest Comparison`,
+    title: `MyResumeCompany vs ${comp.name} (2026) — Features, Pricing & Honest Comparison`,
     description: comp.description,
     alternates: { canonical: `/compare/${slug}` },
   }
@@ -248,7 +248,7 @@ export default async function ComparePage({
   if (!comp) notFound()
 
   const siteUrl =
-    process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'
+    process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
 
   const otherComparisons = COMPETITOR_SLUGS.filter((s) => s !== slug).map(
     (s) => COMPETITORS[s]
@@ -320,7 +320,7 @@ export default async function ComparePage({
 
         {/* Page heading */}
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-          TheResumeCompany vs {comp.name}
+          MyResumeCompany vs {comp.name}
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">{comp.description}</p>
 
@@ -346,7 +346,7 @@ export default async function ComparePage({
                 <tr>
                   <th className="px-5 py-3 text-left font-medium">Feature</th>
                   <th className="px-5 py-3 text-center font-medium">
-                    TheResumeCompany
+                    MyResumeCompany
                   </th>
                   <th className="px-5 py-3 text-center font-medium">
                     {comp.name}
@@ -400,10 +400,10 @@ export default async function ComparePage({
           </ul>
         </div>
 
-        {/* Where TheResumeCompany wins */}
+        {/* Where MyResumeCompany wins */}
         <div className="mt-16">
           <h2 className="text-2xl font-bold">
-            Where TheResumeCompany wins
+            Where MyResumeCompany wins
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
             Here is where our platform has a clear advantage over {comp.name}.
@@ -453,7 +453,7 @@ export default async function ComparePage({
               href="/pricing"
               className="text-sm text-primary underline underline-offset-4 hover:text-primary/80"
             >
-              View TheResumeCompany pricing details
+              View MyResumeCompany pricing details
             </Link>
           </div>
         </div>
@@ -474,7 +474,7 @@ export default async function ComparePage({
             </div>
             <div className="rounded-xl border border-primary/30 bg-primary/5 p-6">
               <h3 className="font-semibold">
-                Choose TheResumeCompany if&hellip;
+                Choose MyResumeCompany if&hellip;
               </h3>
               <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
                 {comp.whoShouldChoose.us}
@@ -511,7 +511,7 @@ export default async function ComparePage({
         {/* CTA */}
         <div className="mt-16 text-center">
           <h2 className="text-2xl font-bold">
-            Ready to try TheResumeCompany?
+            Ready to try MyResumeCompany?
           </h2>
           <p className="mt-2 text-muted-foreground">
             Sign up free and get 100 credits. No credit card required.
@@ -541,7 +541,7 @@ export default async function ComparePage({
                 className="group rounded-xl border p-5 transition-colors hover:border-primary/40 hover:bg-muted/30"
               >
                 <span className="font-medium group-hover:text-primary transition-colors">
-                  TheResumeCompany vs {other.name}
+                  MyResumeCompany vs {other.name}
                 </span>
                 <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
                   {other.description}

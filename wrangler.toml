@@ -1,7 +1,7 @@
-# ─── TheResumeCompany — Cloudflare Workers Config ───
+# ─── MyResumeCompany — Cloudflare Workers Config ───
 # Used by @opennextjs/cloudflare to deploy Next.js on Workers
 
-name = "the-resume-company"
+name = "my-resume-company"
 main = ".open-next/worker.js"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat_v2"]
@@ -12,7 +12,7 @@ directory = ".open-next/assets"
 binding = "ASSETS"
 
 # ─── Hyperdrive (PostgreSQL connection pooling) ───
-# Uncomment after creating: wrangler hyperdrive create theresumecompany-db --connection-string="postgres://..."
+# Uncomment after creating: wrangler hyperdrive create myresumecompany-db --connection-string="postgres://..."
 # [[hyperdrive]]
 # binding = "HYPERDRIVE"
 # id = "your-hyperdrive-id"
@@ -36,9 +36,9 @@ binding = "ASSETS"
 
 # ─── Environment Variables (non-secret) ───
 [vars]
-NEXT_PUBLIC_APP_URL = "https://theresumecompany.com"
-NEXTAUTH_URL = "https://theresumecompany.com"
-PDF_SERVICE_URL = "https://pdf.theresumecompany.com"
+NEXT_PUBLIC_APP_URL = "https://myresumecompany.com"
+NEXTAUTH_URL = "https://myresumecompany.com"
+PDF_SERVICE_URL = "https://pdf.myresumecompany.com"
 ENVIRONMENT = "production"
 
 # ─── Secrets (never committed — set via CLI) ───

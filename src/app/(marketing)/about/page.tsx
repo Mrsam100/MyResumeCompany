@@ -7,29 +7,29 @@ import { JsonLd } from '@/components/schema/json-ld'
 export const metadata: Metadata = {
   title: 'About',
   description:
-    'Learn about TheResumeCompany — our mission to democratize professional resume writing with AI-powered tools, 15+ templates, and ATS optimization.',
+    'Learn about MyResumeCompany — our mission to democratize professional resume writing with AI-powered tools, 15+ templates, and ATS optimization.',
   alternates: { canonical: '/about' },
 }
 
 export default function AboutPage() {
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
   return (
     <>
     <JsonLd data={{ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl }, { '@type': 'ListItem', position: 2, name: 'About', item: `${siteUrl}/about` }] }} />
     <div className="mx-auto max-w-3xl px-4 py-16 sm:py-24">
-      <h1 className="text-4xl font-bold tracking-tight">About TheResumeCompany</h1>
+      <h1 className="text-4xl font-bold tracking-tight">About MyResumeCompany</h1>
 
       {/* Origin story */}
       <div className="mt-8 space-y-5 text-muted-foreground">
         <p className="text-lg leading-relaxed">
-          TheResumeCompany started with a frustration that millions of job seekers share: the resume
+          MyResumeCompany started with a frustration that millions of job seekers share: the resume
           process is broken. Talented people spend hours fighting with formatting in Word, copying
           generic templates from the internet, and guessing which keywords will get them past
           applicant tracking systems. Most never hear back — not because they aren&apos;t qualified,
           but because their resume didn&apos;t make it past the first automated filter.
         </p>
         <p>
-          We built TheResumeCompany to fix that. Our platform combines professionally designed
+          We built MyResumeCompany to fix that. Our platform combines professionally designed
           templates with AI writing tools that help you articulate your experience in the language
           hiring managers and ATS systems actually look for. The result is a resume that represents
           your true potential — built in minutes, not hours.
@@ -53,7 +53,7 @@ export default function AboutPage() {
           fast, affordable, and genuinely effective.
         </p>
         <p>
-          TheResumeCompany sits in the middle. We give you the structure and design of a professional
+          MyResumeCompany sits in the middle. We give you the structure and design of a professional
           template, the intelligence of AI writing assistance, and the confidence of an{' '}
           <Link href="/pricing" className="text-primary underline underline-offset-4 hover:text-primary/80">
             ATS compatibility score
@@ -121,7 +121,7 @@ export default function AboutPage() {
       <h2 className="mt-14 text-2xl font-bold">Who we built this for</h2>
       <div className="mt-4 space-y-4 text-muted-foreground">
         <p>
-          TheResumeCompany is designed for anyone who needs a professional resume without the
+          MyResumeCompany is designed for anyone who needs a professional resume without the
           professional price tag. That includes:
         </p>
         <ul className="list-disc space-y-2 pl-6">

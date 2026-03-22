@@ -21,7 +21,7 @@ export async function MarketingHeader() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Image src="/file.svg" alt="" width={24} height={24} className="h-6 w-6" />
-          <span className="text-lg font-bold tracking-tight">TheResumeCompany</span>
+          <span className="text-lg font-bold tracking-tight">MyResumeCompany</span>
         </Link>
 
         {/* Nav links */}

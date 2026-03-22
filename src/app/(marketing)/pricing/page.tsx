@@ -12,7 +12,7 @@ import { JsonLd } from '@/components/schema/json-ld'
 export const metadata: Metadata = {
   title: 'Pricing',
   description:
-    'Simple, transparent pricing for TheResumeCompany. Start free with 100 credits or upgrade to Pro for unlimited AI resume writing, ATS scanning, and PDF exports.',
+    'Simple, transparent pricing for MyResumeCompany. Start free with 100 credits or upgrade to Pro for unlimited AI resume writing, ATS scanning, and PDF exports.',
   alternates: { canonical: '/pricing' },
 }
 
@@ -84,7 +84,7 @@ const FAQ = [
   },
   {
     q: 'Can I share my resume online?',
-    a: 'Yes. Every resume gets a public shareable link (theresumecompany.com/r/your-slug) that you can include in email signatures, LinkedIn, or job applications.',
+    a: 'Yes. Every resume gets a public shareable link (myresumecompany.com/r/your-slug) that you can include in email signatures, LinkedIn, or job applications.',
   },
 ]
 
@@ -94,7 +94,7 @@ export default async function PricingPage() {
   const ctaHref = session?.user ? '/credits' : '/signup'
   const ctaLabel = session?.user ? 'Go to Credits' : 'Get Started Free'
 
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
 
   return (
     <>

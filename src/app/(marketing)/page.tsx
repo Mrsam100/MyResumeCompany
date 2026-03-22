@@ -19,7 +19,7 @@ import { Separator } from '@/components/ui/separator'
 import { JsonLd } from '@/components/schema/json-ld'
 import { LandingAnimations } from '@/components/marketing/landing-animations'
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://theresumecompany.com'
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
 
 export default async function HomePage() {
   const session = await auth()
@@ -33,7 +33,7 @@ export default async function HomePage() {
         data={{
           '@context': 'https://schema.org',
           '@type': 'WebApplication',
-          name: 'TheResumeCompany',
+          name: 'MyResumeCompany',
           url: siteUrl,
           applicationCategory: 'BusinessApplication',
           operatingSystem: 'Any',
@@ -261,7 +261,7 @@ export default async function HomePage() {
         <section data-section="tools" className="border-y bg-muted/40 px-4 py-24">
           <div className="mx-auto max-w-4xl">
             <h2 className="section-heading text-center text-2xl font-bold sm:text-3xl">
-              What AI tools does TheResumeCompany include?
+              What AI tools does MyResumeCompany include?
             </h2>
             <p className="mt-3 text-center text-muted-foreground">
               Not features. Tools that actually change your callback rate.
