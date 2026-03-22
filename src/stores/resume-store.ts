@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { nanoid } from 'nanoid'
-import type { ResumeContent, PersonalInfo, ResumeSection, SectionType } from '@/types/resume'
+import type { ResumeContent, PersonalInfo, ResumeSection, SectionType, ResumeCustomColors, ResumeCustomFonts, ResumeFormat } from '@/types/resume'
 
 // ==================== History for undo/redo ====================
 
@@ -94,6 +94,15 @@ interface ResumeState {
   markSaving: () => void
   markSaved: () => void
   markSaveError: (error: string) => void
+
+  // ── Actions: Customization ──
+  setCustomColors: (colors: ResumeCustomColors) => void
+  setCustomFont: (key: 'heading' | 'body', value: string) => void
+  resetCustomColors: () => void
+  resetCustomFonts: () => void
+
+  // ── Actions: Format ──
+  setFormat: (format: ResumeFormat) => void
 
   // ── Actions: Job Description (for live ATS) ──
   targetJobDescription: string | null
@@ -450,6 +459,49 @@ export const useResumeStore = create<ResumeState>((set, get) => ({
   markSaving: () => set({ isSaving: true, saveError: null }),
   markSaved: () => set({ isSaving: false, isDirty: false, lastSavedAt: new Date(), saveError: null }),
   markSaveError: (error) => set({ isSaving: false, saveError: error }),
+
+  // ── Customization ──
+
+  setCustomColors: (colors) =>
+    set((state) => ({
+      content: {
+        ...state.content,
+        customColors: { ...state.content.customColors, ...colors },
+      },
+      isDirty: true,
+    })),
+
+  setCustomFont: (key, value) =>
+    set((state) => ({
+      content: {
+        ...state.content,
+        customFonts: { ...state.content.customFonts, [key]: value },
+      },
+      isDirty: true,
+    })),
+
+  resetCustomColors: () =>
+    set((state) => ({
+      content: { ...state.content, customColors: undefined },
+      isDirty: true,
+      history: pushHistory(state),
+    })),
+
+  resetCustomFonts: () =>
+    set((state) => ({
+      content: { ...state.content, customFonts: undefined },
+      isDirty: true,
+      history: pushHistory(state),
+    })),
+
+  // ── Format ──
+
+  setFormat: (format) =>
+    set((state) => ({
+      content: { ...state.content, format },
+      isDirty: true,
+      history: pushHistory(state),
+    })),
 
   // ── Job Description (for live ATS) ──
 

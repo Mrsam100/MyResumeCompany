@@ -38,8 +38,10 @@ export const creditTransactionTypeEnum = pgEnum('credit_transaction_type', [
   'AI_LINKEDIN_IMPORT',
   'AI_RESUME_IMPORT',
   'PDF_EXPORT',
+  'DOCX_EXPORT',
   'SUBSCRIPTION_MONTHLY',
   'REFUND',
+  'REFERRAL_BONUS',
   'ADMIN_ADJUSTMENT',
 ])
 
@@ -72,6 +74,10 @@ export const users = pgTable(
     hashedPassword: text('hashed_password'),
     credits: integer('credits').notNull().default(100),
     subscriptionTier: subscriptionTierEnum('subscription_tier').notNull().default('FREE'),
+    referralCode: text('referral_code').unique(),
+    referredBy: text('referred_by'),
+    onboardingStep: integer('onboarding_step').notNull().default(0),
+    lowCreditsNotifiedAt: timestamp('low_credits_notified_at', { mode: 'date' }),
     createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { mode: 'date' })
       .notNull()
@@ -181,6 +187,28 @@ export const resumes = pgTable(
   ],
 )
 
+// ==================== RESUME VERSIONS ====================
+
+export const resumeVersions = pgTable(
+  'resume_versions',
+  {
+    id: text('id').primaryKey().$defaultFn(cuid),
+    resumeId: text('resume_id')
+      .notNull()
+      .references(() => resumes.id, { onDelete: 'cascade' }),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    label: text('label').notNull(),
+    templateId: text('template_id').notNull(),
+    content: jsonb('content').notNull().$type<ResumeContent>(),
+    createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('resume_versions_resume_idx').on(table.resumeId, table.createdAt),
+  ],
+)
+
 // ==================== TEMPLATES ====================
 
 export const templates = pgTable(
@@ -250,6 +278,77 @@ export const subscriptions = pgTable('subscriptions', {
     .$onUpdateFn(() => new Date()),
 })
 
+// ==================== COVER LETTERS ====================
+
+export const coverLetterToneEnum = pgEnum('cover_letter_tone', [
+  'professional',
+  'enthusiastic',
+  'conversational',
+])
+
+export const coverLetters = pgTable(
+  'cover_letters',
+  {
+    id: text('id').primaryKey().$defaultFn(cuid),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    resumeId: text('resume_id').references(() => resumes.id, { onDelete: 'set null' }),
+    title: text('title').notNull().default('Untitled Cover Letter'),
+    companyName: text('company_name').notNull().default(''),
+    jobTitle: text('job_title').notNull().default(''),
+    tone: coverLetterToneEnum('tone').notNull().default('professional'),
+    subject: text('subject'),
+    content: text('content').notNull().default(''),
+    templateId: text('template_id'),
+    createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { mode: 'date' })
+      .notNull()
+      .defaultNow()
+      .$onUpdateFn(() => new Date()),
+  },
+  (table) => [
+    index('cover_letters_user_id_idx').on(table.userId),
+    index('cover_letters_user_updated_idx').on(table.userId, table.updatedAt),
+  ],
+)
+
+// ==================== REFERRALS ====================
+
+export const referrals = pgTable(
+  'referrals',
+  {
+    id: text('id').primaryKey().$defaultFn(cuid),
+    referrerId: text('referrer_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    referredId: text('referred_id')
+      .notNull()
+      .unique()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    referrerCredited: boolean('referrer_credited').notNull().default(false),
+    referredCredited: boolean('referred_credited').notNull().default(false),
+    createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('referrals_referrer_idx').on(table.referrerId),
+  ],
+)
+
+// ==================== NEWSLETTER SUBSCRIBERS ====================
+
+export const newsletterSubscribers = pgTable(
+  'newsletter_subscribers',
+  {
+    id: text('id').primaryKey().$defaultFn(cuid),
+    email: text('email').notNull().unique(),
+    name: text('name'),
+    source: text('source').notNull().default('footer'),
+    subscribedAt: timestamp('subscribed_at', { mode: 'date' }).notNull().defaultNow(),
+    unsubscribedAt: timestamp('unsubscribed_at', { mode: 'date' }),
+  },
+)
+
 // ==================== STRIPE EVENTS (Webhook Idempotency) ====================
 
 export const stripeEvents = pgTable('stripe_events', {
@@ -279,6 +378,18 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
 export const resumesRelations = relations(resumes, ({ one, many }) => ({
   user: one(users, { fields: [resumes.userId], references: [users.id] }),
   creditTransactions: many(creditTransactions),
+  coverLetters: many(coverLetters),
+  versions: many(resumeVersions),
+}))
+
+export const resumeVersionsRelations = relations(resumeVersions, ({ one }) => ({
+  resume: one(resumes, { fields: [resumeVersions.resumeId], references: [resumes.id] }),
+  user: one(users, { fields: [resumeVersions.userId], references: [users.id] }),
+}))
+
+export const coverLettersRelations = relations(coverLetters, ({ one }) => ({
+  user: one(users, { fields: [coverLetters.userId], references: [users.id] }),
+  resume: one(resumes, { fields: [coverLetters.resumeId], references: [resumes.id] }),
 }))
 
 export const creditTransactionsRelations = relations(creditTransactions, ({ one }) => ({
@@ -288,6 +399,11 @@ export const creditTransactionsRelations = relations(creditTransactions, ({ one 
 
 export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
   user: one(users, { fields: [subscriptions.userId], references: [users.id] }),
+}))
+
+export const referralsRelations = relations(referrals, ({ one }) => ({
+  referrer: one(users, { fields: [referrals.referrerId], references: [users.id] }),
+  referred: one(users, { fields: [referrals.referredId], references: [users.id] }),
 }))
 
 // ==================== TYPE EXPORTS ====================
@@ -306,4 +422,9 @@ export type Account = typeof accounts.$inferSelect
 export type Session = typeof sessions.$inferSelect
 export type SubscriptionTier = (typeof subscriptionTierEnum.enumValues)[number]
 export type CreditTransactionType = (typeof creditTransactionTypeEnum.enumValues)[number]
+export type CoverLetter = typeof coverLetters.$inferSelect
+export type NewCoverLetter = typeof coverLetters.$inferInsert
 export type TemplateCategory = (typeof templateCategoryEnum.enumValues)[number]
+export type Referral = typeof referrals.$inferSelect
+export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect
+export type ResumeVersion = typeof resumeVersions.$inferSelect

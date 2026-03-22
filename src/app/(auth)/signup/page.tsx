@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -16,9 +16,16 @@ import { signupSchema, type SignupInput } from '@/lib/validations/auth'
 
 export default function SignupPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [error, setError] = useState('')
   const [socialLoading, setSocialLoading] = useState<string | null>(null)
   const [showPassword, setShowPassword] = useState(false)
+
+  // Store referral code from URL for post-signup claim
+  useEffect(() => {
+    const ref = searchParams.get('ref')
+    if (ref) localStorage.setItem('referralCode', ref)
+  }, [searchParams])
 
   const {
     register,
@@ -53,6 +60,16 @@ export default function SignupPage() {
       setError('Account created but sign-in failed. Please log in manually.')
       router.push('/login')
       return
+    }
+
+    // Claim referral bonus if present (fire and forget but only delete on success)
+    const refCode = localStorage.getItem('referralCode')
+    if (refCode) {
+      fetch('/api/referral', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ referralCode: refCode }),
+      }).then((res) => { if (res.ok) localStorage.removeItem('referralCode') }).catch(() => {})
     }
 
     router.push('/dashboard')

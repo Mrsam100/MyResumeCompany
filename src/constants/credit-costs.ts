@@ -8,6 +8,7 @@ export const CREDIT_COSTS = {
   AI_LINKEDIN_IMPORT: 20,
   AI_RESUME_IMPORT: 25,
   PDF_EXPORT: 30,
+  DOCX_EXPORT: 25,
 } as const
 
 export type CreditAction = keyof typeof CREDIT_COSTS

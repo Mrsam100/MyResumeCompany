@@ -18,9 +18,26 @@ export function TemplateHeader({ info, colors, fonts, layout = 'left' }: Templat
   ].filter((item) => item.value?.trim())
 
   const isCentered = layout === 'centered'
+  const hasPhoto = !!info.photoUrl
 
   return (
     <div style={{ textAlign: isCentered ? 'center' : 'left' }}>
+      <div style={{ display: 'flex', alignItems: isCentered ? 'center' : 'flex-start', gap: '12px', flexDirection: isCentered ? 'column' : 'row' }}>
+        {hasPhoto && (
+          <img
+            src={info.photoUrl}
+            alt=""
+            style={{
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              objectFit: 'cover',
+              flexShrink: 0,
+              border: `2px solid ${colors.primary}`,
+            }}
+          />
+        )}
+        <div style={{ textAlign: isCentered ? 'center' : 'left' }}>
       {info.fullName && (
         <h1
           style={{ color: colors.text, fontFamily: fonts.heading, fontSize: '24px', fontWeight: 700, lineHeight: 1.2, margin: 0 }}
@@ -45,6 +62,8 @@ export function TemplateHeader({ info, colors, fonts, layout = 'left' }: Templat
           ))}
         </div>
       )}
+        </div>
+      </div>
     </div>
   )
 }

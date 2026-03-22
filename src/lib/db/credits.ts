@@ -1,8 +1,11 @@
-import { eq, desc, and, count, sql } from 'drizzle-orm'
+import { eq, desc, and, count, sql, isNull } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { users, creditTransactions } from './schema'
 import type { CreditTransactionType } from './schema'
 import { invalidateSessionCache } from '@/lib/redis'
+import { sendLowCreditsEmail } from '@/lib/email'
+
+const LOW_CREDITS_THRESHOLD = 20
 
 export async function checkSufficientCredits(userId: string, cost: number) {
   const user = await db.query.users.findFirst({
@@ -68,7 +71,30 @@ export async function deductCredits(
   })
 
   await invalidateSessionCache(userId)
+
+  // Trigger low credits email (async, non-blocking)
+  if (result.charged > 0 && result.credits > 0 && result.credits < LOW_CREDITS_THRESHOLD) {
+    triggerLowCreditsEmail(userId, result.credits).catch(console.error)
+  }
+
   return result
+}
+
+async function triggerLowCreditsEmail(userId: string, credits: number) {
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+    columns: { email: true, name: true, lowCreditsNotifiedAt: true, subscriptionTier: true },
+  })
+  if (!user?.email || user.subscriptionTier === 'PRO') return
+
+  // Only send once per 7 days
+  if (user.lowCreditsNotifiedAt) {
+    const daysSince = (Date.now() - user.lowCreditsNotifiedAt.getTime()) / (1000 * 60 * 60 * 24)
+    if (daysSince < 7) return
+  }
+
+  await db.update(users).set({ lowCreditsNotifiedAt: new Date() }).where(eq(users.id, userId))
+  await sendLowCreditsEmail(user.email, user.name || 'there', credits)
 }
 
 export async function addCredits(

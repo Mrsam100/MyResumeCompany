@@ -31,6 +31,7 @@ const inputSchema = z.object({
   goals: z.string().max(1000).optional(),
   tone: z.enum(['professional', 'conversational', 'technical', 'creative']).optional(),
   contentDensity: z.enum(['concise', 'balanced', 'detailed']).optional(),
+  resumeFormat: z.enum(['chronological', 'functional', 'hybrid']).optional(),
   templateCategory: z.string().max(50).optional(),
   jobDescription: z.string().max(2000).optional(),
 })

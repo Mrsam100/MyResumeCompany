@@ -13,6 +13,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Templates gallery (public)
     { url: `${baseUrl}/resume-templates`, lastModified: new Date('2026-03-15') },
 
+    // Resume examples
+    { url: `${baseUrl}/examples`, lastModified: new Date('2026-03-22') },
+    { url: `${baseUrl}/examples/software-engineer`, lastModified: new Date('2026-03-22') },
+    { url: `${baseUrl}/examples/data-scientist`, lastModified: new Date('2026-03-22') },
+    { url: `${baseUrl}/examples/product-manager`, lastModified: new Date('2026-03-22') },
+    { url: `${baseUrl}/examples/registered-nurse`, lastModified: new Date('2026-03-22') },
+    { url: `${baseUrl}/examples/graphic-designer`, lastModified: new Date('2026-03-22') },
+    { url: `${baseUrl}/examples/marketing-manager`, lastModified: new Date('2026-03-22') },
+    { url: `${baseUrl}/examples/recent-graduate`, lastModified: new Date('2026-03-22') },
+    { url: `${baseUrl}/examples/accountant`, lastModified: new Date('2026-03-22') },
+
     // Blog (each article has its own publish date)
     { url: `${baseUrl}/blog`, lastModified: new Date('2026-03-16') },
     { url: `${baseUrl}/blog/how-to-write-resume-bullet-points`, lastModified: new Date('2026-03-10') },

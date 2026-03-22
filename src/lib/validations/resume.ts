@@ -57,11 +57,35 @@ export const resumeSectionSchema = z.object({
   entries: z.array(sectionEntrySchema).max(50, 'Maximum 50 entries per section'),
 })
 
+// ==================== Custom Colors/Fonts ====================
+
+const hexColorSchema = z.string().regex(/^#[0-9a-fA-F]{3,8}$/, 'Invalid hex color')
+
+export const customColorsSchema = z.object({
+  primary: hexColorSchema.optional(),
+  secondary: hexColorSchema.optional(),
+  text: hexColorSchema.optional(),
+  textLight: hexColorSchema.optional(),
+  background: hexColorSchema.optional(),
+  sidebarBg: hexColorSchema.optional(),
+  sidebarText: hexColorSchema.optional(),
+}).optional()
+
+export const customFontsSchema = z.object({
+  heading: z.string().max(100).optional(),
+  body: z.string().max(100).optional(),
+}).optional()
+
+export const resumeFormatSchema = z.enum(['chronological', 'functional', 'hybrid']).optional()
+
 // ==================== Resume Content ====================
 
 export const resumeContentSchema = z.object({
   personalInfo: personalInfoSchema,
   sections: z.array(resumeSectionSchema).max(20, 'Maximum 20 sections'),
+  customColors: customColorsSchema,
+  customFonts: customFontsSchema,
+  format: resumeFormatSchema,
 })
 
 // ==================== API Schemas ====================

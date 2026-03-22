@@ -5,6 +5,7 @@ import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { JsonLd } from '@/components/schema/json-ld'
+import { NewsletterSignup } from '@/components/marketing/newsletter-signup'
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
 
@@ -1037,6 +1038,10 @@ export default async function BlogArticlePage({
         </div>
 
         <ArticleCTA />
+
+        <div className="mt-10 rounded-xl border bg-muted/30 p-6">
+          <NewsletterSignup source="blog" />
+        </div>
 
         <nav className="mt-12 border-t pt-8">
           <Link

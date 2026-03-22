@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { NewsletterSignup } from './newsletter-signup'
 
 const PRODUCT_LINKS = [
   { href: '/pricing', label: 'Pricing' },
@@ -36,6 +37,9 @@ export function MarketingFooter() {
               Build professional, ATS-optimized resumes in minutes with the power of AI.
               Land more interviews with less effort.
             </p>
+            <div className="mt-4">
+              <NewsletterSignup source="footer" compact />
+            </div>
           </div>
 
           {/* Product */}

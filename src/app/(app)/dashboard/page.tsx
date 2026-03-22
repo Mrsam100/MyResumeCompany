@@ -27,6 +27,7 @@ import { ResumeCard } from '@/components/resume/resume-card'
 import { ResumeWizard } from '@/components/ai/resume-wizard'
 import { LinkedInImport } from '@/components/ai/linkedin-import'
 import { ResumeImport } from '@/components/ai/resume-import'
+import { ReferralCard } from '@/components/referral-card'
 import { useCurrentUser } from '@/hooks/use-current-user'
 import { cn } from '@/lib/utils'
 
@@ -322,6 +323,9 @@ export default function DashboardPage() {
           </button>
         </div>
       </div>
+
+      {/* ── Referral Card ── */}
+      <ReferralCard />
 
       <Separator />
 

@@ -13,6 +13,7 @@ import {
 
 import { Input } from '@/components/ui/input'
 import { useResumeStore } from '@/stores/resume-store'
+import { PhotoUpload } from './photo-upload'
 import type { PersonalInfo } from '@/types/resume'
 
 interface FieldConfig {
@@ -81,6 +82,9 @@ export function PersonalInfoForm() {
           <p className="text-xs text-muted-foreground">How employers will contact you</p>
         </div>
       </div>
+
+      {/* Photo Upload */}
+      <PhotoUpload />
 
       {/* Name & Title */}
       <div className="grid gap-3 sm:grid-cols-2">

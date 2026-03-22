@@ -9,14 +9,18 @@ import {
   Eye,
   PenLine,
   Download,
+  FileDown,
   ZoomIn,
   ZoomOut,
   LayoutGrid,
   Target,
   ChevronDown,
   ChevronUp,
+  Link2,
+  Loader2,
 } from 'lucide-react'
 
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -31,7 +35,9 @@ import { SaveStatus } from '@/components/editor/save-status'
 import { PersonalInfoForm } from '@/components/editor/personal-info-form'
 import { SummaryEditor } from '@/components/editor/summary-editor'
 import { SectionManager } from '@/components/editor/section-manager'
+import { TemplateCustomizer } from '@/components/editor/template-customizer'
 import { CompletenessIndicator } from '@/components/editor/completeness-indicator'
+import { VersionManager } from '@/components/editor/version-manager'
 import { ATSScanner } from '@/components/ai/ats-scanner'
 import { CoverLetterGenerator } from '@/components/ai/cover-letter-generator'
 import { TemplateRenderer } from '@/templates/template-renderer'
@@ -39,6 +45,7 @@ import { useResumeStore } from '@/stores/resume-store'
 import { useEditorStore } from '@/stores/editor-store'
 import { useAutosave } from '@/hooks/use-autosave'
 import { usePdfExport } from '@/hooks/use-pdf-export'
+import { useDocxExport } from '@/hooks/use-docx-export'
 import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts'
 import { useLiveATSScore } from '@/hooks/use-live-ats-score'
 import { TEMPLATE_NAMES } from '@/constants/template-names'
@@ -57,13 +64,42 @@ export default function EditorPage() {
     useResumeStore()
   const { showPreview, togglePreview, zoom, setZoom } = useEditorStore()
   const { save } = useAutosave()
-  const { exportPdf, exporting } = usePdfExport()
+  const { exportPdf, exporting: exportingPdf } = usePdfExport()
+  const { exportDocx, exporting: exportingDocx } = useDocxExport()
+  const exporting = exportingPdf || exportingDocx
   const { score: atsScore, matched: atsMatched, total: atsTotal, hasJobDescription } = useLiveATSScore()
   const [jdExpanded, setJdExpanded] = useState(false)
   const [jdInput, setJdInput] = useState('')
   const [atsScannerOpen, setAtsScannerOpen] = useState(false)
+  const [jdUrlInput, setJdUrlInput] = useState('')
+  const [jdUrlLoading, setJdUrlLoading] = useState(false)
 
   useKeyboardShortcuts(save)
+
+  async function handleJdUrlImport() {
+    if (!jdUrlInput.trim() || jdUrlLoading) return
+    setJdUrlLoading(true)
+    try {
+      const res = await fetch('/api/jd-extract', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: jdUrlInput.trim() }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to extract job description')
+        return
+      }
+      setJdInput(data.text)
+      setTargetJobDescription(data.text)
+      setJdUrlInput('')
+      toast.success(`Imported ${data.charCount} characters from job listing`)
+    } catch {
+      toast.error('Failed to fetch URL')
+    } finally {
+      setJdUrlLoading(false)
+    }
+  }
 
   useEffect(() => {
     setLoading(true)
@@ -93,6 +129,9 @@ export default function EditorPage() {
             photoUrl: rawContent?.personalInfo?.photoUrl,
           },
           sections: Array.isArray(rawContent?.sections) ? rawContent.sections : [],
+          customColors: rawContent?.customColors,
+          customFonts: rawContent?.customFonts,
+          format: rawContent?.format,
         }
         loadResume({
           id: data.resume.id,
@@ -200,6 +239,8 @@ export default function EditorPage() {
             <TooltipContent>Redo (Ctrl+Shift+Z)</TooltipContent>
           </Tooltip>
 
+          <VersionManager />
+
           <Separator orientation="vertical" className="mx-1 h-5" />
 
           <Button variant="ghost" size="sm" className="gap-1.5 lg:hidden" onClick={togglePreview}>
@@ -242,19 +283,32 @@ export default function EditorPage() {
 
           <Separator orientation="vertical" className="mx-1 h-5" />
 
-          <Tooltip>
-            <TooltipTrigger>
-              <Button variant="outline" size="sm" className="gap-1.5" onClick={exportPdf} disabled={exporting}>
-                {exporting ? (
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                ) : (
-                  <Download className="h-4 w-4" />
-                )}
-                <span className="hidden sm:inline">{exporting ? 'Exporting...' : 'Export PDF'}</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Download as PDF (30 credits)</TooltipContent>
-          </Tooltip>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              className="inline-flex items-center justify-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium shadow-xs hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
+              disabled={exporting}
+            >
+              {exporting ? (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
+              <span className="hidden sm:inline">{exporting ? 'Exporting...' : 'Export'}</span>
+              <ChevronDown className="h-3 w-3" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={exportPdf} disabled={exportingPdf}>
+                <Download className="mr-2 h-4 w-4" />
+                Export PDF
+                <span className="ml-auto text-xs text-muted-foreground">30 credits</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={exportDocx} disabled={exportingDocx}>
+                <FileDown className="mr-2 h-4 w-4" />
+                Export DOCX
+                <span className="ml-auto text-xs text-muted-foreground">25 credits</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -271,6 +325,31 @@ export default function EditorPage() {
                 <ChevronUp className="h-4 w-4" />
               </button>
             </div>
+            {/* URL import */}
+            <div className="flex gap-1.5">
+              <div className="relative flex-1">
+                <Link2 className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground/40" />
+                <input
+                  type="url"
+                  value={jdUrlInput}
+                  onChange={(e) => setJdUrlInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleJdUrlImport()}
+                  placeholder="Paste Indeed/LinkedIn job URL..."
+                  className="h-8 w-full rounded-md border bg-background pl-8 pr-3 text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                />
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 shrink-0 gap-1 text-[11px]"
+                onClick={handleJdUrlImport}
+                disabled={jdUrlLoading || !jdUrlInput.trim()}
+              >
+                {jdUrlLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Link2 className="h-3 w-3" />}
+                Import
+              </Button>
+            </div>
+
             <Textarea
               value={jdInput}
               onChange={(e) => setJdInput(e.target.value)}
@@ -311,6 +390,7 @@ export default function EditorPage() {
         <div className={`flex-1 overflow-y-auto ${showPreview ? 'hidden lg:block' : 'block'}`}>
           <div className="mx-auto max-w-2xl space-y-6 p-6">
             <CompletenessIndicator />
+            <TemplateCustomizer />
             <PersonalInfoForm />
             <Separator />
             <SummaryEditor />
@@ -326,7 +406,7 @@ export default function EditorPage() {
               className="w-full max-w-[min(100%,420px)] overflow-hidden rounded-md border bg-white shadow-sm"
               style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'top center', minHeight: '594px' }}
             >
-              <TemplateRenderer templateSlug={templateId} content={content} />
+              <TemplateRenderer templateSlug={templateId} content={content} customColors={content.customColors} customFonts={content.customFonts} />
             </div>
           </div>
 

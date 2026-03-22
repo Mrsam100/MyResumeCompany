@@ -119,6 +119,7 @@ export interface FullResumeInput {
   contentDensity?: 'concise' | 'balanced' | 'detailed'
   templateCategory?: string
   jobDescription?: string
+  resumeFormat?: 'chronological' | 'functional' | 'hybrid'
 }
 
 export function buildFullResumePrompt(input: FullResumeInput) {
@@ -128,6 +129,7 @@ export function buildFullResumePrompt(input: FullResumeInput) {
   const goals = input.goals ? sanitize(input.goals, 1000) : ''
   const tone = input.tone || 'professional'
   const density = input.contentDensity || 'balanced'
+  const resumeFormat = input.resumeFormat || 'chronological'
   const templateCategory = input.templateCategory ? sanitize(input.templateCategory, 50) : ''
   const jobDescription = input.jobDescription ? sanitizeLong(input.jobDescription, 2000) : ''
 
@@ -159,6 +161,12 @@ export function buildFullResumePrompt(input: FullResumeInput) {
 
   const skillsText = input.skills.slice(0, 30).map(s => sanitize(s, 100)).join(', ')
 
+  const formatInstructions: Record<string, string> = {
+    chronological: 'CHRONOLOGICAL FORMAT: Lead with Work Experience (reverse chronological), followed by Education, then Skills. This is the standard format showing career progression.',
+    functional: 'FUNCTIONAL FORMAT: Lead with a "Core Competencies" or "Key Skills" section that groups skills by function (e.g., "Project Management", "Technical Skills", "Leadership"). Follow with a brief "Employment History" section listing only job titles, companies, and dates (NO bullet points in employment). This format emphasizes SKILLS over job history — ideal for career changers or those with gaps.',
+    hybrid: 'HYBRID/COMBINATION FORMAT: Start with a "Key Qualifications" section (3-4 bullet points summarizing top achievements), followed by a "Skills" section, then Work Experience (with bullets), then Education. This combines the best of chronological and functional formats.',
+  }
+
   return `Generate a complete, professional resume as a JSON object for this person:
 
 <user_data>
@@ -167,6 +175,7 @@ Experience Level: ${experienceLevel}
 ${industry ? `Industry: ${industry}` : ''}
 Writing Tone: ${tone}
 Content Density: ${density}
+Resume Format: ${resumeFormat}
 ${templateCategory ? `Template Style: ${templateCategory}` : ''}
 
 Work History:
@@ -225,7 +234,8 @@ Generate a complete resume JSON with this EXACT structure:
 }
 
 RULES:
-- Generate exactly ${bulletCount} bullet points per work position using STAR format
+- ${formatInstructions[resumeFormat]}
+- Generate exactly ${bulletCount} bullet points per work position using STAR format${resumeFormat === 'functional' ? ' (except in Employment History which has NO bullets)' : ''}
 - Writing tone: ${toneInstructions[tone]}
 ${templateCategory && templateAdjustments[templateCategory] ? `- Template style adjustment: ${templateAdjustments[templateCategory]}` : ''}
 ${jobDescription ? `- A target job description is provided. Extract key requirements and keywords from it. Tailor ALL bullets and the summary to match this specific role. Naturally incorporate relevant keywords from the job description throughout the resume.` : ''}

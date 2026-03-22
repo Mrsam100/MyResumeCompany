@@ -1,6 +1,26 @@
+export type ResumeFormat = 'chronological' | 'functional' | 'hybrid'
+
+export interface ResumeCustomColors {
+  primary?: string
+  secondary?: string
+  text?: string
+  textLight?: string
+  background?: string
+  sidebarBg?: string
+  sidebarText?: string
+}
+
+export interface ResumeCustomFonts {
+  heading?: string
+  body?: string
+}
+
 export interface ResumeContent {
   personalInfo: PersonalInfo
   sections: ResumeSection[]
+  customColors?: ResumeCustomColors
+  customFonts?: ResumeCustomFonts
+  format?: ResumeFormat
 }
 
 export interface PersonalInfo {

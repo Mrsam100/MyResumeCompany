@@ -41,6 +41,7 @@ interface Position {
 
 type WritingTone = 'professional' | 'conversational' | 'technical' | 'creative'
 type ContentDensity = 'concise' | 'balanced' | 'detailed'
+type ResumeFormatOption = 'chronological' | 'functional' | 'hybrid'
 
 interface WizardData {
   targetRole: string
@@ -59,6 +60,7 @@ interface WizardData {
   writingTone: WritingTone
   contentDensity: ContentDensity
   jobDescription: string
+  resumeFormat: ResumeFormatOption
 }
 
 const STEPS = [
@@ -92,6 +94,12 @@ const DENSITY_OPTIONS: Array<{ value: ContentDensity; label: string; desc: strin
   { value: 'detailed', label: 'Detailed', desc: '5-6 bullets per entry — comprehensive' },
 ]
 
+const FORMAT_OPTIONS: Array<{ value: ResumeFormatOption; label: string; desc: string }> = [
+  { value: 'chronological', label: 'Chronological', desc: 'Work history first, most recent on top. Best for steady career growth.' },
+  { value: 'functional', label: 'Functional', desc: 'Skills-first layout. Best for career changers or gaps.' },
+  { value: 'hybrid', label: 'Hybrid', desc: 'Skills summary + work history. Best balance of both.' },
+]
+
 const CATEGORY_FILTERS = [
   { value: null, label: 'All' },
   { value: 'PROFESSIONAL', label: 'Professional' },
@@ -119,6 +127,7 @@ const INITIAL_DATA: WizardData = {
   writingTone: 'professional',
   contentDensity: 'balanced',
   jobDescription: '',
+  resumeFormat: 'chronological',
 }
 
 interface ResumeWizardProps {
@@ -237,6 +246,7 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
           goals: data.goals || undefined,
           tone: data.writingTone,
           contentDensity: data.contentDensity,
+          resumeFormat: data.resumeFormat,
           templateCategory: selectedConfig?.category,
           jobDescription: data.jobDescription || undefined,
         }),
@@ -273,6 +283,7 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
           location: '',
           summary: aiResume.personalInfo.summary || '',
         },
+        format: data.resumeFormat as 'chronological' | 'functional' | 'hybrid',
         sections: (aiResume.sections || []).map((section: { type: string; title: string; entries: Array<{ fields: Record<string, string>; bulletPoints: string[]; startDate?: string; endDate?: string; current?: boolean }> }) => ({
           id: nanoid(10),
           type: section.type,
@@ -608,6 +619,27 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
           {step === 5 && (
             <>
               <div>
+                <Label className="mb-2 text-xs font-semibold">Resume Format</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {FORMAT_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => updateField('resumeFormat', opt.value)}
+                      className={cn(
+                        'rounded-lg border-2 p-3 text-left transition-all',
+                        data.resumeFormat === opt.value
+                          ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                          : 'border-muted hover:border-muted-foreground/30',
+                      )}
+                    >
+                      <p className="text-sm font-medium">{opt.label}</p>
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">{opt.desc}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
                 <Label className="mb-2 text-xs font-semibold">Writing Tone</Label>
                 <div className="grid grid-cols-2 gap-2">
                   {TONE_OPTIONS.map((opt) => (
@@ -686,6 +718,7 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
                   <p><span className="font-medium text-foreground">Education:</span> {data.education.degree} — {data.education.school}</p>
                   <p><span className="font-medium text-foreground">Skills:</span> {data.skills.length}</p>
                   <p><span className="font-medium text-foreground">Template:</span> {TEMPLATE_NAMES[data.selectedTemplate] || data.selectedTemplate}</p>
+                  <p><span className="font-medium text-foreground">Format:</span> {FORMAT_OPTIONS.find(f => f.value === data.resumeFormat)?.label}</p>
                   <p><span className="font-medium text-foreground">Style:</span> {TONE_OPTIONS.find(t => t.value === data.writingTone)?.label} / {DENSITY_OPTIONS.find(d => d.value === data.contentDensity)?.label}</p>
                   {data.jobDescription && (
                     <p><span className="font-medium text-foreground">Job Description:</span> Provided ({data.jobDescription.length} chars)</p>
