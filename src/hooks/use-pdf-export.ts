@@ -85,7 +85,7 @@ export function usePdfExport() {
       trackEvent('pdf_exported', { resumeId, templateId })
       toast.success('PDF downloaded!')
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') {
+      if (err instanceof Error && err.name === 'AbortError') {
         toast.error('PDF export timed out. Please try again.')
       } else {
         toast.error('Something went wrong')

@@ -151,8 +151,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token
     },
     async session({ session, token }) {
-      if (session.user && token) {
-        session.user.id = (token.id as string) ?? ''
+      if (session.user && token?.id) {
+        session.user.id = token.id as string
         session.user.credits = (token.credits as number) ?? 0
         session.user.subscriptionTier = (token.subscriptionTier as string) ?? 'FREE'
         session.user.hasPassword = (token.hasPassword as boolean) ?? false

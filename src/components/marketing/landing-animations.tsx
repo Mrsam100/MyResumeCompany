@@ -30,6 +30,7 @@ export function LandingAnimations({ children }: Props) {
     if (!introComplete) return
 
     let ctx: ReturnType<typeof GSAPType.context> | undefined
+    const cleanupFns: (() => void)[] = []
 
     loadGsap().then((gsap) => {
       ctx = gsap.context(() => {
@@ -86,12 +87,18 @@ export function LandingAnimations({ children }: Props) {
 
           toolCards.forEach((card) => {
             const el = card as HTMLElement
-            el.addEventListener('mouseenter', () => {
+            const onEnter = () => {
               gsap.to(el, { scale: 1.03, y: -4, duration: 0.3, ease: 'power2.out' })
               gsap.to(el.querySelector('.tool-icon'), { rotation: 360, duration: 0.6, ease: 'power2.out' })
-            })
-            el.addEventListener('mouseleave', () => {
+            }
+            const onLeave = () => {
               gsap.to(el, { scale: 1, y: 0, duration: 0.3, ease: 'power2.out' })
+            }
+            el.addEventListener('mouseenter', onEnter)
+            el.addEventListener('mouseleave', onLeave)
+            cleanupFns.push(() => {
+              el.removeEventListener('mouseenter', onEnter)
+              el.removeEventListener('mouseleave', onLeave)
             })
           })
         }
@@ -168,7 +175,10 @@ export function LandingAnimations({ children }: Props) {
       }, mainRef)
     })
 
-    return () => { ctx?.revert() }
+    return () => {
+      cleanupFns.forEach((fn) => fn())
+      ctx?.revert()
+    }
   }, [introComplete])
 
   return (

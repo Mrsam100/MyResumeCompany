@@ -9,15 +9,11 @@ const MAX_RETRIES = 3
 export function useAutosave() {
   const {
     resumeId,
+    content,
     title,
     templateId,
-    content,
     targetJobDescription,
     isDirty,
-    isSaving,
-    markSaving,
-    markSaved,
-    markSaveError,
   } = useResumeStore()
 
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -26,42 +22,48 @@ export function useAutosave() {
   const abortRef = useRef<AbortController | null>(null)
 
   const save = useCallback(async () => {
-    if (!resumeId || !isDirty || isSaving) return
+    // Read fresh state from the store to avoid stale closures on retries
+    const state = useResumeStore.getState()
+    if (!state.resumeId || !state.isDirty || state.isSaving) return
 
     abortRef.current?.abort()
     abortRef.current = new AbortController()
 
-    markSaving()
+    state.markSaving()
 
     try {
-      const res = await fetch(`/api/resumes/${resumeId}`, {
+      const res = await fetch(`/api/resumes/${state.resumeId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, templateId, content, targetJobDescription }),
+        body: JSON.stringify({
+          title: state.title,
+          templateId: state.templateId,
+          content: state.content,
+          targetJobDescription: state.targetJobDescription,
+        }),
         signal: abortRef.current.signal,
       })
 
       if (res.ok) {
-        markSaved()
+        state.markSaved()
         retryCountRef.current = 0
       } else {
         throw new Error(`Save failed: ${res.status}`)
       }
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'AbortError') return
+      if (err instanceof Error && err.name === 'AbortError') return
 
       retryCountRef.current++
       if (retryCountRef.current < MAX_RETRIES) {
         const delay = Math.min(1000 * 2 ** retryCountRef.current, 10000)
-        // Use separate retry timer so debounce doesn't clear it
         retryTimerRef.current = setTimeout(save, delay)
-        markSaveError(`Retrying... (${retryCountRef.current}/${MAX_RETRIES})`)
+        useResumeStore.getState().markSaveError(`Retrying... (${retryCountRef.current}/${MAX_RETRIES})`)
       } else {
-        markSaveError('Failed to save. Check your connection.')
+        useResumeStore.getState().markSaveError('Failed to save. Check your connection.')
         retryCountRef.current = 0
       }
     }
-  }, [resumeId, isDirty, isSaving, title, templateId, content, targetJobDescription, markSaving, markSaved, markSaveError])
+  }, [])
 
   // Debounced auto-save on changes
   useEffect(() => {
@@ -78,11 +80,17 @@ export function useAutosave() {
   // Save on page unload
   useEffect(() => {
     function handleBeforeUnload(e: BeforeUnloadEvent) {
-      if (isDirty && resumeId) {
+      const state = useResumeStore.getState()
+      if (state.isDirty && state.resumeId) {
         e.preventDefault()
-        const data = JSON.stringify({ title, templateId, content, targetJobDescription })
+        const data = JSON.stringify({
+          title: state.title,
+          templateId: state.templateId,
+          content: state.content,
+          targetJobDescription: state.targetJobDescription,
+        })
         navigator.sendBeacon(
-          `/api/resumes/${resumeId}/save`,
+          `/api/resumes/${state.resumeId}/save`,
           new Blob([data], { type: 'application/json' }),
         )
       }
@@ -90,7 +98,7 @@ export function useAutosave() {
 
     window.addEventListener('beforeunload', handleBeforeUnload)
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
-  }, [isDirty, resumeId, title, templateId, content, targetJobDescription])
+  }, [])
 
   // Cleanup on unmount
   useEffect(() => {

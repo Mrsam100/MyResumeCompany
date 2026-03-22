@@ -243,19 +243,19 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
       })
 
       if (aiRes.status === 402) {
-        await fetch(`/api/resumes/${resume.id}`, { method: 'DELETE' }).catch(() => {})
+        await fetch(`/api/resumes/${resume.id}`, { method: 'DELETE' }).catch((e) => console.error('Failed to cleanup orphaned resume:', e))
         toast.error('Not enough credits (40 required)')
         return
       }
 
       if (aiRes.status === 429) {
-        await fetch(`/api/resumes/${resume.id}`, { method: 'DELETE' }).catch(() => {})
+        await fetch(`/api/resumes/${resume.id}`, { method: 'DELETE' }).catch((e) => console.error('Failed to cleanup orphaned resume:', e))
         toast.error('Rate limit exceeded. Please try again later.')
         return
       }
 
       if (!aiRes.ok) {
-        await fetch(`/api/resumes/${resume.id}`, { method: 'DELETE' }).catch(() => {})
+        await fetch(`/api/resumes/${resume.id}`, { method: 'DELETE' }).catch((e) => console.error('Failed to cleanup orphaned resume:', e))
         const errData = await aiRes.json().catch(() => null)
         toast.error(errData?.error || 'AI generation failed. Please try again.')
         return

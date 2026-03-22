@@ -14,7 +14,6 @@ const checks: { name: string; check: () => boolean; required: boolean }[] = [
   { name: 'STRIPE_PRO_MONTHLY_PRICE_ID set', check: () => !!process.env.STRIPE_PRO_MONTHLY_PRICE_ID, required: true },
   { name: 'STRIPE_PRO_YEARLY_PRICE_ID set', check: () => !!process.env.STRIPE_PRO_YEARLY_PRICE_ID, required: true },
   { name: 'GOOGLE_CLIENT_ID set', check: () => !!process.env.GOOGLE_CLIENT_ID, required: true },
-  { name: 'GITHUB_CLIENT_ID set', check: () => !!process.env.GITHUB_CLIENT_ID, required: true },
   { name: 'NEXT_PUBLIC_APP_URL set', check: () => !!process.env.NEXT_PUBLIC_APP_URL, required: true },
   { name: 'NEXT_PUBLIC_APP_URL is not localhost', check: () => !process.env.NEXT_PUBLIC_APP_URL?.includes('localhost'), required: true },
 

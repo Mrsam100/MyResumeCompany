@@ -186,7 +186,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         )
       })
 
-      await invalidateSessionCache(userId)
+      await invalidateSessionCache(userId).catch((err) => {
+        Sentry.captureException(err, { tags: { component: 'stripe-webhook', feature: 'session-cache' } })
+      })
     }
   }
 }
@@ -209,14 +211,18 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
     return
   }
 
-  await addCredits(
-    subscription.userId,
-    SIGNUP_CREDITS.PRO,
-    'SUBSCRIPTION_MONTHLY',
-    'Pro monthly credit refill — 500 credits',
-  )
-
-  console.log(`Monthly credits added for user ${subscription.userId}`)
+  try {
+    await addCredits(
+      subscription.userId,
+      SIGNUP_CREDITS.PRO,
+      'SUBSCRIPTION_MONTHLY',
+      'Pro monthly credit refill — 500 credits',
+    )
+    console.log(`Monthly credits added for user ${subscription.userId}`)
+  } catch (err) {
+    Sentry.captureException(err, { level: 'fatal', tags: { component: 'stripe-webhook', feature: 'monthly-credits' }, extra: { userId: subscription.userId } })
+    throw err // Re-throw so Stripe retries
+  }
 }
 
 // ─── Subscription updated (plan change, status change) ───
@@ -256,7 +262,9 @@ async function handleSubscriptionUpdated(sub: Stripe.Subscription) {
     }
   })
 
-  await invalidateSessionCache(existing.userId)
+  await invalidateSessionCache(existing.userId).catch((err) => {
+    Sentry.captureException(err, { tags: { component: 'stripe-webhook', feature: 'session-cache' } })
+  })
 }
 
 // ─── Subscription deleted (cancellation finalized) ───
@@ -280,7 +288,9 @@ async function handleSubscriptionDeleted(sub: Stripe.Subscription) {
     await tx.update(users).set({ subscriptionTier: 'FREE' }).where(eq(users.id, existing.userId))
   })
 
-  await invalidateSessionCache(existing.userId)
+  await invalidateSessionCache(existing.userId).catch((err) => {
+    Sentry.captureException(err, { tags: { component: 'stripe-webhook', feature: 'session-cache' } })
+  })
   console.log(`Subscription deleted, user ${existing.userId} downgraded to FREE`)
 }
 
@@ -310,7 +320,9 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
       .where(eq(users.id, existing.userId))
   })
 
-  await invalidateSessionCache(existing.userId)
+  await invalidateSessionCache(existing.userId).catch((err) => {
+    Sentry.captureException(err, { tags: { component: 'stripe-webhook', feature: 'session-cache' } })
+  })
   console.log(`Payment failed for user ${existing.userId}, downgraded to FREE + PAST_DUE`)
 }
 

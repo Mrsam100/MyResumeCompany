@@ -45,8 +45,6 @@ ENVIRONMENT = "production"
 # wrangler secret put NEXTAUTH_SECRET
 # wrangler secret put GOOGLE_CLIENT_ID
 # wrangler secret put GOOGLE_CLIENT_SECRET
-# wrangler secret put GITHUB_CLIENT_ID
-# wrangler secret put GITHUB_CLIENT_SECRET
 # wrangler secret put GEMINI_API_KEY
 # wrangler secret put STRIPE_SECRET_KEY
 # wrangler secret put STRIPE_WEBHOOK_SECRET

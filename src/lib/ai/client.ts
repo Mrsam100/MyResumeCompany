@@ -34,23 +34,26 @@ export async function generateAIResponse(options: {
     },
   })
 
+  let timeoutId: ReturnType<typeof setTimeout> | undefined
   try {
     const response = await Promise.race([
       model.generateContent(options.prompt),
       new Promise<never>((_, reject) => {
-        setTimeout(() => {
+        timeoutId = setTimeout(() => {
           const err = new Error('AI request timed out')
           err.name = 'AbortError'
           reject(err)
         }, options.timeoutMs)
       }),
     ])
+    clearTimeout(timeoutId)
 
     const text = response.response.text()
 
     if (!text) throw new Error('Empty AI response')
     return text
   } catch (err: unknown) {
+    clearTimeout(timeoutId)
     // Re-throw timeout errors as-is
     if (err instanceof Error && err.name === 'AbortError') throw err
 

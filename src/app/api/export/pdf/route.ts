@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/nextjs'
 import { z } from 'zod'
 import { auth } from '@/auth'
 import { getResumeById } from '@/lib/db/resumes'
-import { deductCredits } from '@/lib/db/credits'
+import { deductCredits, checkSufficientCredits } from '@/lib/db/credits'
 import { getTemplateConfig } from '@/templates/registry'
 import { CREDIT_COSTS } from '@/constants/credit-costs'
 import { checkRateLimit } from '@/lib/ai/rate-limiter'
@@ -45,7 +45,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Resume not found' }, { status: 404 })
     }
 
-    // 3. Render PDF inline (nodejs_compat enables @react-pdf/renderer on Workers)
+    // 3. Pre-check credits before expensive render
+    const hasCredits = await checkSufficientCredits(session.user.id, CREDIT_COSTS.PDF_EXPORT)
+    if (!hasCredits) {
+      return NextResponse.json(
+        { error: 'Insufficient credits', required: CREDIT_COSTS.PDF_EXPORT },
+        { status: 402 },
+      )
+    }
+
+    // 4. Render PDF inline (nodejs_compat enables @react-pdf/renderer on Workers)
     const config = getTemplateConfig(resume.templateId)
     const content = resume.content as ResumeContent
 
@@ -58,7 +67,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Failed to render PDF' }, { status: 500 })
     }
 
-    // 4. Deduct credits AFTER successful generation
+    // 5. Deduct credits AFTER successful generation
     try {
       await deductCredits(
         session.user.id,
@@ -77,7 +86,7 @@ export async function POST(req: Request) {
       throw err
     }
 
-    // 5. Build safe filename with fallback
+    // 6. Build safe filename with fallback
     const rawName = (content.personalInfo.fullName || resume.title || '')
       .replace(/[^a-zA-Z0-9\s-]/g, '')
       .trim()

@@ -3,7 +3,7 @@ import { z } from 'zod'
 // ==================== Personal Info ====================
 
 export const personalInfoSchema = z.object({
-  fullName: z.string().min(1, 'Full name is required').max(100),
+  fullName: z.string().max(100).default(''),
   title: z.string().max(100).default(''),
   email: z.union([z.string().email('Invalid email address'), z.literal('')]).default(''),
   phone: z.string().max(20).default(''),

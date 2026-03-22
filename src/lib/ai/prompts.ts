@@ -600,16 +600,17 @@ export function resumeToPlainText(content: {
     lines.push(`\n${section.title}:`)
 
     for (const entry of section.entries) {
-      const title = entry.fields.jobTitle || entry.fields.school || entry.fields.name || entry.fields.title || ''
-      const subtitle = entry.fields.company || entry.fields.degree || entry.fields.issuer || entry.fields.organization || ''
+      const f = entry.fields ?? {}
+      const title = f.jobTitle || f.school || f.name || f.title || ''
+      const subtitle = f.company || f.degree || f.issuer || f.organization || ''
       const dates = entry.startDate
         ? `${entry.startDate}${entry.current ? ' — Present' : entry.endDate ? ` — ${entry.endDate}` : ''}`
         : ''
       if (title || subtitle) {
         lines.push(`  ${title}${subtitle ? ` — ${subtitle}` : ''}${dates ? ` (${dates})` : ''}`)
       }
-      if (section.type === 'skills' && entry.fields.skills) {
-        lines.push(`  ${entry.fields.groupName ? `${entry.fields.groupName}: ` : ''}${entry.fields.skills}`)
+      if (section.type === 'skills' && f.skills) {
+        lines.push(`  ${f.groupName ? `${f.groupName}: ` : ''}${f.skills}`)
       }
       for (const bullet of entry.bulletPoints) {
         if (bullet.trim()) lines.push(`  • ${bullet}`)

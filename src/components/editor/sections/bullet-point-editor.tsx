@@ -49,7 +49,7 @@ export function BulletPointEditor({
   return (
     <div className="space-y-1">
       {entry.bulletPoints.map((bullet, index) => (
-        <div key={index} className="group flex items-center gap-1">
+        <div key={`${entryId}-bullet-${index}`} className="group flex items-center gap-1">
           <div className="flex h-8 w-5 shrink-0 items-center justify-center">
             <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground/30" />
           </div>
