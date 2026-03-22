@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Plus, X, Trash2, Wrench } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -47,10 +48,12 @@ export function SkillsEditor({ sectionId }: { sectionId: string }) {
     const existing = entry.fields.skills ?? ''
     const skills = existing ? existing.split(',').map((s) => s.trim()) : []
 
-    if (!skills.includes(value)) {
-      updateEntryField(sectionId, entryId, 'skills', [...skills, value].join(', '))
+    if (skills.includes(value)) {
+      toast.error(`"${value}" is already in this group`)
+      return
     }
 
+    updateEntryField(sectionId, entryId, 'skills', [...skills, value].join(', '))
     setInputValues((prev) => ({ ...prev, [entryId]: '' }))
   }
 

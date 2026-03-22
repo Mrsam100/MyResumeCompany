@@ -8,9 +8,9 @@ import { getAllTemplateConfigs } from '@/templates/registry'
 import { cn } from '@/lib/utils'
 
 export const metadata: Metadata = {
-  title: 'Resume Templates — 15 Professional, ATS-Optimized Designs',
+  title: 'Resume Templates — 50+ Professional, ATS-Optimized Designs',
   description:
-    'Browse 15 free resume templates — professional, modern, creative, ATS-optimized, tech, and academic. Pick a design and start building your resume with AI.',
+    'Browse 50+ free resume templates — professional, modern, creative, ATS-optimized, tech, and academic. Pick a design and start building your resume with AI.',
   alternates: {
     canonical: '/resume-templates',
   },
@@ -65,7 +65,7 @@ export default function TemplatesPage() {
         data={{
           '@context': 'https://schema.org',
           '@type': 'CollectionPage',
-          name: '15 Professional Resume Templates',
+          name: '50+ Professional Resume Templates',
           description: metadata.description,
           url: `${siteUrl}/resume-templates`,
           mainEntity: {
@@ -102,7 +102,7 @@ export default function TemplatesPage() {
             Resume Templates for Every Industry
           </h1>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-            Choose from 15 professionally designed resume templates — all ATS-tested, all free to
+            Choose from 50+ professionally designed resume templates — all ATS-tested, all free to
             use. Pick a design, add your info, and let AI write the hard parts.
           </p>
           <div className="mt-8">
@@ -227,7 +227,7 @@ export default function TemplatesPage() {
             <div>
               <h3 className="font-semibold">Are these resume templates free?</h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                Yes. All 15 templates are free to use. You get 100 credits when you sign up, which
+                Yes. All templates are free to use. You get 100 credits when you sign up, which
                 covers AI writing, ATS scanning, and PDF export. Some templates are marked Pro —
                 these are available to Pro subscribers ($12/mo) and offer more advanced layouts.
               </p>

@@ -98,7 +98,7 @@ export default function OGImage() {
               marginTop: 16,
             }}
           >
-            {['15 Templates', 'AI Writer', 'ATS Scanner', 'PDF Export'].map(
+            {['50+ Templates', 'AI Writer', 'ATS Scanner', 'PDF Export'].map(
               (feature) => (
                 <div
                   key={feature}

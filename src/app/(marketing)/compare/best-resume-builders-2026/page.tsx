@@ -36,7 +36,7 @@ const BUILDERS: Builder[] = [
     bestFor: 'Job seekers who want AI writing + ATS scoring in one tool',
     price: '$12/mo (Pro) or pay-per-use credits',
     freeOption: '100 free credits — enough for a full resume + ATS scan + PDF export',
-    templates: '15 templates across 7 categories (Professional, Modern, Creative, Tech, ATS-Optimized, Academic, Minimal)',
+    templates: '50+ templates across 7 categories (Professional, Modern, Creative, Tech, ATS-Optimized, Academic, Minimal)',
     aiFeatures: ['AI bullet point writer', 'AI summary generator (3 tones)', 'AI full resume wizard', 'ATS scanner (0-100 score)', 'ATS optimizer (rewrites bullets)', 'Cover letter generator'],
     atsScanner: '0-100 score with keyword analysis',
     pdfExport: true,

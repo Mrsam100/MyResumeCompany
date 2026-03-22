@@ -93,7 +93,7 @@ export default function TemplatesPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Choose a Template</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          15 professional templates — pick one and start editing
+          50+ professional templates — pick one and start editing
         </p>
       </div>
 

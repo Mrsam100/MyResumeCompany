@@ -86,7 +86,7 @@ export default function AboutPage() {
           <li>
             <strong className="text-foreground">Choose a template.</strong> Pick from{' '}
             <Link href="/resume-templates" className="text-primary underline underline-offset-4 hover:text-primary/80">
-              15 professionally designed templates
+              50+ professionally designed templates
             </Link>{' '}
             spanning classic, modern, creative, tech, ATS-optimized, and academic styles. Every
             template has been tested against real ATS parsers to ensure your content gets through.
@@ -204,7 +204,7 @@ export default function AboutPage() {
 const VALUES = [
   {
     icon: FileText,
-    title: '15 professional templates',
+    title: '50+ professional templates',
     description:
       'Classic, modern, creative, tech, ATS-optimized, and academic styles. Each tested against real applicant tracking systems.',
   },

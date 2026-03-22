@@ -52,7 +52,7 @@ export default async function HomePage() {
                 name: 'Free Plan',
                 price: '0',
                 priceCurrency: 'USD',
-                description: '100 free credits, all 15 templates, AI features',
+                description: '100 free credits, all 50+ templates, AI features',
               },
               {
                 '@type': 'Offer',
@@ -206,7 +206,7 @@ export default async function HomePage() {
                 <div className="step-content">
                   <h3 className="text-xl font-semibold">Pick a design that fits your industry</h3>
                   <p className="mt-2 text-muted-foreground">
-                    15 templates across categories — clean ATS-safe layouts for finance,
+                    50+ templates across categories — clean ATS-safe layouts for finance,
                     bold modern designs for startups, academic CVs for research. Every one
                     is tested with real ATS systems.
                   </p>
@@ -435,7 +435,7 @@ const TOOLS = [
   },
   {
     icon: Check,
-    label: '15 Templates',
+    label: '50+ Templates',
     detail: 'Classic, modern, creative, ATS-safe, academic. Every one tested with real tracking systems.',
   },
 ]

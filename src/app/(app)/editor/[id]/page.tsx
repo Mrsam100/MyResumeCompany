@@ -54,6 +54,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import type { ResumeContent } from '@/types/resume'
 
+const isMac = typeof navigator !== 'undefined' && /Mac|iPhone/.test(navigator.userAgent)
+const mod = isMac ? '⌘' : 'Ctrl'
+
 export default function EditorPage() {
   const params = useParams<{ id: string }>()
   const router = useRouter()
@@ -141,6 +144,7 @@ export default function EditorPage() {
           targetJobDescription: data.resume.targetJobDescription ?? null,
         })
         setJdInput(data.resume.targetJobDescription ?? '')
+        if (data.resume.targetJobDescription?.trim()) setJdExpanded(true)
       } catch {
         setError('Failed to load resume')
       } finally {
@@ -227,7 +231,7 @@ export default function EditorPage() {
                 <Undo2 className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Undo (Ctrl+Z)</TooltipContent>
+            <TooltipContent>Undo ({mod}+Z)</TooltipContent>
           </Tooltip>
 
           <Tooltip>
@@ -236,7 +240,7 @@ export default function EditorPage() {
                 <Redo2 className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Redo (Ctrl+Shift+Z)</TooltipContent>
+            <TooltipContent>Redo ({mod}+Shift+Z)</TooltipContent>
           </Tooltip>
 
           <VersionManager />

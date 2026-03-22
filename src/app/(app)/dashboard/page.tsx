@@ -276,7 +276,7 @@ export default function DashboardPage() {
             <div>
               <p className="text-base font-semibold">Choose a Template</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Pick from 15+ professional, modern, and creative designs
+                Pick from 50+ professional, modern, and creative designs
               </p>
               <p className="mt-3 flex items-center justify-center gap-1 text-xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
                 Browse templates <ArrowRight className="h-3 w-3" />

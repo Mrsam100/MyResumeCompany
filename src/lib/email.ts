@@ -127,7 +127,7 @@ export async function sendWelcomeEmail(
       <p style="margin:0 0 24px; color:#475569; font-size:15px; line-height:1.6;">Here's what you can do:</p>
 
       <ul style="margin:0 0 24px; padding-left:20px; color:#475569; font-size:14px; line-height:1.8;">
-        <li>Pick from 15 professional templates</li>
+        <li>Pick from 50+ professional templates</li>
         <li>Let AI write your bullet points and summary</li>
         <li>Score your resume against any job description</li>
         <li>Export a clean PDF that passes ATS systems</li>
@@ -201,7 +201,7 @@ export const ONBOARDING_EMAILS: { day: number; subject: string; builder: (name: 
     day: 1,
     subject: 'Pick a template that fits your industry',
     builder: (name, appUrl) => emailShell(`Choose your template, ${esc(name)}`,
-      p('We have 15 professionally designed templates across 7 categories: Professional, Modern, Creative, Tech, ATS-Optimized, Academic, and Minimal.')
+      p('We have 50+ professionally designed templates across 7 categories: Professional, Modern, Creative, Tech, ATS-Optimized, Academic, and Minimal.')
       + p('Each template is tested with real ATS systems. Pick one that matches your industry and start customizing.')
       + ctaButton('Browse Templates', `${appUrl}/templates`)
       + p('<strong>Tip:</strong> Not sure which to pick? Classic Professional works for any industry.')),

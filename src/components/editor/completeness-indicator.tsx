@@ -22,33 +22,33 @@ function useCompletenessScore() {
     { label: 'Phone number', done: !!personalInfo.phone.trim(), weight: 4 },
     { label: 'Location', done: !!personalInfo.location.trim(), weight: 3 },
     {
-      label: 'Professional summary',
+      label: 'Professional summary (50+ chars)',
       done: (personalInfo.summary?.trim().length ?? 0) >= 50,
       weight: 15,
     },
     {
-      label: 'Work experience',
+      label: 'Work experience (with job title)',
       done: sections.some(
         (s) => s.type === 'experience' && s.entries.some((e) => !!e.fields.jobTitle?.trim()),
       ),
       weight: 20,
     },
     {
-      label: 'Education',
+      label: 'Education (with school name)',
       done: sections.some(
         (s) => s.type === 'education' && s.entries.some((e) => !!e.fields.school?.trim()),
       ),
       weight: 15,
     },
     {
-      label: 'Skills',
+      label: 'Skills section',
       done: sections.some(
         (s) => s.type === 'skills' && s.entries.some((e) => !!e.fields.skills?.trim()),
       ),
       weight: 10,
     },
     {
-      label: 'Additional section',
+      label: 'One additional section',
       done: sections.some(
         (s) =>
           !['experience', 'education', 'skills'].includes(s.type) && s.entries.length > 0,
@@ -56,7 +56,7 @@ function useCompletenessScore() {
       weight: 10,
     },
     {
-      label: 'Achievement bullet points',
+      label: 'Achievement bullets (2+ per job)',
       done: sections.some(
         (s) =>
           s.type === 'experience' &&
@@ -79,36 +79,33 @@ export function CompletenessIndicator() {
   const { items, percentage } = useCompletenessScore()
 
   const completedCount = items.filter((i) => i.done).length
+  const missingCount = items.length - completedCount
+  // Sort: incomplete items first (sorted by weight desc), then completed
+  const sortedItems = [...items].sort((a, b) => {
+    if (a.done === b.done) return b.weight - a.weight
+    return a.done ? 1 : -1
+  })
+  const topMissing = sortedItems.filter((i) => !i.done).slice(0, 3)
 
   return (
-    <div className="rounded-xl border bg-card">
+    <div className="rounded-xl border bg-card overflow-hidden">
       {/* Header bar */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center gap-3 px-4 py-3"
+        className="flex w-full items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/30"
+        aria-expanded={expanded}
+        aria-label="Toggle completeness checklist"
       >
         {/* Circular progress */}
         <div className="relative flex h-10 w-10 shrink-0 items-center justify-center">
           <svg className="h-10 w-10 -rotate-90" viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="3" className="text-muted/50" />
             <circle
-              cx="18"
-              cy="18"
-              r="15"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              className="text-muted/50"
-            />
-            <circle
-              cx="18"
-              cy="18"
-              r="15"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
+              cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="3"
               strokeDasharray={`${percentage * 0.94} 100`}
               strokeLinecap="round"
               className={cn(
+                'transition-all duration-500',
                 percentage < 40 && 'text-red-500',
                 percentage >= 40 && percentage < 70 && 'text-amber-500',
                 percentage >= 70 && 'text-green-500',
@@ -118,52 +115,65 @@ export function CompletenessIndicator() {
           <span className="absolute text-[10px] font-bold">{percentage}%</span>
         </div>
 
-        <div className="flex-1 text-left">
+        <div className="flex-1 text-left min-w-0">
           <p className="text-sm font-medium">
-            {percentage < 40
-              ? 'Getting started'
-              : percentage < 70
-                ? 'Making progress'
-                : percentage < 100
-                  ? 'Almost there'
-                  : 'Complete'}
+            {percentage < 40 ? 'Getting started' : percentage < 70 ? 'Making progress' : percentage < 100 ? 'Almost there' : 'Complete!'}
           </p>
-          <p className="text-xs text-muted-foreground">
-            {completedCount} of {items.length} items completed
+          <p className="text-xs text-muted-foreground truncate">
+            {missingCount === 0
+              ? 'All items completed'
+              : !expanded && topMissing.length > 0
+                ? `Next: ${topMissing[0].label}`
+                : `${completedCount} of ${items.length} items completed`}
           </p>
         </div>
 
+        {missingCount > 0 && !expanded && (
+          <span className={cn(
+            'shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold',
+            missingCount <= 3 ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700',
+          )}>
+            {missingCount} left
+          </span>
+        )}
+
         {expanded ? (
-          <ChevronUp className="h-4 w-4 text-muted-foreground" />
+          <ChevronUp className="h-4 w-4 shrink-0 text-muted-foreground" />
         ) : (
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
         )}
       </button>
 
       {/* Expanded checklist */}
-      {expanded && (
-        <div className="border-t px-4 py-3">
-          <div className="grid gap-1.5 sm:grid-cols-2">
-            {items.map((item) => (
-              <div key={item.label} className="flex items-center gap-2 text-sm">
-                {item.done ? (
-                  <Check className="h-3.5 w-3.5 shrink-0 text-green-500" />
-                ) : (
-                  <Circle className="h-3.5 w-3.5 shrink-0 text-muted-foreground/30" />
-                )}
-                <span
-                  className={cn(
+      <div className={cn(
+        'grid transition-all duration-200 ease-in-out',
+        expanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+      )}>
+        <div className="overflow-hidden">
+          <div className="border-t px-4 py-3">
+            <div className="grid gap-1.5 sm:grid-cols-2">
+              {sortedItems.map((item) => (
+                <div key={item.label} className="flex items-center gap-2 text-sm">
+                  {item.done ? (
+                    <Check className="h-3.5 w-3.5 shrink-0 text-green-500" />
+                  ) : (
+                    <Circle className="h-3.5 w-3.5 shrink-0 text-muted-foreground/30" />
+                  )}
+                  <span className={cn(
                     'text-xs',
                     item.done ? 'text-muted-foreground line-through' : 'text-foreground',
+                  )}>
+                    {item.label}
+                  </span>
+                  {!item.done && item.weight >= 15 && (
+                    <span className="text-[9px] text-amber-500 font-medium">important</span>
                   )}
-                >
-                  {item.label}
-                </span>
-              </div>
-            ))}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }

@@ -149,7 +149,7 @@ function SortableSection({
           <button
             {...attributes}
             {...listeners}
-            className="cursor-grab touch-none text-muted-foreground/30 hover:text-muted-foreground"
+            className="cursor-grab touch-none text-muted-foreground/30 transition-colors hover:text-muted-foreground active:cursor-grabbing"
             aria-label="Drag to reorder"
           >
             <GripVertical className="h-4 w-4" />
@@ -160,21 +160,24 @@ function SortableSection({
           </div>
 
           {isEditing ? (
-            <Input
-              autoFocus
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              onBlur={handleSaveTitle}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleSaveTitle()
-                if (e.key === 'Escape') {
-                  setEditValue(title)
-                  setIsEditing(false)
-                }
-              }}
-              onClick={(e) => e.stopPropagation()}
-              className="h-7 text-sm font-medium"
-            />
+            <div className="flex-1 min-w-0">
+              <Input
+                autoFocus
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onBlur={handleSaveTitle}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSaveTitle()
+                  if (e.key === 'Escape') {
+                    setEditValue(title)
+                    setIsEditing(false)
+                  }
+                }}
+                onClick={(e) => e.stopPropagation()}
+                className="h-7 text-sm font-medium ring-2 ring-primary/30"
+              />
+              <p className="mt-0.5 text-[9px] text-muted-foreground/60">Enter to save · Escape to cancel</p>
+            </div>
           ) : (
             <button onClick={handleExpand} className="flex flex-1 items-center gap-2 text-left min-w-0">
               <span

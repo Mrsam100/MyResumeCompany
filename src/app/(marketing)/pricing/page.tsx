@@ -72,7 +72,7 @@ const FAQ = [
   },
   {
     q: 'Will my resume pass ATS (Applicant Tracking Systems)?',
-    a: 'All 15 templates are tested against real ATS parsers. The ATS Scanner scores your resume 0-100 against a specific job description and shows exactly which keywords you\'re missing. The optimizer can rewrite your bullets to match.',
+    a: 'All 50+ templates are tested against real ATS parsers. The ATS Scanner scores your resume 0-100 against a specific job description and shows exactly which keywords you\'re missing. The optimizer can rewrite your bullets to match.',
   },
   {
     q: 'Is my data safe?',
@@ -80,7 +80,7 @@ const FAQ = [
   },
   {
     q: 'What\'s the difference between Free and Pro?',
-    a: 'Free users pay credits per AI action and PDF export. Pro users ($12/month) get unlimited AI usage at zero credit cost, 500 bonus credits per month for PDF exports, and priority support. Both plans have access to all 15 templates and the full editor.',
+    a: 'Free users pay credits per AI action and PDF export. Pro users ($12/month) get unlimited AI usage at zero credit cost, 500 bonus credits per month for PDF exports, and priority support. Both plans have access to all 50+ templates and the full editor.',
   },
   {
     q: 'Can I share my resume online?',

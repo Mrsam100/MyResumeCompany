@@ -885,7 +885,7 @@ function ArticleCTA() {
     <div className="mt-12 rounded-xl border bg-muted/40 p-8 text-center">
       <h2 className="text-2xl font-bold">Build Your Resume in Minutes</h2>
       <p className="mx-auto mt-3 max-w-lg text-muted-foreground">
-        MyResumeCompany gives you 15 professional templates, AI-powered writing tools, and a
+        MyResumeCompany gives you 50+ professional templates, AI-powered writing tools, and a
         built-in ATS scanner. Start free with 100 credits.
       </p>
       <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
