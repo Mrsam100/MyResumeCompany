@@ -1,6 +1,5 @@
 import NextAuth from 'next-auth'
 import Google from 'next-auth/providers/google'
-import GitHub from 'next-auth/providers/github'
 import Credentials from 'next-auth/providers/credentials'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { eq } from 'drizzle-orm'
@@ -36,19 +35,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           name: profile.name,
           email: profile.email?.toLowerCase().trim(),
           image: profile.picture,
-        }
-      },
-    }),
-    GitHub({
-      clientId: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      // (#2) Normalize OAuth email before it reaches the adapter
-      profile(profile) {
-        return {
-          id: String(profile.id),
-          name: profile.name ?? profile.login,
-          email: profile.email?.toLowerCase().trim(),
-          image: profile.avatar_url,
         }
       },
     }),

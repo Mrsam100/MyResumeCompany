@@ -165,9 +165,9 @@ export default function PrivacyPage() {
 
           <h3>2.3 Information From Third-Party Sign-In</h3>
           <p>
-            If you sign in with Google or GitHub, we receive your name, email address, and profile
-            photo from the provider. We do not receive your password. You can revoke access at any
-            time through your Google or GitHub account settings.
+            If you sign in with Google, we receive your name, email address, and profile
+            photo. We do not receive your password. You can revoke access at any
+            time through your Google account settings.
           </p>
 
           {/* ── 3. How We Use Your Information ── */}
