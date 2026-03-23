@@ -123,12 +123,27 @@
   }
   body {
     @apply bg-background text-foreground;
+    -webkit-overflow-scrolling: touch;
   }
   html {
     @apply font-sans;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading), var(--font-body), sans-serif;
+  }
+  /* Safe area insets for notched phones (iPhone X+) */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
+
+/* Prevent 300ms tap delay and improve touch interactions */
+@layer base {
+  button, a, [role="button"] {
+    touch-action: manipulation;
   }
 }
 

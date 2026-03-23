@@ -73,7 +73,7 @@ export function DateMonthYearPicker({
 
       {/* Year */}
       <Select value={year} onValueChange={handleYearChange}>
-        <SelectTrigger size="sm" className="w-[4.5rem] shrink-0">
+        <SelectTrigger size="sm" className="w-[4rem] shrink-0 sm:w-[4.5rem]">
           <SelectValue placeholder="Year" />
         </SelectTrigger>
         <SelectContent>

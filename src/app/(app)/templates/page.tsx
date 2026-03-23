@@ -161,8 +161,8 @@ export default function TemplatesPage() {
                     </Badge>
                   )}
 
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/50 opacity-0 backdrop-blur-[2px] transition-all duration-300 group-hover:opacity-100">
+                  {/* Hover overlay — desktop only */}
+                  <div className="absolute inset-0 hidden flex-col items-center justify-center gap-3 bg-black/50 opacity-0 backdrop-blur-[2px] transition-all duration-300 group-hover:opacity-100 sm:flex">
                     <Button
                       size="lg"
                       onClick={() => handleUseTemplate(template.slug)}
@@ -188,6 +188,16 @@ export default function TemplatesPage() {
                       {template.description}
                     </p>
                   )}
+                  {/* Use button — always visible on mobile */}
+                  <Button
+                    size="sm"
+                    onClick={() => handleUseTemplate(template.slug)}
+                    disabled={isCreating}
+                    className="mt-3 w-full gap-1.5 sm:hidden"
+                  >
+                    {isCreating ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                    {isCreating ? 'Creating...' : 'Use This Template'}
+                  </Button>
                 </div>
               </div>
             )

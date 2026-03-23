@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Nunito, Poppins } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -21,6 +21,13 @@ const poppins = Poppins({
 })
 
 const siteUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com').trim()
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: 'cover',
+}
 
 export const metadata: Metadata = {
   title: {
@@ -122,7 +129,7 @@ export default function RootLayout({
         <PostHogProvider>
           <TooltipProvider>
             {children}
-            <Toaster richColors position="bottom-right" />
+            <Toaster richColors position="top-center" />
           </TooltipProvider>
         </PostHogProvider>
       </body>

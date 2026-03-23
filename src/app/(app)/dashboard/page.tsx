@@ -228,7 +228,7 @@ export default function DashboardPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <button
             onClick={() => setWizardOpen(true)}
-            className="animate-fade-in-up group flex flex-col items-center justify-center gap-4 rounded-xl rounded-xl border border-border/60 border-t-4 border-t-primary shadow-sm bg-card p-6 text-center min-h-[200px] transition-all hover:border-primary/30 hover:shadow-md hover:-translate-y-0.5 duration-200"
+            className="animate-fade-in-up group flex flex-col items-center justify-center gap-4 rounded-xl rounded-xl border border-border/60 border-t-4 border-t-primary shadow-sm bg-card p-6 text-center min-h-[160px] sm:min-h-[200px] transition-all hover:border-primary/30 hover:shadow-md hover:-translate-y-0.5 duration-200"
             style={{ animationDelay: '300ms' }}
           >
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-sm group-hover:scale-110 transition-all duration-200">
@@ -239,7 +239,7 @@ export default function DashboardPage() {
               <p className="mt-1 text-sm text-muted-foreground">
                 Let AI generate a full resume from your work history
               </p>
-              <p className="mt-3 flex items-center justify-center gap-1 text-xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+              <p className="mt-3 flex items-center justify-center gap-1 text-xs font-medium text-primary sm:opacity-0 transition-opacity group-hover:opacity-100">
                 Get started <ArrowRight className="h-3 w-3" />
               </p>
             </div>
@@ -247,7 +247,7 @@ export default function DashboardPage() {
 
           <Link
             href="/templates"
-            className="animate-fade-in-up group flex flex-col items-center justify-center gap-4 rounded-xl rounded-xl border border-border/60 border-t-4 border-t-violet-500 shadow-sm bg-card p-6 text-center min-h-[200px] transition-all hover:border-primary/30 hover:shadow-md hover:-translate-y-0.5 duration-200"
+            className="animate-fade-in-up group flex flex-col items-center justify-center gap-4 rounded-xl rounded-xl border border-border/60 border-t-4 border-t-violet-500 shadow-sm bg-card p-6 text-center min-h-[160px] sm:min-h-[200px] transition-all hover:border-primary/30 hover:shadow-md hover:-translate-y-0.5 duration-200"
             style={{ animationDelay: '375ms' }}
           >
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-violet-600 text-white shadow-sm group-hover:scale-110 transition-all duration-200">
@@ -258,7 +258,7 @@ export default function DashboardPage() {
               <p className="mt-1 text-sm text-muted-foreground">
                 Pick from 50+ professional, modern, and creative designs
               </p>
-              <p className="mt-3 flex items-center justify-center gap-1 text-xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+              <p className="mt-3 flex items-center justify-center gap-1 text-xs font-medium text-primary sm:opacity-0 transition-opacity group-hover:opacity-100">
                 Browse templates <ArrowRight className="h-3 w-3" />
               </p>
             </div>
@@ -266,7 +266,7 @@ export default function DashboardPage() {
 
           <button
             onClick={() => setImportOpen(true)}
-            className="animate-fade-in-up group flex flex-col items-center justify-center gap-4 rounded-xl rounded-xl border border-border/60 border-t-4 border-t-emerald-500 shadow-sm bg-card p-6 text-center min-h-[200px] transition-all hover:border-primary/30 hover:shadow-md hover:-translate-y-0.5 duration-200"
+            className="animate-fade-in-up group flex flex-col items-center justify-center gap-4 rounded-xl rounded-xl border border-border/60 border-t-4 border-t-emerald-500 shadow-sm bg-card p-6 text-center min-h-[160px] sm:min-h-[200px] transition-all hover:border-primary/30 hover:shadow-md hover:-translate-y-0.5 duration-200"
             style={{ animationDelay: '450ms' }}
           >
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-sm group-hover:scale-110 transition-all duration-200">
@@ -277,7 +277,7 @@ export default function DashboardPage() {
               <p className="mt-1 text-sm text-muted-foreground">
                 Upload a LinkedIn PDF or paste your profile text
               </p>
-              <p className="mt-3 flex items-center justify-center gap-1 text-xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+              <p className="mt-3 flex items-center justify-center gap-1 text-xs font-medium text-primary sm:opacity-0 transition-opacity group-hover:opacity-100">
                 Import now <ArrowRight className="h-3 w-3" />
               </p>
             </div>
@@ -285,7 +285,7 @@ export default function DashboardPage() {
 
           <button
             onClick={() => setResumeImportOpen(true)}
-            className="animate-fade-in-up group flex flex-col items-center justify-center gap-4 rounded-xl rounded-xl border border-border/60 border-t-4 border-t-amber-500 shadow-sm bg-card p-6 text-center min-h-[200px] transition-all hover:border-primary/30 hover:shadow-md hover:-translate-y-0.5 duration-200"
+            className="animate-fade-in-up group flex flex-col items-center justify-center gap-4 rounded-xl rounded-xl border border-border/60 border-t-4 border-t-amber-500 shadow-sm bg-card p-6 text-center min-h-[160px] sm:min-h-[200px] transition-all hover:border-primary/30 hover:shadow-md hover:-translate-y-0.5 duration-200"
             style={{ animationDelay: '525ms' }}
           >
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-sm group-hover:scale-110 transition-all duration-200">
@@ -296,7 +296,7 @@ export default function DashboardPage() {
               <p className="mt-1 text-sm text-muted-foreground">
                 Upload your old resume and AI will make it 10x better
               </p>
-              <p className="mt-3 flex items-center justify-center gap-1 text-xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+              <p className="mt-3 flex items-center justify-center gap-1 text-xs font-medium text-primary sm:opacity-0 transition-opacity group-hover:opacity-100">
                 Upgrade now <ArrowRight className="h-3 w-3" />
               </p>
             </div>

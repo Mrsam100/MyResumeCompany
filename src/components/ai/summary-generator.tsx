@@ -107,7 +107,7 @@ export function SummaryGenerator() {
       </Button>
 
       <Dialog open={open} onOpenChange={(val) => { if (!generating) setOpen(val) }}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[85dvh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Generate Professional Summary</DialogTitle>
             <DialogDescription>

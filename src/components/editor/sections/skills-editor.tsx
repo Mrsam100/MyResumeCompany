@@ -82,9 +82,9 @@ export function SkillsEditor({ sectionId }: { sectionId: string }) {
               </span>
               <button
                 onClick={() => setDeleteId(entry.id)}
-                className="text-muted-foreground/50 hover:text-destructive"
+                className="flex h-8 w-8 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
               >
-                <Trash2 className="h-3.5 w-3.5" />
+                <Trash2 className="h-4 w-4" />
               </button>
             </div>
 
@@ -116,9 +116,9 @@ export function SkillsEditor({ sectionId }: { sectionId: string }) {
                     {skill}
                     <button
                       onClick={() => removeSkill(entry.id, skill)}
-                      className="rounded-sm hover:text-destructive"
+                      className="flex h-5 w-5 items-center justify-center rounded-sm hover:text-destructive"
                     >
-                      <X className="h-3 w-3" />
+                      <X className="h-3.5 w-3.5" />
                     </button>
                   </Badge>
                 ))}

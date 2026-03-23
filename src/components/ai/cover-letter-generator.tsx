@@ -199,7 +199,7 @@ export function CoverLetterGenerator() {
         onClick={() => { resetForm(); setOpen(true) }}
       >
         <FileText className="h-3.5 w-3.5" />
-        Cover Letter
+        <span className="hidden sm:inline">Cover Letter</span>
       </Button>
 
       <Dialog open={open} onOpenChange={(val) => { if (!generating && !saving) setOpen(val) }}>

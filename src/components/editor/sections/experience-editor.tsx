@@ -49,9 +49,9 @@ export function ExperienceEditor({ sectionId }: { sectionId: string }) {
             </span>
             <button
               onClick={() => setDeleteId(entry.id)}
-              className="flex h-6 w-6 items-center justify-center rounded text-muted-foreground/40 hover:bg-destructive/10 hover:text-destructive"
+              className="flex h-8 w-8 items-center justify-center rounded text-muted-foreground/40 hover:bg-destructive/10 hover:text-destructive"
             >
-              <Trash2 className="h-3.5 w-3.5" />
+              <Trash2 className="h-4 w-4" />
             </button>
           </div>
           <Separator />

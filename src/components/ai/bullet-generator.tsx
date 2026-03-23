@@ -119,7 +119,7 @@ export function BulletGenerator({ sectionId, entryId, jobTitle, company }: Bulle
       </Button>
 
       <Dialog open={open} onOpenChange={(val) => { if (!generating) setOpen(val) }}>
-        <DialogContent>
+        <DialogContent className="max-h-[85dvh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Generate Bullet Points</DialogTitle>
             <DialogDescription>

@@ -255,7 +255,7 @@ export function ATSScanner({ externalOpen, onExternalOpenChange, prefillJobDescr
         onClick={() => { setResult(null); setOptimizeResult(null); setJobDescription(''); setAppliedEntries(new Set()); setOpen(true) }}
       >
         <Search className="h-3.5 w-3.5" />
-        ATS Score
+        <span className="hidden sm:inline">ATS Score</span>
       </Button>
 
       <Dialog open={open} onOpenChange={(val) => { if (!scanning && !optimizing) setOpen(val) }}>

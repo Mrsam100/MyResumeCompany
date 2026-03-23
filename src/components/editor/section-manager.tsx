@@ -324,7 +324,7 @@ export function SectionManager() {
           <Plus className="h-4 w-4" />
           Add Section
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-64">
+        <DropdownMenuContent className="w-[calc(100vw-3rem)] max-w-64 sm:w-64">
           {Object.entries(sectionMeta).map(([type, meta]) => {
             const IconComp = meta.icon
             return (

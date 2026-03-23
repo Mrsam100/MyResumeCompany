@@ -227,7 +227,7 @@ export default function EditorPage() {
         <div className="flex items-center gap-1">
           <Tooltip>
             <TooltipTrigger>
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={undo} disabled={!canUndo()}>
+              <Button variant="ghost" size="icon" className="hidden h-8 w-8 sm:inline-flex" onClick={undo} disabled={!canUndo()}>
                 <Undo2 className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
@@ -236,16 +236,18 @@ export default function EditorPage() {
 
           <Tooltip>
             <TooltipTrigger>
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={redo} disabled={!canRedo()}>
+              <Button variant="ghost" size="icon" className="hidden h-8 w-8 sm:inline-flex" onClick={redo} disabled={!canRedo()}>
                 <Redo2 className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Redo ({mod}+Shift+Z)</TooltipContent>
           </Tooltip>
 
-          <VersionManager />
+          <div className="hidden sm:block">
+            <VersionManager />
+          </div>
 
-          <Separator orientation="vertical" className="mx-1 h-5" />
+          <Separator orientation="vertical" className="mx-1 hidden h-5 sm:block" />
 
           <Button variant="ghost" size="sm" className="gap-1.5 lg:hidden" onClick={togglePreview}>
             {showPreview ? <><PenLine className="h-4 w-4" /> Edit</> : <><Eye className="h-4 w-4" /> Preview</>}
@@ -392,7 +394,7 @@ export default function EditorPage() {
       <div className="flex flex-1 overflow-hidden">
         {/* Editor panel */}
         <div className={`flex-1 overflow-y-auto ${showPreview ? 'hidden lg:block' : 'block'}`}>
-          <div className="mx-auto max-w-2xl space-y-6 p-6">
+          <div className="mx-auto max-w-2xl space-y-5 p-4 sm:space-y-6 sm:p-6">
             <CompletenessIndicator />
             <TemplateCustomizer />
             <PersonalInfoForm />
@@ -405,7 +407,7 @@ export default function EditorPage() {
 
         {/* Preview panel */}
         <div className={`relative border-l bg-muted/20 lg:w-1/2 ${showPreview ? 'block' : 'hidden lg:block'}`}>
-          <div className="flex h-full items-start justify-center overflow-y-auto p-6">
+          <div className="flex h-full items-start justify-center overflow-y-auto p-3 sm:p-6">
             <div
               className="w-full max-w-[min(100%,420px)] overflow-hidden rounded-md border bg-white shadow-sm"
               style={{ transform: `scale(${zoom / 100})`, transformOrigin: 'top center', minHeight: '594px' }}
@@ -415,13 +417,13 @@ export default function EditorPage() {
           </div>
 
           {/* Zoom controls */}
-          <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-lg border bg-card/90 px-2 py-1 shadow-sm backdrop-blur-sm">
-            <button onClick={() => setZoom(zoom - 10)} className="flex h-7 w-7 items-center justify-center rounded hover:bg-muted" disabled={zoom <= 25}>
-              <ZoomOut className="h-3.5 w-3.5" />
+          <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-lg border bg-card/90 px-2 py-1 shadow-sm backdrop-blur-sm safe-bottom">
+            <button onClick={() => setZoom(zoom - 10)} className="flex h-8 w-8 items-center justify-center rounded hover:bg-muted" disabled={zoom <= 25}>
+              <ZoomOut className="h-4 w-4" />
             </button>
             <span className="w-10 text-center text-xs font-medium tabular-nums">{zoom}%</span>
-            <button onClick={() => setZoom(zoom + 10)} className="flex h-7 w-7 items-center justify-center rounded hover:bg-muted" disabled={zoom >= 200}>
-              <ZoomIn className="h-3.5 w-3.5" />
+            <button onClick={() => setZoom(zoom + 10)} className="flex h-8 w-8 items-center justify-center rounded hover:bg-muted" disabled={zoom >= 200}>
+              <ZoomIn className="h-4 w-4" />
             </button>
           </div>
         </div>

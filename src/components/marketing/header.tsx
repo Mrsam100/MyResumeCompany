@@ -3,6 +3,7 @@ import Image from 'next/image'
 
 import { auth } from '@/auth'
 import { Button } from '@/components/ui/button'
+import { MobileNav } from '@/components/marketing/mobile-nav'
 
 const NAV_LINKS = [
   { href: '/resume-templates', label: 'Templates' },
@@ -24,7 +25,7 @@ export async function MarketingHeader() {
           <span className="text-lg font-bold tracking-tight">MyResumeCompany</span>
         </Link>
 
-        {/* Nav links */}
+        {/* Nav links — desktop */}
         <nav className="hidden items-center gap-6 md:flex">
           {NAV_LINKS.map((link) => (
             <Link
@@ -37,7 +38,7 @@ export async function MarketingHeader() {
           ))}
         </nav>
 
-        {/* Auth CTA */}
+        {/* Right side: Auth CTA + Mobile menu */}
         <div className="flex items-center gap-2 sm:gap-3">
           {isLoggedIn ? (
             <Link href="/dashboard">
@@ -45,7 +46,7 @@ export async function MarketingHeader() {
             </Link>
           ) : (
             <>
-              <Link href="/login">
+              <Link href="/login" className="hidden sm:block">
                 <Button variant="ghost" size="sm">Log in</Button>
               </Link>
               <Link href="/signup">
@@ -53,6 +54,7 @@ export async function MarketingHeader() {
               </Link>
             </>
           )}
+          <MobileNav isLoggedIn={isLoggedIn} navLinks={NAV_LINKS} />
         </div>
       </div>
     </header>
