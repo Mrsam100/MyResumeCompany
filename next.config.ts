@@ -6,8 +6,7 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       // Common typos and alternate paths
-      { source: '/login', destination: '/signup', permanent: false },
-      { source: '/signin', destination: '/signup', permanent: false },
+      { source: '/signin', destination: '/login', permanent: false },
       { source: '/sign-up', destination: '/signup', permanent: false },
       { source: '/sign-in', destination: '/signup', permanent: false },
       { source: '/register', destination: '/signup', permanent: false },
