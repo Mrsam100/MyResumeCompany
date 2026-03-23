@@ -9,7 +9,6 @@
 
 const REQUIRED_VARS = [
   'NEXTAUTH_SECRET',
-  'NEXTAUTH_URL',
 ] as const
 
 const REQUIRED_IN_PRODUCTION = [
