@@ -64,7 +64,7 @@ export async function POST(req: Request) {
 
     const res = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; MyResumeCompany/1.0; +https://myresumecompany.com)',
+        'User-Agent': 'Mozilla/5.0 (compatible; MyResumeCompany/1.0; +https://myresumecompany.canmero.com)',
         'Accept': 'text/html,application/xhtml+xml',
       },
       signal: controller.signal,

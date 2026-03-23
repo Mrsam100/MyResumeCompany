@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { JsonLd } from '@/components/schema/json-ld'
 import { RESUME_EXAMPLES, EXAMPLE_CATEGORIES } from '@/constants/resume-examples'
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
 
 export async function generateStaticParams() {
   return RESUME_EXAMPLES.map((ex) => ({ slug: ex.slug }))

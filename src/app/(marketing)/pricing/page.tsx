@@ -84,7 +84,7 @@ const FAQ = [
   },
   {
     q: 'Can I share my resume online?',
-    a: 'Yes. Every resume gets a public shareable link (myresumecompany.com/r/your-slug) that you can include in email signatures, LinkedIn, or job applications.',
+    a: 'Yes. Every resume gets a public shareable link (myresumecompany.canmero.com/r/your-slug) that you can include in email signatures, LinkedIn, or job applications.',
   },
 ]
 
@@ -94,7 +94,7 @@ export default async function PricingPage() {
   const ctaHref = session?.user ? '/credits' : '/signup'
   const ctaLabel = session?.user ? 'Go to Credits' : 'Get Started Free'
 
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
 
   return (
     <>

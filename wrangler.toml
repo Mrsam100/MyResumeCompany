@@ -36,9 +36,9 @@ binding = "ASSETS"
 
 # ─── Environment Variables (non-secret) ───
 [vars]
-NEXT_PUBLIC_APP_URL = "https://myresumecompany.com"
-NEXTAUTH_URL = "https://myresumecompany.com"
-PDF_SERVICE_URL = "https://pdf.myresumecompany.com"
+NEXT_PUBLIC_APP_URL = "https://myresumecompany.canmero.com"
+NEXTAUTH_URL = "https://myresumecompany.canmero.com"
+PDF_SERVICE_URL = "https://pdf.myresumecompany.canmero.com"
 ENVIRONMENT = "production"
 
 # ─── Secrets (never committed — set via CLI) ───
@@ -55,5 +55,6 @@ ENVIRONMENT = "production"
 # wrangler secret put PDF_SERVICE_SECRET
 
 # ─── Workers Limits ───
-[limits]
-cpu_ms = 50000  # 50s max CPU time (covers AI + PDF operations)
+# cpu_ms requires a paid Workers plan. Uncomment after upgrading:
+# [limits]
+# cpu_ms = 50000

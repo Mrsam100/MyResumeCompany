@@ -57,7 +57,7 @@ export default function TemplatesPage() {
   const templates = getAllTemplateConfigs()
   const categories = [...new Set(templates.map((t) => t.category))]
 
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
 
   return (
     <>

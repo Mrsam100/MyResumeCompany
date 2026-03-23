@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 }
 
 export default function ContactPage() {
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
   return (
     <>
     <JsonLd data={{ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl }, { '@type': 'ListItem', position: 2, name: 'Contact', item: `${siteUrl}/contact` }] }} />
@@ -30,10 +30,10 @@ export default function ContactPage() {
             For general inquiries and support
           </p>
           <a
-            href="mailto:support@myresumecompany.com"
+            href="mailto:support@myresumecompany.canmero.com"
             className="mt-3 inline-block text-sm font-medium text-primary hover:underline"
           >
-            support@myresumecompany.com
+            support@myresumecompany.canmero.com
           </a>
         </div>
 
@@ -44,10 +44,10 @@ export default function ContactPage() {
             Data requests and privacy concerns
           </p>
           <a
-            href="mailto:privacy@myresumecompany.com"
+            href="mailto:privacy@myresumecompany.canmero.com"
             className="mt-3 inline-block text-sm font-medium text-primary hover:underline"
           >
-            privacy@myresumecompany.com
+            privacy@myresumecompany.canmero.com
           </a>
         </div>
 
@@ -81,21 +81,21 @@ export default function ContactPage() {
           <div>
             <h3 className="font-semibold">How do I get a refund?</h3>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              Email support@myresumecompany.com with your account email and we&apos;ll review
+              Email support@myresumecompany.canmero.com with your account email and we&apos;ll review
               your request. We typically respond within 24 hours.
             </p>
           </div>
           <div>
             <h3 className="font-semibold">I found a bug. Where do I report it?</h3>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              Email support@myresumecompany.com with a description of what happened and
+              Email support@myresumecompany.canmero.com with a description of what happened and
               screenshots if possible. We appreciate every report.
             </p>
           </div>
           <div>
             <h3 className="font-semibold">Can I use MyResumeCompany for my team or company?</h3>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              Enterprise and team features are on our roadmap. Email support@myresumecompany.com
+              Enterprise and team features are on our roadmap. Email support@myresumecompany.canmero.com
               to discuss your needs and get early access.
             </p>
           </div>

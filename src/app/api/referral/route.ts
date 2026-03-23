@@ -35,7 +35,7 @@ export async function GET() {
     columns: { id: true, referrerCredited: true, createdAt: true },
   })
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
 
   return NextResponse.json({
     referralCode,

@@ -28,6 +28,7 @@ import { ResumeWizard } from '@/components/ai/resume-wizard'
 import { LinkedInImport } from '@/components/ai/linkedin-import'
 import { ResumeImport } from '@/components/ai/resume-import'
 import { ReferralCard } from '@/components/referral-card'
+import { NewResumeDialog } from '@/components/new-resume-dialog'
 import { useCurrentUser } from '@/hooks/use-current-user'
 import { cn } from '@/lib/utils'
 
@@ -50,7 +51,7 @@ export default function DashboardPage() {
   const { user } = useCurrentUser()
   const [resumes, setResumes] = useState<ResumeItem[]>([])
   const [loading, setLoading] = useState(true)
-  const [creating, setCreating] = useState(false)
+  const [newResumeOpen, setNewResumeOpen] = useState(false)
   const [wizardOpen, setWizardOpen] = useState(false)
   const [importOpen, setImportOpen] = useState(false)
   const [resumeImportOpen, setResumeImportOpen] = useState(false)
@@ -78,27 +79,6 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchResumes()
   }, [fetchResumes])
-
-  async function handleCreate() {
-    setCreating(true)
-    try {
-      const res = await fetch('/api/resumes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      })
-      if (res.ok) {
-        const data = await res.json()
-        router.push(`/editor/${data.resume.id}`)
-      } else {
-        toast.error('Failed to create resume')
-      }
-    } catch {
-      toast.error('Something went wrong')
-    } finally {
-      setCreating(false)
-    }
-  }
 
   async function handleDelete(id: string) {
     const res = await fetch(`/api/resumes/${id}`, { method: 'DELETE' })
@@ -138,8 +118,8 @@ export default function DashboardPage() {
               : 'Create your first resume and start landing interviews.'}
           </p>
         </div>
-        <Button onClick={handleCreate} disabled={creating} size="lg" className="gap-2 bg-gradient-to-r from-primary to-primary/80 shadow-sm hover:shadow-md">
-          {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+        <Button onClick={() => setNewResumeOpen(true)} size="lg" className="gap-2 bg-gradient-to-r from-primary to-primary/80 shadow-sm hover:shadow-md">
+          <Plus className="h-4 w-4" />
           New Resume
         </Button>
       </div>
@@ -365,13 +345,9 @@ export default function DashboardPage() {
                 you in minutes.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Button onClick={handleCreate} disabled={creating} size="lg" className="w-full sm:w-auto gap-2">
-                  {creating ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Plus className="h-4 w-4" />
-                  )}
-                  Start from scratch
+                <Button onClick={() => setNewResumeOpen(true)} size="lg" className="w-full sm:w-auto gap-2">
+                  <Plus className="h-4 w-4" />
+                  Create new resume
                 </Button>
                 <Button
                   variant="outline"
@@ -389,23 +365,16 @@ export default function DashboardPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {/* Create new — always first card */}
             <button
-              onClick={handleCreate}
-              disabled={creating}
+              onClick={() => setNewResumeOpen(true)}
               className="group flex h-full min-h-[280px] flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed bg-card/50 transition-all duration-300 hover:border-primary/40 hover:bg-card hover:shadow-[0_0_30px_oklch(0.205_0_0/8%)]"
             >
-              {creating ? (
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-              ) : (
-                <>
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 group-hover:scale-110 transition-transform duration-200">
-                    <Plus className="h-6 w-6 text-primary" />
-                  </div>
-                  <div className="text-center">
-                    <p className="font-medium">Create new resume</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">Blank or from template</p>
-                  </div>
-                </>
-              )}
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 group-hover:scale-110 transition-transform duration-200">
+                <Plus className="h-6 w-6 text-primary" />
+              </div>
+              <div className="text-center">
+                <p className="font-medium">Create new resume</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">Choose how to start</p>
+              </div>
             </button>
 
             {resumes.map((resume) => (
@@ -423,6 +392,13 @@ export default function DashboardPage() {
         )}
       </div>
 
+      <NewResumeDialog
+        open={newResumeOpen}
+        onOpenChange={setNewResumeOpen}
+        onWizardOpen={() => setWizardOpen(true)}
+        onLinkedInOpen={() => setImportOpen(true)}
+        onResumeImportOpen={() => setResumeImportOpen(true)}
+      />
       <ResumeWizard open={wizardOpen} onOpenChange={setWizardOpen} />
       <LinkedInImport open={importOpen} onOpenChange={setImportOpen} />
       <ResumeImport open={resumeImportOpen} onOpenChange={setResumeImportOpen} />

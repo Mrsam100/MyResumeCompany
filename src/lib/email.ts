@@ -15,7 +15,7 @@ function getResend(): Resend {
   return _resend
 }
 
-const FROM_EMAIL = 'MyResumeCompany <noreply@myresumecompany.com>'
+const FROM_EMAIL = 'MyResumeCompany <noreply@myresumecompany.canmero.com>'
 
 // ─── Password Reset Email ───
 
@@ -23,7 +23,7 @@ export async function sendPasswordResetEmail(
   to: string,
   token: string,
 ): Promise<void> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
   const resetUrl = `${appUrl}/reset-password?token=${token}`
 
   const resend = getResend()
@@ -94,7 +94,7 @@ export async function sendWelcomeEmail(
   to: string,
   name: string,
 ): Promise<void> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
 
   const resend = getResend()
 
@@ -168,7 +168,7 @@ function esc(text: string): string {
 
 function emailShell(title: string, body: string): string {
   const year = new Date().getFullYear()
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
   return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
 <body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
@@ -247,7 +247,7 @@ export const ONBOARDING_EMAILS: { day: number; subject: string; builder: (name: 
 // ─── Low Credits Email ───
 
 export async function sendLowCreditsEmail(to: string, name: string, credits: number): Promise<void> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
   await getResend().emails.send({
     from: FROM_EMAIL, to,
     subject: `You have ${credits} credits left — MyResumeCompany`,
@@ -263,7 +263,7 @@ export async function sendLowCreditsEmail(to: string, name: string, credits: num
 // ─── Referral Reward Email ───
 
 export async function sendReferralRewardEmail(to: string, name: string, friendName: string): Promise<void> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
   await getResend().emails.send({
     from: FROM_EMAIL, to,
     subject: 'You earned 50 bonus credits!',
@@ -277,7 +277,7 @@ export async function sendReferralRewardEmail(to: string, name: string, friendNa
 // ─── Onboarding Drip Sender ───
 
 export async function sendOnboardingEmail(to: string, name: string, step: number): Promise<void> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
   const email = ONBOARDING_EMAILS.find((e) => e.day === step)
   if (!email) return
   await getResend().emails.send({
@@ -290,7 +290,7 @@ export async function sendOnboardingEmail(to: string, name: string, step: number
 // ─── Newsletter Welcome ───
 
 export async function sendNewsletterWelcomeEmail(to: string): Promise<void> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
   await getResend().emails.send({
     from: FROM_EMAIL, to,
     subject: 'Welcome to the MyResumeCompany newsletter',

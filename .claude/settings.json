@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Read(//c/Users/Lenovo/TheResumeCompany/src/**)",
+      "Bash(npx wrangler:*)",
+      "Bash(curl -sI https://myresumecompany.canmero.com)",
+      "Read(//tmp/**)",
+      "Bash(curl -s https://my-resume-company.team-superorbit.workers.dev)",
+      "Bash(wsl --list --verbose)",
+      "Bash(wsl -d Ubuntu -- bash -c \"node --version && npm --version\")",
+      "Bash(wsl -d Ubuntu -- bash -c 'source $HOME/.nvm/nvm.sh && cd /mnt/c/Users/Lenovo/TheResumeCompany && npm ci 2>&1 | tail -5')"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\Lenovo\\TheResumeCompany\\src\\app\\(marketing)\\examples"
+    ]
+  }
+}

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   const siteUrl =
-    process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
+    process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
 
   return (
     <>
@@ -42,7 +42,7 @@ export default function PrivacyPage() {
           <p>
             MyResumeCompany (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) operates the website at{' '}
             <Link href="/" className="text-primary hover:underline">
-              myresumecompany.com
+              myresumecompany.canmero.com
             </Link>{' '}
             and the associated AI resume builder service (collectively, the &ldquo;Service&rdquo;).
             MyResumeCompany is a product of Schroeder Technologies Company, registered in the United States.
@@ -66,14 +66,14 @@ export default function PrivacyPage() {
           <ul>
             <li>
               <strong>Privacy inquiries:</strong>{' '}
-              <a href="mailto:privacy@myresumecompany.com" className="text-primary hover:underline">
-                privacy@myresumecompany.com
+              <a href="mailto:privacy@myresumecompany.canmero.com" className="text-primary hover:underline">
+                privacy@myresumecompany.canmero.com
               </a>
             </li>
             <li>
               <strong>General support:</strong>{' '}
-              <a href="mailto:support@myresumecompany.com" className="text-primary hover:underline">
-                support@myresumecompany.com
+              <a href="mailto:support@myresumecompany.canmero.com" className="text-primary hover:underline">
+                support@myresumecompany.canmero.com
               </a>
             </li>
             <li>
@@ -436,7 +436,7 @@ export default function PrivacyPage() {
               <tr>
                 <td><strong>Access</strong></td>
                 <td>Request a copy of all personal data we hold about you</td>
-                <td>Email privacy@myresumecompany.com</td>
+                <td>Email privacy@myresumecompany.canmero.com</td>
               </tr>
               <tr>
                 <td><strong>Correction</strong></td>
@@ -457,22 +457,22 @@ export default function PrivacyPage() {
               <tr>
                 <td><strong>Data portability</strong></td>
                 <td>Receive your data in a structured, machine-readable format (JSON)</td>
-                <td>Email privacy@myresumecompany.com</td>
+                <td>Email privacy@myresumecompany.canmero.com</td>
               </tr>
               <tr>
                 <td><strong>Restrict processing</strong></td>
                 <td>Request that we limit how we use your data</td>
-                <td>Email privacy@myresumecompany.com</td>
+                <td>Email privacy@myresumecompany.canmero.com</td>
               </tr>
               <tr>
                 <td><strong>Object to processing</strong></td>
                 <td>Object to processing based on legitimate interest</td>
-                <td>Email privacy@myresumecompany.com</td>
+                <td>Email privacy@myresumecompany.canmero.com</td>
               </tr>
               <tr>
                 <td><strong>Withdraw consent</strong></td>
                 <td>Withdraw any previously given consent at any time</td>
-                <td>Email privacy@myresumecompany.com</td>
+                <td>Email privacy@myresumecompany.canmero.com</td>
               </tr>
               <tr>
                 <td><strong>Opt out of sale</strong></td>
@@ -564,8 +564,8 @@ export default function PrivacyPage() {
           <p>
             California residents may submit requests to know, delete, or correct their personal
             information by emailing{' '}
-            <a href="mailto:privacy@myresumecompany.com" className="text-primary hover:underline">
-              privacy@myresumecompany.com
+            <a href="mailto:privacy@myresumecompany.canmero.com" className="text-primary hover:underline">
+              privacy@myresumecompany.canmero.com
             </a>{' '}
             with the subject line &ldquo;CCPA Request.&rdquo; You may also designate an authorized
             agent to submit a request on your behalf with written proof of authorization.
@@ -578,8 +578,8 @@ export default function PrivacyPage() {
             personal information from children under 16. If we learn that we have collected personal
             data from a child under 16, we will delete that data promptly. If you believe a child
             under 16 has provided us with personal information, please contact us at{' '}
-            <a href="mailto:privacy@myresumecompany.com" className="text-primary hover:underline">
-              privacy@myresumecompany.com
+            <a href="mailto:privacy@myresumecompany.canmero.com" className="text-primary hover:underline">
+              privacy@myresumecompany.canmero.com
             </a>
             .
           </p>
@@ -673,20 +673,20 @@ export default function PrivacyPage() {
           <ul>
             <li>
               <strong>Email:</strong>{' '}
-              <a href="mailto:privacy@myresumecompany.com" className="text-primary hover:underline">
-                privacy@myresumecompany.com
+              <a href="mailto:privacy@myresumecompany.canmero.com" className="text-primary hover:underline">
+                privacy@myresumecompany.canmero.com
               </a>
             </li>
             <li>
               <strong>General support:</strong>{' '}
-              <a href="mailto:support@myresumecompany.com" className="text-primary hover:underline">
-                support@myresumecompany.com
+              <a href="mailto:support@myresumecompany.canmero.com" className="text-primary hover:underline">
+                support@myresumecompany.canmero.com
               </a>
             </li>
             <li>
               <strong>Contact page:</strong>{' '}
               <Link href="/contact" className="text-primary hover:underline">
-                myresumecompany.com/contact
+                myresumecompany.canmero.com/contact
               </Link>
             </li>
           </ul>

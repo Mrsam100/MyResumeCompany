@@ -55,7 +55,7 @@ const POSTS = [
 ]
 
 export default function BlogPage() {
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
   return (
     <>
     <JsonLd data={{ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl }, { '@type': 'ListItem', position: 2, name: 'Blog', item: `${siteUrl}/blog` }] }} />

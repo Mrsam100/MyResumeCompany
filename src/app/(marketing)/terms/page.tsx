@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 }
 
 export default function TermsPage() {
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
   return (
     <>
     <JsonLd data={{ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl }, { '@type': 'ListItem', position: 2, name: 'Terms of Service', item: `${siteUrl}/terms` }] }} />
@@ -95,7 +95,7 @@ export default function TermsPage() {
 
         <h2>11. Contact</h2>
         <p>
-          For questions about these terms, contact us at legal@myresumecompany.com.
+          For questions about these terms, contact us at legal@myresumecompany.canmero.com.
         </p>
       </div>
     </div>

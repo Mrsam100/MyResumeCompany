@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { JsonLd } from '@/components/schema/json-ld'
 import { NewsletterSignup } from '@/components/marketing/newsletter-signup'
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
 
 interface Article {
   title: string

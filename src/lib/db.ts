@@ -15,9 +15,10 @@ function createNodeClient(): postgres.Sql {
     throw new Error('DATABASE_URL environment variable is not set')
   }
   return postgres(connectionString, {
-    max: process.env.NODE_ENV === 'production' ? 15 : 10,
+    max: process.env.NODE_ENV === 'production' ? 5 : 10,
     idle_timeout: 20,
     connect_timeout: 10,
+    prepare: false, // Required for Supabase transaction pooler (PgBouncer)
   })
 }
 

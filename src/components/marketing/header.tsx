@@ -49,7 +49,7 @@ export async function MarketingHeader() {
                 <Button variant="ghost" size="sm">Log in</Button>
               </Link>
               <Link href="/signup">
-                <Button size="sm" className="text-xs sm:text-sm">Get Started</Button>
+                <Button size="sm" className="bg-gradient-to-r from-blue-600 to-violet-600 text-xs text-white shadow-sm sm:text-sm">Get Started</Button>
               </Link>
             </>
           )}

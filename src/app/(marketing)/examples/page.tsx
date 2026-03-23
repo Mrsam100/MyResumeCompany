@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 }
 
 export default function ExamplesPage() {
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
 
   return (
     <>

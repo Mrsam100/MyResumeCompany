@@ -65,7 +65,8 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, userId: newUser.id }, { status: 201 })
-  } catch {
+  } catch (err) {
+    console.error('[register] Error:', err)
     return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 500 })
   }
 }

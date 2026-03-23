@@ -1,5 +1,4 @@
 import type { NextConfig } from 'next'
-import { withSentryConfig } from '@sentry/nextjs'
 
 const nextConfig: NextConfig = {
   // OpenNext/Cloudflare reads standard Next.js build output
@@ -73,13 +72,21 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default withSentryConfig(nextConfig, {
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
-  authToken: process.env.SENTRY_AUTH_TOKEN,
-  silent: true,
-  tunnelRoute: '/monitoring',
-  sourcemaps: {
-    deleteSourcemapsAfterUpload: true,
-  },
-})
+// Sentry build-time config (source maps upload) — only enable when SENTRY_AUTH_TOKEN is set.
+// On Cloudflare Workers, Sentry server SDK is incompatible so we skip it entirely.
+let config = nextConfig
+try {
+  if (process.env.SENTRY_AUTH_TOKEN) {
+    const { withSentryConfig } = require('@sentry/nextjs')
+    config = withSentryConfig(nextConfig, {
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      silent: true,
+      tunnelRoute: '/monitoring',
+      sourcemaps: { deleteSourcemapsAfterUpload: true },
+    })
+  }
+} catch {}
+
+export default config

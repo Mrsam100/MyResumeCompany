@@ -248,7 +248,7 @@ export default async function ComparePage({
   if (!comp) notFound()
 
   const siteUrl =
-    process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.com'
+    process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
 
   const otherComparisons = COMPETITOR_SLUGS.filter((s) => s !== slug).map(
     (s) => COMPETITORS[s]

@@ -16,16 +16,20 @@ const REQUIRED_IN_PRODUCTION = [
   'GOOGLE_CLIENT_ID',
   'GOOGLE_CLIENT_SECRET',
   'GEMINI_API_KEY',
-  'STRIPE_SECRET_KEY',
-  'STRIPE_WEBHOOK_SECRET',
-  'STRIPE_PRO_MONTHLY_PRICE_ID',
-  'STRIPE_PRO_YEARLY_PRICE_ID',
   'NEXT_PUBLIC_APP_URL',
   'UPSTASH_REDIS_REST_URL',
   'UPSTASH_REDIS_REST_TOKEN',
   'SENTRY_DSN',
   'NEXT_PUBLIC_SENTRY_DSN',
   'RESEND_API_KEY',
+] as const
+
+// Stripe vars are optional — app runs without payments until configured
+const OPTIONAL_IN_PRODUCTION = [
+  'STRIPE_SECRET_KEY',
+  'STRIPE_WEBHOOK_SECRET',
+  'STRIPE_PRO_MONTHLY_PRICE_ID',
+  'STRIPE_PRO_YEARLY_PRICE_ID',
 ] as const
 
 // DATABASE_URL is only required on Node.js (Vercel/local).
@@ -56,10 +60,17 @@ export function validateEnv() {
     }
   }
 
+  // Warn about optional Stripe vars (don't block startup)
+  if (isProduction) {
+    const optionalMissing = OPTIONAL_IN_PRODUCTION.filter((k) => !process.env[k])
+    if (optionalMissing.length > 0) {
+      console.warn(`[env] Optional vars not set (payments disabled):\n${optionalMissing.map((k) => `  - ${k}`).join('\n')}`)
+    }
+  }
+
   if (missing.length > 0) {
     const msg = `Missing environment variables:\n${missing.map((k) => `  - ${k}`).join('\n')}`
     if (isProduction) {
-      // Fail hard in production — do not start with missing critical config
       throw new Error(`[env] FATAL: ${msg}`)
     } else {
       console.warn(`[env] ${msg}`)
