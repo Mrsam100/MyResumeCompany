@@ -69,7 +69,7 @@ export function ExperienceEditor({ sectionId }: { sectionId: string }) {
                 <Label className="mb-1.5 text-xs text-muted-foreground">Location</Label>
                 <Input placeholder="San Francisco, CA" value={entry.fields.location ?? ''} onChange={(e) => updateEntryField(sectionId, entry.id, 'location', e.target.value)} />
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="sm:col-span-2 grid grid-cols-2 gap-3">
                 <div>
                   <Label className="mb-1.5 text-xs text-muted-foreground">Start</Label>
                   <DateMonthYearPicker value={entry.startDate ?? ''} onChange={(val) => setEntryDates(sectionId, entry.id, { startDate: val })} />

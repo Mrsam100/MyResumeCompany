@@ -55,11 +55,11 @@ export function DateMonthYearPicker({
   }
 
   return (
-    <div className={cn('flex gap-1.5', disabled && 'pointer-events-none opacity-50')}>
+    <div className={cn('flex min-w-0 gap-1.5', disabled && 'pointer-events-none opacity-50')}>
       {/* Month */}
       <Select value={month} onValueChange={handleMonthChange}>
-        <SelectTrigger size="sm" className="flex-1">
-          <Calendar className="h-3 w-3 text-muted-foreground/50" />
+        <SelectTrigger size="sm" className="min-w-0 flex-1">
+          <Calendar className="h-3 w-3 shrink-0 text-muted-foreground/50" />
           <SelectValue placeholder="Month" />
         </SelectTrigger>
         <SelectContent>
@@ -73,7 +73,7 @@ export function DateMonthYearPicker({
 
       {/* Year */}
       <Select value={year} onValueChange={handleYearChange}>
-        <SelectTrigger size="sm" className="w-20">
+        <SelectTrigger size="sm" className="w-[4.5rem] shrink-0">
           <SelectValue placeholder="Year" />
         </SelectTrigger>
         <SelectContent>

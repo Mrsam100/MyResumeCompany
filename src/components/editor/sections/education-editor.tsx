@@ -58,7 +58,7 @@ export function EducationEditor({ sectionId }: { sectionId: string }) {
               <Label className="mb-1.5 text-xs text-muted-foreground">Field of Study</Label>
               <Input placeholder="Computer Science" value={entry.fields.fieldOfStudy ?? ''} onChange={(e) => updateEntryField(sectionId, entry.id, 'fieldOfStudy', e.target.value)} />
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="sm:col-span-2 grid grid-cols-[1fr_1fr_auto] gap-3">
               <div>
                 <Label className="mb-1.5 text-xs text-muted-foreground">Start</Label>
                 <DateMonthYearPicker value={entry.startDate ?? ''} onChange={(val) => setEntryDates(sectionId, entry.id, { startDate: val })} />
@@ -67,10 +67,10 @@ export function EducationEditor({ sectionId }: { sectionId: string }) {
                 <Label className="mb-1.5 text-xs text-muted-foreground">End</Label>
                 <DateMonthYearPicker value={entry.endDate ?? ''} onChange={(val) => setEntryDates(sectionId, entry.id, { endDate: val })} />
               </div>
-            </div>
-            <div>
-              <Label className="mb-1.5 text-xs text-muted-foreground">GPA (optional)</Label>
-              <Input placeholder="3.8 / 4.0" value={entry.fields.gpa ?? ''} onChange={(e) => updateEntryField(sectionId, entry.id, 'gpa', e.target.value)} />
+              <div>
+                <Label className="mb-1.5 text-xs text-muted-foreground">GPA</Label>
+                <Input placeholder="3.8 / 4.0" className="w-24" value={entry.fields.gpa ?? ''} onChange={(e) => updateEntryField(sectionId, entry.id, 'gpa', e.target.value)} />
+              </div>
             </div>
           </div>
         </div>

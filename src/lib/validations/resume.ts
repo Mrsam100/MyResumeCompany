@@ -12,7 +12,7 @@ export const personalInfoSchema = z.object({
   website: z.union([z.string().url('Invalid URL'), z.literal('')]).optional(),
   portfolio: z.union([z.string().url('Invalid URL'), z.literal('')]).optional(),
   summary: z.string().max(2000).optional(),
-  photoUrl: z.union([z.string().url(), z.literal('')]).optional(),
+  photoUrl: z.union([z.string().url(), z.string().startsWith('data:image/'), z.literal('')]).optional(),
 })
 
 // ==================== Section Entry ====================
