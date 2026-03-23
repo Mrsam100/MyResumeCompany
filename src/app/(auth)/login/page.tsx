@@ -57,8 +57,8 @@ function LoginForm() {
       return
     }
 
-    router.push(callbackUrl)
-    router.refresh()
+    // Full page redirect ensures the auth cookie is sent with the request
+    window.location.href = callbackUrl
   }
 
   function handleSocialLogin(provider: string) {

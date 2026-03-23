@@ -80,8 +80,8 @@ function SignupForm() {
       }).then((res) => { if (res.ok) localStorage.removeItem('referralCode') }).catch(() => {})
     }
 
-    router.push('/dashboard')
-    router.refresh()
+    // Full page redirect ensures the auth cookie is sent with the request
+    window.location.href = '/dashboard'
   }
 
   function handleSocialLogin(provider: string) {
