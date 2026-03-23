@@ -1,8 +1,7 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  // OpenNext/Cloudflare reads standard Next.js build output
-  // No special config needed — the adapter handles the conversion
+  serverExternalPackages: ['pdf-parse', 'pdfjs-dist'],
 
   async redirects() {
     return [
