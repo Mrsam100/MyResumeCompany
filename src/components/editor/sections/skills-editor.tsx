@@ -116,9 +116,9 @@ export function SkillsEditor({ sectionId }: { sectionId: string }) {
                     {skill}
                     <button
                       onClick={() => removeSkill(entry.id, skill)}
-                      className="flex h-5 w-5 items-center justify-center rounded-sm hover:text-destructive"
+                      className="flex h-6 w-6 items-center justify-center rounded-sm p-0.5 hover:text-destructive"
                     >
-                      <X className="h-3.5 w-3.5" />
+                      <X className="h-4 w-4" />
                     </button>
                   </Badge>
                 ))}

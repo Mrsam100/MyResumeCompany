@@ -285,21 +285,21 @@ export default async function PricingPage() {
             Transparent per-action pricing. Pro users pay nothing.
           </p>
         </div>
-        <div className="mt-8 overflow-hidden rounded-xl border">
+        <div className="mt-8 overflow-x-auto rounded-xl border">
           <table className="w-full text-sm">
             <thead className="bg-muted/50">
               <tr>
-                <th className="px-5 py-3 text-left font-medium">Feature</th>
-                <th className="px-5 py-3 text-center font-medium">Free</th>
-                <th className="px-5 py-3 text-center font-medium">Pro</th>
+                <th className="px-3 sm:px-5 py-3 text-left font-medium">Feature</th>
+                <th className="px-3 sm:px-5 py-3 text-center font-medium">Free</th>
+                <th className="px-3 sm:px-5 py-3 text-center font-medium">Pro</th>
               </tr>
             </thead>
             <tbody className="divide-y">
               {Object.entries(CREDIT_COSTS).map(([key, cost]) => (
                 <tr key={key}>
-                  <td className="px-5 py-3">{formatFeatureName(key)}</td>
-                  <td className="px-5 py-3 text-center">{cost} credits</td>
-                  <td className="px-5 py-3 text-center font-medium text-green-600">Free</td>
+                  <td className="px-3 sm:px-5 py-3 whitespace-nowrap">{formatFeatureName(key)}</td>
+                  <td className="px-3 sm:px-5 py-3 text-center">{cost} credits</td>
+                  <td className="px-3 sm:px-5 py-3 text-center font-medium text-green-600">Free</td>
                 </tr>
               ))}
             </tbody>

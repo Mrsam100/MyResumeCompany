@@ -130,7 +130,7 @@ export function TemplateCustomizer() {
           {/* Color Presets */}
           <div>
             <p className="mb-2 text-xs font-medium">Quick Colors</p>
-            <div className="grid grid-cols-6 gap-1.5">
+            <div className="grid grid-cols-4 sm:grid-cols-6 gap-1.5">
               {COLOR_PRESETS.map((preset) => (
                 <button
                   key={preset.name}
@@ -138,7 +138,7 @@ export function TemplateCustomizer() {
                   className="group relative"
                   title={preset.name}
                 >
-                  <div className="flex h-7 w-full overflow-hidden rounded-md border shadow-sm transition-transform group-hover:scale-110">
+                  <div className="flex h-8 sm:h-7 w-full overflow-hidden rounded-md border shadow-sm transition-transform group-hover:scale-110">
                     <div className="flex-1" style={{ backgroundColor: preset.colors.primary }} />
                     <div className="flex-1" style={{ backgroundColor: preset.colors.secondary }} />
                   </div>

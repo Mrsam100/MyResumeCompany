@@ -361,7 +361,7 @@ export function CoverLetterGenerator() {
                   ))}
                 </div>
 
-                <div className="grid gap-2 max-h-[50vh] overflow-y-auto pr-1">
+                <div className="grid gap-2 max-h-[40vh] sm:max-h-[50vh] overflow-y-auto pr-1">
                   {filteredTemplates.map((template) => (
                     <button
                       key={template.id}

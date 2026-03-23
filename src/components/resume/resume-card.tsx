@@ -89,7 +89,7 @@ export function ResumeCard({
             </div>
 
             <DropdownMenu>
-              <DropdownMenuTrigger className="h-8 w-8 shrink-0 rounded-md opacity-0 transition-all duration-200 hover:bg-muted/80 group-hover:opacity-100 backdrop-blur-sm">
+              <DropdownMenuTrigger className="h-8 w-8 shrink-0 rounded-md opacity-100 sm:opacity-0 transition-all duration-200 hover:bg-muted/80 sm:group-hover:opacity-100 backdrop-blur-sm">
                 <MoreHorizontal className="mx-auto h-4 w-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">

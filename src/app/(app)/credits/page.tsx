@@ -495,7 +495,7 @@ function CreditsPageInner() {
                       {COST_LABELS[tx.type] ?? tx.type}
                     </p>
                     {tx.description && (
-                      <p className="text-xs text-muted-foreground truncate max-w-[200px] sm:max-w-[300px]">
+                      <p className="text-xs text-muted-foreground truncate max-w-[160px] sm:max-w-[300px]">
                         {tx.description}
                       </p>
                     )}

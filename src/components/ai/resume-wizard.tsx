@@ -620,7 +620,7 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
             <>
               <div>
                 <Label className="mb-2 text-xs font-semibold">Resume Format</Label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {FORMAT_OPTIONS.map((opt) => (
                     <button
                       key={opt.value}
@@ -662,7 +662,7 @@ export function ResumeWizard({ open, onOpenChange }: ResumeWizardProps) {
 
               <div>
                 <Label className="mb-2 text-xs font-semibold">Content Density</Label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {DENSITY_OPTIONS.map((opt) => (
                     <button
                       key={opt.value}

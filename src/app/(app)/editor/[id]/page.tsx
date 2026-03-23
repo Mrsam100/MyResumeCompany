@@ -204,9 +204,9 @@ export default function EditorPage() {
 
           {/* Template selector */}
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1 rounded-md border bg-muted/50 px-2 py-1 text-[11px] font-medium text-muted-foreground hover:bg-muted">
+            <DropdownMenuTrigger className="hidden sm:flex items-center gap-1 rounded-md border bg-muted/50 px-2 py-1 text-[11px] font-medium text-muted-foreground hover:bg-muted">
               <LayoutGrid className="h-3 w-3" />
-              <span className="hidden sm:inline">{TEMPLATE_NAMES[templateId] ?? templateId}</span>
+              <span className="hidden md:inline">{TEMPLATE_NAMES[templateId] ?? templateId}</span>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="max-h-64 overflow-y-auto">
               {Object.entries(TEMPLATE_NAMES).map(([slug, name]) => (
@@ -255,7 +255,7 @@ export default function EditorPage() {
 
           <Separator orientation="vertical" className="mx-1 hidden h-5 lg:block" />
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5 sm:gap-1">
             {hasJobDescription && atsScore !== null && (
               <Tooltip>
                 <TooltipTrigger>
@@ -332,7 +332,7 @@ export default function EditorPage() {
               </button>
             </div>
             {/* URL import */}
-            <div className="flex gap-1.5">
+            <div className="flex flex-col gap-1.5 sm:flex-row">
               <div className="relative flex-1">
                 <Link2 className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground/40" />
                 <input
@@ -340,7 +340,7 @@ export default function EditorPage() {
                   value={jdUrlInput}
                   onChange={(e) => setJdUrlInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleJdUrlImport()}
-                  placeholder="Paste Indeed/LinkedIn job URL..."
+                  placeholder="Paste job URL..."
                   className="h-8 w-full rounded-md border bg-background pl-8 pr-3 text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 />
               </div>
