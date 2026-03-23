@@ -72,7 +72,7 @@ export const users = pgTable(
     name: text('name'),
     image: text('image'),
     hashedPassword: text('hashed_password'),
-    credits: integer('credits').notNull().default(100),
+    credits: integer('credits').notNull().default(0),
     subscriptionTier: subscriptionTierEnum('subscription_tier').notNull().default('FREE'),
     referralCode: text('referral_code').unique(),
     referredBy: text('referred_by'),

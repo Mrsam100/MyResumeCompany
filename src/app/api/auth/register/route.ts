@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 import { users, creditTransactions } from '@/lib/db/schema'
 import { signupSchema } from '@/lib/validations/auth'
 import { checkAuthRateLimit } from '@/lib/auth/rate-limit'
+import { sendWelcomeEmail } from '@/lib/email'
 import { sql } from 'drizzle-orm'
 
 export async function POST(req: Request) {
@@ -63,6 +64,11 @@ export async function POST(req: Request) {
       }
       throw err
     }
+
+    // Send welcome email (non-blocking)
+    sendWelcomeEmail(email, name).catch((err) =>
+      console.error('[register] Welcome email failed:', err),
+    )
 
     return NextResponse.json({ success: true, userId: newUser.id }, { status: 201 })
   } catch (err) {

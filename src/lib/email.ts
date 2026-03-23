@@ -23,7 +23,7 @@ export async function sendPasswordResetEmail(
   to: string,
   token: string,
 ): Promise<void> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com'
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://myresumecompany.canmero.com').trim()
   const resetUrl = `${appUrl}/reset-password?token=${token}`
 
   const resend = getResend()
