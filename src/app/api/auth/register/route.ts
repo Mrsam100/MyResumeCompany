@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server'
 import { hashPassword } from '@/lib/auth/password'
 
 import { db } from '@/lib/db'
-import { users, creditTransactions } from '@/lib/db/schema'
+import { users, accounts, creditTransactions } from '@/lib/db/schema'
 import { signupSchema } from '@/lib/validations/auth'
 import { checkAuthRateLimit } from '@/lib/auth/rate-limit'
 import { sendWelcomeEmail } from '@/lib/email'
-import { sql } from 'drizzle-orm'
+import { sql, eq } from 'drizzle-orm'
 
 export async function POST(req: Request) {
   // (#4) Rate limit: 10 signups per IP per hour
@@ -57,8 +57,38 @@ export async function POST(req: Request) {
       })
     } catch (err: unknown) {
       if (err instanceof Error && 'code' in err && (err as { code: string }).code === '23505') {
+        // Detect how the existing account was created
+        let method: 'password' | 'google' | 'github' | 'unknown' = 'unknown'
+        try {
+          const existing = await db
+            .select({ id: users.id, hashedPassword: users.hashedPassword })
+            .from(users)
+            .where(eq(users.email, email))
+            .limit(1)
+
+          if (existing.length > 0) {
+            if (existing[0].hashedPassword) {
+              method = 'password'
+            } else {
+              // Check which OAuth provider
+              const oauthAccounts = await db
+                .select({ provider: accounts.provider })
+                .from(accounts)
+                .where(eq(accounts.userId, existing[0].id))
+                .limit(1)
+
+              if (oauthAccounts.length > 0) {
+                const p = oauthAccounts[0].provider
+                method = p === 'google' ? 'google' : p === 'github' ? 'github' : 'unknown'
+              }
+            }
+          }
+        } catch {
+          // Non-critical — fall through with 'unknown'
+        }
+
         return NextResponse.json(
-          { error: 'An account with this email already exists' },
+          { error: 'An account with this email already exists', method },
           { status: 409 },
         )
       }

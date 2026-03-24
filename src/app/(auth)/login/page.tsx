@@ -31,6 +31,7 @@ function LoginForm() {
   const searchParams = useSearchParams()
   const rawCallback = searchParams.get('callbackUrl') ?? '/dashboard'
   const callbackUrl = isLocalPath(rawCallback) ? rawCallback : '/dashboard'
+  const prefillEmail = searchParams.get('email') ?? ''
   const [error, setError] = useState('')
   const [socialLoading, setSocialLoading] = useState<string | null>(null)
   const [showPassword, setShowPassword] = useState(false)
@@ -41,6 +42,7 @@ function LoginForm() {
     formState: { errors, isSubmitting },
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
+    defaultValues: { email: prefillEmail },
   })
 
   async function onSubmit(data: LoginInput) {

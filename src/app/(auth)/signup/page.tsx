@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, Eye, EyeOff } from 'lucide-react'
+import { Loader2, Eye, EyeOff, ArrowRight } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,6 +26,7 @@ function SignupForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [error, setError] = useState('')
+  const [existingAccount, setExistingAccount] = useState<{ email: string; method: string } | null>(null)
   const [socialLoading, setSocialLoading] = useState<string | null>(null)
   const [showPassword, setShowPassword] = useState(false)
 
@@ -45,6 +46,7 @@ function SignupForm() {
 
   async function onSubmit(data: SignupInput) {
     setError('')
+    setExistingAccount(null)
 
     const res = await fetch('/api/auth/register', {
       method: 'POST',
@@ -54,6 +56,10 @@ function SignupForm() {
 
     if (!res.ok) {
       const body = await res.json()
+      if (res.status === 409 && body.method) {
+        setExistingAccount({ email: data.email, method: body.method })
+        return
+      }
       setError(body.error ?? 'Something went wrong')
       return
     }
@@ -107,6 +113,24 @@ function SignupForm() {
       <Divider />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {existingAccount && (
+          <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm">
+            <p className="font-medium text-amber-900">You already have an account</p>
+            <p className="mt-1 text-amber-700">
+              {existingAccount.method === 'google'
+                ? 'This email is linked to a Google account. Sign in with Google instead.'
+                : existingAccount.method === 'github'
+                  ? 'This email is linked to a GitHub account. Sign in with GitHub instead.'
+                  : 'An account with this email already exists.'}
+            </p>
+            <Link
+              href={`/login?email=${encodeURIComponent(existingAccount.email)}`}
+              className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+            >
+              Sign in instead <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        )}
         {error && (
           <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
         )}
