@@ -190,6 +190,9 @@ export default async function BlogArticlePage({
             <Link href="/resume-templates">
               <Button variant="outline" size="lg">Browse Templates</Button>
             </Link>
+            <Link href="/pricing">
+              <Button variant="ghost" size="lg" className="text-muted-foreground">View Pricing</Button>
+            </Link>
           </div>
         </div>
 
