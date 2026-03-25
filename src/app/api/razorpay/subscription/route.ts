@@ -2,34 +2,41 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { eq } from 'drizzle-orm'
 import { auth } from '@/auth'
-import { stripe } from '@/lib/stripe/client'
-import { getOrCreateStripeCustomer, getSubscriptionPriceId } from '@/lib/stripe/helpers'
+import { razorpay } from '@/lib/razorpay/client'
 import { db } from '@/lib/db'
 import { subscriptions } from '@/lib/db/schema'
-import { checkStripeRateLimit } from '@/lib/stripe/rate-limit'
+import { checkPaymentRateLimit } from '@/lib/razorpay/rate-limit'
 
 const inputSchema = z.object({
   plan: z.enum(['monthly', 'yearly']),
 })
 
+function getPlanId(plan: 'monthly' | 'yearly'): string | null {
+  if (plan === 'monthly') return process.env.RAZORPAY_PLAN_ID_MONTHLY ?? null
+  return process.env.RAZORPAY_PLAN_ID_YEARLY ?? null
+}
+
+/**
+ * Create a Razorpay subscription.
+ * Client opens the Razorpay modal with the returned subscription_id.
+ */
 export async function POST(req: Request) {
   const session = await auth()
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // (#15) CSRF: verify Origin header
+  // CSRF: verify Origin header
   const origin = req.headers.get('origin')
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
   if (origin && new URL(appUrl).origin !== new URL(origin).origin) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  // (#5) Rate limit
-  const rateLimitError = await checkStripeRateLimit(session.user.id)
+  const rateLimitError = await checkPaymentRateLimit(session.user.id)
   if (rateLimitError) return rateLimitError
 
-  // (#3) Query DB directly instead of trusting stale JWT session
+  // Check if already subscribed
   const existingSub = await db.query.subscriptions.findFirst({
     where: eq(subscriptions.userId, session.user.id),
     columns: { status: true },
@@ -50,8 +57,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
   }
 
-  const priceId = getSubscriptionPriceId(parsed.plan)
-  if (!priceId) {
+  const planId = getPlanId(parsed.plan)
+  if (!planId) {
     return NextResponse.json(
       { error: 'Subscription plan not configured. Please contact support.' },
       { status: 500 },
@@ -59,29 +66,22 @@ export async function POST(req: Request) {
   }
 
   try {
-    const customerId = await getOrCreateStripeCustomer(session.user.id)
-
-    const checkoutSession = await stripe.checkout.sessions.create({
-      customer: customerId,
-      mode: 'subscription',
-      line_items: [{ price: priceId, quantity: 1 }],
-      metadata: {
+    const subscription = await razorpay.subscriptions.create({
+      plan_id: planId,
+      total_count: parsed.plan === 'monthly' ? 120 : 10, // max billing cycles
+      notes: {
         userId: session.user.id,
         type: 'subscription',
         plan: parsed.plan,
       },
-      success_url: `${appUrl}/credits?session_id={CHECKOUT_SESSION_ID}&success=true`,
-      cancel_url: `${appUrl}/credits?canceled=true`,
-      subscription_data: {
-        metadata: {
-          userId: session.user.id,
-        },
-      },
     })
 
-    return NextResponse.json({ url: checkoutSession.url })
+    return NextResponse.json({
+      subscriptionId: subscription.id,
+      plan: parsed.plan,
+    })
   } catch (err) {
-    console.error('Stripe subscription checkout error:', err)
-    return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 })
+    console.error('Razorpay subscription creation error:', err)
+    return NextResponse.json({ error: 'Failed to create subscription' }, { status: 500 })
   }
 }

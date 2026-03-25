@@ -31,7 +31,7 @@ function getRedis(): Redis {
   return client
 }
 
-// Export redis for @upstash/ratelimit (used by AI and Stripe rate limiters).
+// Export redis for @upstash/ratelimit (used by AI and payment rate limiters).
 // Works on both Node.js and Workers since Upstash uses REST/HTTP.
 export const redis = new Proxy({} as Redis, {
   get(_, prop) {

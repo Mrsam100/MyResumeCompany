@@ -229,7 +229,7 @@ export default function TemplatesPage() {
               <p className="mt-1 text-sm text-muted-foreground">
                 Yes. All templates are free to use. You get 100 credits when you sign up, which
                 covers AI writing, ATS scanning, and PDF export. Some templates are marked Pro —
-                these are available to Pro subscribers ($12/mo) and offer more advanced layouts.
+                these are available to Pro subscribers (₹799/mo) and offer more advanced layouts.
               </p>
             </div>
             <div>

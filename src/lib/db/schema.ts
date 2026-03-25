@@ -265,9 +265,8 @@ export const subscriptions = pgTable('subscriptions', {
     .notNull()
     .unique()
     .references(() => users.id, { onDelete: 'cascade' }),
-  stripeCustomerId: text('stripe_customer_id').notNull().unique(),
-  stripeSubscriptionId: text('stripe_subscription_id').unique(),
-  stripePriceId: text('stripe_price_id'),
+  razorpaySubscriptionId: text('razorpay_subscription_id').unique(),
+  razorpayPlanId: text('razorpay_plan_id'),
   status: subscriptionStatusEnum('status').notNull().default('ACTIVE'),
   currentPeriodStart: timestamp('current_period_start', { mode: 'date' }),
   currentPeriodEnd: timestamp('current_period_end', { mode: 'date' }),
@@ -349,10 +348,10 @@ export const newsletterSubscribers = pgTable(
   },
 )
 
-// ==================== STRIPE EVENTS (Webhook Idempotency) ====================
+// ==================== PAYMENT EVENTS (Webhook Idempotency) ====================
 
-export const stripeEvents = pgTable('stripe_events', {
-  id: text('id').primaryKey(), // Stripe event ID (evt_xxx)
+export const paymentEvents = pgTable('payment_events', {
+  id: text('id').primaryKey(), // Razorpay event ID
   type: text('type').notNull(),
   processedAt: timestamp('processed_at', { mode: 'date' }).notNull().defaultNow(),
 })

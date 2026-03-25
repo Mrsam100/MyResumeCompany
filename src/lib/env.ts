@@ -23,12 +23,14 @@ const REQUIRED_IN_PRODUCTION = [
   'RESEND_API_KEY',
 ] as const
 
-// Stripe vars are optional — app runs without payments until configured
+// Razorpay vars are optional — app runs without payments until configured
 const OPTIONAL_IN_PRODUCTION = [
-  'STRIPE_SECRET_KEY',
-  'STRIPE_WEBHOOK_SECRET',
-  'STRIPE_PRO_MONTHLY_PRICE_ID',
-  'STRIPE_PRO_YEARLY_PRICE_ID',
+  'RAZORPAY_KEY_ID',
+  'RAZORPAY_KEY_SECRET',
+  'RAZORPAY_WEBHOOK_SECRET',
+  'NEXT_PUBLIC_RAZORPAY_KEY_ID',
+  'RAZORPAY_PLAN_ID_MONTHLY',
+  'RAZORPAY_PLAN_ID_YEARLY',
 ] as const
 
 // DATABASE_URL is only required on Node.js (Vercel/local).
@@ -59,7 +61,7 @@ export function validateEnv() {
     }
   }
 
-  // Warn about optional Stripe vars (don't block startup)
+  // Warn about optional Razorpay vars (don't block startup)
   if (isProduction) {
     const optionalMissing = OPTIONAL_IN_PRODUCTION.filter((k) => !process.env[k])
     if (optionalMissing.length > 0) {

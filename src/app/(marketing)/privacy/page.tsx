@@ -111,7 +111,7 @@ export default function PrivacyPage() {
               </tr>
               <tr>
                 <td><strong>Payment data</strong></td>
-                <td>Billing name, billing address, payment method (processed by Stripe)</td>
+                <td>Billing name, billing address, payment method (processed by Razorpay)</td>
                 <td>Processing purchases and subscriptions</td>
               </tr>
               <tr>
@@ -125,12 +125,12 @@ export default function PrivacyPage() {
             <strong>Important:</strong> We never store raw credit card numbers, CVVs, or full card
             details. All payment processing is handled by{' '}
             <a
-              href="https://stripe.com/privacy"
+              href="https://razorpay.com/privacy/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline"
             >
-              Stripe
+              Razorpay
             </a>
             , a PCI-DSS Level 1 compliant payment processor.
           </p>
@@ -186,7 +186,7 @@ export default function PrivacyPage() {
             </li>
             <li>
               <strong>Payment processing</strong> — Processing credit purchases, subscription
-              payments, renewals, and refunds through Stripe.
+              payments, renewals, and refunds through Razorpay.
             </li>
             <li>
               <strong>Communication</strong> — Sending transactional emails (account verification,
@@ -309,7 +309,7 @@ export default function PrivacyPage() {
                 <td>United States</td>
               </tr>
               <tr>
-                <td><strong>Stripe</strong></td>
+                <td><strong>Razorpay</strong></td>
                 <td>Payment processing</td>
                 <td>Billing name, email, payment method, transaction details</td>
                 <td>United States</td>
@@ -350,7 +350,7 @@ export default function PrivacyPage() {
           <ul>
             <li><strong>Encryption in transit:</strong> All connections use TLS/HTTPS with HSTS preloading (2-year max-age)</li>
             <li><strong>Password security:</strong> Passwords are hashed using bcrypt with per-user salts. We never store plaintext passwords</li>
-            <li><strong>Payment security:</strong> All payment processing is handled by Stripe (PCI-DSS Level 1 certified). We never receive or store card numbers</li>
+            <li><strong>Payment security:</strong> All payment processing is handled by Razorpay (PCI-DSS Level 1 certified). We never receive or store card numbers</li>
             <li><strong>Database security:</strong> Row-level security policies, encrypted connections, and access controls on all database operations</li>
             <li><strong>API security:</strong> Rate limiting on all endpoints, input validation with Zod schemas, CSRF protection via origin header verification</li>
             <li><strong>Access control:</strong> Ownership verification on all resume operations — users can only access their own data</li>

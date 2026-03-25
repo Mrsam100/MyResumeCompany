@@ -2,23 +2,23 @@ import { NextResponse } from 'next/server'
 import { Ratelimit } from '@upstash/ratelimit'
 import { redis } from '@/lib/redis'
 
-const stripeLimiter = new Ratelimit({
+const paymentLimiter = new Ratelimit({
   redis,
   limiter: Ratelimit.slidingWindow(10, '1 m'),
-  prefix: '@app/stripe-ratelimit',
+  prefix: '@app/payment-ratelimit',
   analytics: true,
 })
 
 /**
- * Redis-backed rate limiter for Stripe checkout/portal routes.
+ * Redis-backed rate limiter for payment checkout routes.
  * 10 requests per minute per user.
  * Fails open on Redis errors (allows request through).
  */
-export async function checkStripeRateLimit(
+export async function checkPaymentRateLimit(
   userId: string,
 ): Promise<NextResponse | null> {
   try {
-    const { success } = await stripeLimiter.limit(userId)
+    const { success } = await paymentLimiter.limit(userId)
 
     if (!success) {
       return NextResponse.json(
@@ -29,7 +29,7 @@ export async function checkStripeRateLimit(
 
     return null
   } catch (err) {
-    console.error('[stripe-rate-limit] Redis error, allowing request:', err instanceof Error ? err.message : err)
+    console.error('[payment-rate-limit] Redis error, allowing request:', err instanceof Error ? err.message : err)
     return null
   }
 }

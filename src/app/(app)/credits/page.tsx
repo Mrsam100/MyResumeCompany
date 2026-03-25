@@ -22,8 +22,9 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCurrentUser } from '@/hooks/use-current-user'
+import { useRazorpay } from '@/hooks/use-razorpay'
 import { cn } from '@/lib/utils'
-import { CREDIT_COSTS, CREDIT_PACKS, SUBSCRIPTION_PLANS } from '@/constants/credit-costs'
+import { CREDIT_COSTS, CREDIT_PACKS, SUBSCRIPTION_PLANS, CURRENCY } from '@/constants/credit-costs'
 
 interface Transaction {
   id: string
@@ -73,49 +74,24 @@ function CreditsPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user, update } = useCurrentUser()
+  const { openCheckout } = useRazorpay()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
-  const [fetchError, setFetchError] = useState<string | null>(null) // (#10)
+  const [fetchError, setFetchError] = useState<string | null>(null)
   const [totalPages, setTotalPages] = useState(1)
   const [page, setPage] = useState(1)
   const [purchasing, setPurchasing] = useState<string | null>(null)
   const [subscribing, setSubscribing] = useState<string | null>(null)
-  const abortRef = useRef<AbortController | null>(null) // (#8)
+  const abortRef = useRef<AbortController | null>(null)
 
   const isPro = user?.subscriptionTier === 'PRO'
 
-  // (#7) Show success toast on return from Stripe + verify credits
+  // Show success toast on return (for any edge case redirects)
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
-      toast.success('Payment successful! Verifying your credits...')
-
-      // Poll /api/credits to verify webhook processed
-      let attempts = 0
-      const prevCredits = user?.credits ?? 0
-      const interval = setInterval(async () => {
-        attempts++
-        try {
-          const res = await fetch('/api/credits?page=1&limit=1')
-          if (res.ok) {
-            const data = await res.json()
-            if (data.credits > prevCredits || attempts >= 10) {
-              clearInterval(interval)
-              update() // Refresh session
-              if (data.credits > prevCredits) {
-                toast.success(`Credits updated! New balance: ${data.credits}`)
-              } else {
-                toast.info('Payment processed. Credits may take a moment to appear.')
-              }
-              router.replace('/credits')
-            }
-          }
-        } catch {
-          // Retry silently
-        }
-        if (attempts >= 10) clearInterval(interval)
-      }, 2000)
-
-      return () => clearInterval(interval)
+      toast.success('Payment successful!')
+      update()
+      router.replace('/credits')
     }
     if (searchParams.get('canceled') === 'true') {
       toast.info('Payment canceled.')
@@ -124,7 +100,6 @@ function CreditsPageInner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // (#8) Cancel in-flight fetch on page change
   const fetchCredits = useCallback(async () => {
     abortRef.current?.abort()
     const controller = new AbortController()
@@ -159,58 +134,161 @@ function CreditsPageInner() {
   }, [fetchCredits])
 
   async function handleBuyCredits(packId: string) {
+    if (purchasing) return // Prevent double-click
     setPurchasing(packId)
     try {
-      const res = await fetch('/api/stripe/checkout/credits', {
+      // 1. Create Razorpay order
+      const res = await fetch('/api/razorpay/order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ packId }),
       })
       if (!res.ok) {
         const data = await res.json()
-        toast.error(data.error || 'Failed to start checkout')
+        toast.error(data.error || 'Failed to create order')
         return
       }
-      const { url } = await res.json()
-      if (url) window.location.href = url
-    } catch {
-      toast.error('Something went wrong')
+      const { orderId, amount, currency, credits } = await res.json()
+
+      // 2. Open Razorpay modal
+      const pack = CREDIT_PACKS.find((p) => p.id === packId)
+      const response = await openCheckout({
+        order_id: orderId,
+        amount,
+        currency,
+        name: 'TheResumeCompany',
+        description: `${pack?.label ?? 'Credit Pack'} — ${credits} Credits`,
+        prefill: {
+          name: user?.name ?? undefined,
+          email: user?.email ?? undefined,
+        },
+        theme: { color: '#6366f1' },
+      })
+
+      // 3. Verify payment (with timeout)
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 20000)
+      try {
+        const verifyRes = await fetch('/api/razorpay/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'credit_pack',
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            packId,
+          }),
+          signal: controller.signal,
+        })
+
+        if (verifyRes.ok) {
+          toast.success(`${credits} credits added to your account!`)
+          update()
+          fetchCredits()
+        } else {
+          const data = await verifyRes.json()
+          toast.error(data.error || 'Payment verification failed. Credits will be added shortly.')
+        }
+      } finally {
+        clearTimeout(timeout)
+      }
+    } catch (err) {
+      if (err instanceof Error && err.message === 'Payment cancelled') {
+        toast.info('Payment cancelled')
+      } else if (err instanceof Error && err.name === 'AbortError') {
+        toast.info('Verification timed out. Your credits will be added shortly via webhook.')
+      } else {
+        toast.error('Something went wrong. If you were charged, credits will be added automatically.')
+      }
     } finally {
       setPurchasing(null)
     }
   }
 
   async function handleSubscribe(plan: 'monthly' | 'yearly') {
+    if (subscribing) return // Prevent double-click
     setSubscribing(plan)
     try {
-      const res = await fetch('/api/stripe/checkout/subscription', {
+      // 1. Create Razorpay subscription
+      const res = await fetch('/api/razorpay/subscription', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan }),
       })
       if (!res.ok) {
         const data = await res.json()
-        toast.error(data.error || 'Failed to start checkout')
+        toast.error(data.error || 'Failed to create subscription')
         return
       }
-      const { url } = await res.json()
-      if (url) window.location.href = url
-    } catch {
-      toast.error('Something went wrong')
+      const { subscriptionId } = await res.json()
+
+      // 2. Open Razorpay modal
+      const response = await openCheckout({
+        subscription_id: subscriptionId,
+        name: 'TheResumeCompany',
+        description: `Pro ${plan === 'monthly' ? 'Monthly' : 'Yearly'} Subscription`,
+        prefill: {
+          name: user?.name ?? undefined,
+          email: user?.email ?? undefined,
+        },
+        theme: { color: '#f59e0b' },
+      })
+
+      // 3. Verify subscription (with timeout)
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 20000)
+      try {
+        const verifyRes = await fetch('/api/razorpay/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'subscription',
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_subscription_id: response.razorpay_subscription_id,
+            razorpay_signature: response.razorpay_signature,
+            plan,
+          }),
+          signal: controller.signal,
+        })
+
+        if (verifyRes.ok) {
+          toast.success('Pro subscription activated! Welcome to Pro!')
+          update()
+          fetchCredits()
+        } else {
+          const data = await verifyRes.json()
+          toast.error(data.error || 'Subscription verification failed. It will activate shortly.')
+        }
+      } finally {
+        clearTimeout(timeout)
+      }
+    } catch (err) {
+      if (err instanceof Error && err.message === 'Payment cancelled') {
+        toast.info('Payment cancelled')
+      } else if (err instanceof Error && err.name === 'AbortError') {
+        toast.info('Verification timed out. Your subscription will activate shortly via webhook.')
+      } else {
+        toast.error('Something went wrong. If you were charged, your subscription will activate automatically.')
+      }
     } finally {
       setSubscribing(null)
     }
   }
 
-  async function handleManageBilling() {
+  async function handleCancelSubscription() {
+    if (!confirm('Are you sure you want to cancel your Pro subscription? You will lose access to unlimited AI features.')) {
+      return
+    }
     try {
-      const res = await fetch('/api/stripe/portal', { method: 'POST' })
-      if (!res.ok) {
-        toast.error('Failed to open billing portal')
-        return
+      const res = await fetch('/api/razorpay/subscription/cancel', { method: 'POST' })
+      if (res.ok) {
+        toast.success('Subscription cancelled')
+        update()
+      } else {
+        const data = await res.json()
+        toast.error(data.error || 'Failed to cancel subscription')
       }
-      const { url } = await res.json()
-      if (url) window.location.href = url
     } catch {
       toast.error('Something went wrong')
     }
@@ -257,12 +335,11 @@ function CreditsPageInner() {
             {isPro && (
               <Button
                 variant="outline"
-                onClick={handleManageBilling}
-                className="w-full sm:w-auto gap-2"
-                aria-label="Open Stripe billing portal to manage your subscription"
+                onClick={handleCancelSubscription}
+                className="w-full sm:w-auto gap-2 text-destructive hover:text-destructive"
               >
                 <CreditCard className="h-4 w-4" />
-                Manage Billing
+                Cancel Subscription
               </Button>
             )}
           </div>
@@ -286,7 +363,7 @@ function CreditsPageInner() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <span className="text-2xl sm:text-3xl font-bold">${(SUBSCRIPTION_PLANS.PRO_MONTHLY.price / 100).toFixed(0)}</span>
+                    <span className="text-2xl sm:text-3xl font-bold">{CURRENCY.symbol}{(SUBSCRIPTION_PLANS.PRO_MONTHLY.price / 100).toFixed(0)}</span>
                     <span className="text-muted-foreground">/month</span>
                   </div>
                   <ul className="space-y-2 text-sm">
@@ -314,7 +391,7 @@ function CreditsPageInner() {
               <Card className="relative overflow-hidden border-2 border-amber-500/40 shadow-lg shadow-amber-500/5 bg-gradient-to-br from-amber-500/5 to-orange-500/3 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                 <div className="absolute right-3 top-3">
                   <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
-                    Save 31%
+                    Save 32%
                   </Badge>
                 </div>
                 <CardHeader className="pb-3">
@@ -323,11 +400,10 @@ function CreditsPageInner() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <span className="text-2xl sm:text-3xl font-bold">${(SUBSCRIPTION_PLANS.PRO_YEARLY.price / 100).toFixed(0)}</span>
+                    <span className="text-2xl sm:text-3xl font-bold">{CURRENCY.symbol}{(SUBSCRIPTION_PLANS.PRO_YEARLY.price / 100).toFixed(0)}</span>
                     <span className="text-muted-foreground">/year</span>
-                    {/* (#12) Dynamic per-month calculation */}
                     <span className="ml-2 text-sm text-muted-foreground">
-                      (${(SUBSCRIPTION_PLANS.PRO_YEARLY.price / 100 / 12).toFixed(2)}/mo)
+                      ({CURRENCY.symbol}{(SUBSCRIPTION_PLANS.PRO_YEARLY.price / 100 / 12).toFixed(0)}/mo)
                     </span>
                   </div>
                   <ul className="space-y-2 text-sm">
@@ -384,9 +460,9 @@ function CreditsPageInner() {
                   <p className="text-sm text-muted-foreground">{pack.credits} credits</p>
                 </div>
                 <div>
-                  <span className="text-2xl font-bold">${(pack.price / 100).toFixed(2)}</span>
+                  <span className="text-2xl font-bold">{CURRENCY.symbol}{(pack.price / 100).toFixed(0)}</span>
                   <span className="text-sm text-muted-foreground ml-1">
-                    (${(pack.price / pack.credits).toFixed(1)}¢/credit)
+                    ({CURRENCY.symbol}{(pack.price / pack.credits).toFixed(1)}/credit)
                   </span>
                 </div>
                 <Button
@@ -415,7 +491,6 @@ function CreditsPageInner() {
         <h2 className="mb-4 text-lg font-semibold">Credit Costs</h2>
         <Card>
           <CardContent className="p-0">
-            {/* (#18) Fix grid borders for both 2-col and 4-col layouts */}
             <div className="grid grid-cols-2 gap-0 sm:grid-cols-4">
               {Object.entries(CREDIT_COSTS).map(([key, cost]) => (
                 <div
@@ -448,7 +523,6 @@ function CreditsPageInner() {
           Transaction History
         </h2>
 
-        {/* (#10) Persistent error state with retry */}
         {fetchError ? (
           <Card className="border-destructive/30">
             <CardContent className="flex flex-col items-center py-12">
@@ -509,7 +583,6 @@ function CreditsPageInner() {
                       })}
                     </p>
                   </div>
-                  {/* (#16) Screen reader context for transaction amounts */}
                   {tx.amount > 0 ? (
                     <span className="bg-green-500/10 rounded-full px-2 py-0.5">
                       <span

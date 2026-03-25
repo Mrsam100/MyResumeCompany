@@ -235,12 +235,12 @@ export const ONBOARDING_EMAILS: { day: number; subject: string; builder: (name: 
     day: 7,
     subject: 'Unlock unlimited AI with Pro',
     builder: (name, appUrl) => emailShell(`Running low on credits, ${esc(name)}?`,
-      p('You started with 100 free credits. <strong>Pro</strong> gives you unlimited AI usage + 500 monthly credits for just $12/month.')
+      p('You started with 100 free credits. <strong>Pro</strong> gives you unlimited AI usage + 500 monthly credits for just ₹799/month.')
       + `<div style="margin:24px 0;padding:20px;background:#f0fdf4;border-radius:8px;border:1px solid #bbf7d0;">
 <p style="margin:0 0 8px;color:#166534;font-size:14px;font-weight:600;">Pro includes:</p>
 <ul style="margin:0;padding-left:20px;color:#166534;font-size:14px;line-height:1.8;">
 <li>Unlimited AI features</li><li>Unlimited PDF & DOCX exports</li><li>500 bonus credits/month</li></ul></div>`
-      + ctaButton('Upgrade to Pro — $12/mo', `${appUrl}/credits`)),
+      + ctaButton('Upgrade to Pro — ₹799/mo', `${appUrl}/credits`)),
   },
 ]
 

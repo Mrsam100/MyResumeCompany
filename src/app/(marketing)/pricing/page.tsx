@@ -6,7 +6,7 @@ import { auth } from '@/auth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { CREDIT_COSTS, CREDIT_PACKS, SUBSCRIPTION_PLANS } from '@/constants/credit-costs'
+import { CREDIT_COSTS, CREDIT_PACKS, SUBSCRIPTION_PLANS, CURRENCY } from '@/constants/credit-costs'
 import { JsonLd } from '@/components/schema/json-ld'
 
 export const metadata: Metadata = {
@@ -56,7 +56,7 @@ const FAQ = [
   },
   {
     q: 'What happens when I run out of credits?',
-    a: 'You can purchase credit packs starting at $4.99 for 100 credits, or upgrade to Pro for unlimited AI usage. You can still use the drag-and-drop editor and view templates without credits.',
+    a: `You can purchase credit packs starting at ${CURRENCY.symbol}299 for 100 credits, or upgrade to Pro for unlimited AI usage. You can still use the drag-and-drop editor and view templates without credits.`,
   },
   {
     q: 'Can I cancel my Pro subscription?',
@@ -80,7 +80,7 @@ const FAQ = [
   },
   {
     q: 'What\'s the difference between Free and Pro?',
-    a: 'Free users pay credits per AI action and PDF export. Pro users ($12/month) get unlimited AI usage at zero credit cost, 500 bonus credits per month for PDF exports, and priority support. Both plans have access to all 50+ templates and the full editor.',
+    a: `Free users pay credits per AI action and PDF export. Pro users (${CURRENCY.symbol}${(SUBSCRIPTION_PLANS.PRO_MONTHLY.price / 100).toFixed(0)}/month) get unlimited AI usage at zero credit cost, 500 bonus credits per month for PDF exports, and priority support. Both plans have access to all 50+ templates and the full editor.`,
   },
   {
     q: 'Can I share my resume online?',
@@ -176,7 +176,7 @@ export default async function PricingPage() {
           </CardHeader>
           <CardContent className="flex flex-1 flex-col space-y-6">
             <div>
-              <span className="text-4xl font-bold">$0</span>
+              <span className="text-4xl font-bold">{CURRENCY.symbol}0</span>
               <span className="text-muted-foreground">/forever</span>
             </div>
             <ul className="flex-1 space-y-3">
@@ -215,11 +215,11 @@ export default async function PricingPage() {
           <CardContent className="flex flex-1 flex-col space-y-6">
             <div>
               <span className="text-4xl font-bold">
-                ${(SUBSCRIPTION_PLANS.PRO_MONTHLY.price / 100).toFixed(0)}
+                {CURRENCY.symbol}{(SUBSCRIPTION_PLANS.PRO_MONTHLY.price / 100).toFixed(0)}
               </span>
               <span className="text-muted-foreground">/month</span>
               <p className="mt-1 text-sm text-muted-foreground">
-                or ${(SUBSCRIPTION_PLANS.PRO_YEARLY.price / 100).toFixed(0)}/year (save 31%)
+                or {CURRENCY.symbol}{(SUBSCRIPTION_PLANS.PRO_YEARLY.price / 100).toFixed(0)}/year (save 32%)
               </p>
             </div>
             <ul className="flex-1 space-y-3">
@@ -261,9 +261,9 @@ export default async function PricingPage() {
               )}
               <CardContent className="space-y-3 p-5 text-center">
                 <p className="text-xl font-bold">{pack.credits} Credits</p>
-                <p className="text-3xl font-bold">${(pack.price / 100).toFixed(2)}</p>
+                <p className="text-3xl font-bold">{CURRENCY.symbol}{(pack.price / 100).toFixed(0)}</p>
                 <p className="text-xs text-muted-foreground">
-                  ${(pack.price / pack.credits).toFixed(1)}¢ per credit
+                  {CURRENCY.symbol}{(pack.price / pack.credits).toFixed(1)} per credit
                 </p>
                 <Link href={ctaHref}>
                   <Button variant={pack.popular ? 'default' : 'outline'} className="w-full gap-2">

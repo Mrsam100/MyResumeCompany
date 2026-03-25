@@ -7,8 +7,8 @@ We are building an AI-powered resume builder SaaS to disrupt the resume builder 
 - **Target:** B2C job seekers (students, professionals, career changers)
 - **Monetization:** Credits + Subscription hybrid
   - Free signup = 100 credits
-  - Pro plan = $12/mo (unlimited AI + 500 credits/month) or $99/year
-  - Credit packs: $4.99/100, $9.99/300, $19.99/800
+  - Pro plan = ₹799/mo (unlimited AI + 500 credits/month) or ₹6,499/year
+  - Credit packs: ₹299/100, ₹599/300, ₹1,199/800
 - **AI Features:** Bullet writer, summary writer, full resume generator, ATS scorer/optimizer, cover letter generator
 - **Timeline:** ~95 days (3 months) to production launch
 - **Starting from:** Zero. No code, no design, no brand assets.
@@ -29,7 +29,7 @@ We are building an AI-powered resume builder SaaS to disrupt the resume builder 
 | Database | PostgreSQL via Supabase | Auth, realtime, storage, DB in one platform |
 | ORM | Drizzle ORM | Type-safe, zero-codegen, SQL-like, lightweight |
 | Validation | Zod v4 | Runtime type validation, form validation, API validation |
-| Payments | Stripe (Checkout + Webhooks) | Subscriptions + one-time credit pack purchases |
+| Payments | Razorpay (Orders + Subscriptions + Webhooks) | INR payments, client-side modal checkout |
 | File Storage | Supabase Storage | Generated PDFs, user uploads |
 | Hosting | Vercel | Zero-config Next.js, edge functions, analytics |
 | Email | Resend | Transactional emails (welcome, receipts, etc.) |
@@ -96,7 +96,7 @@ src/
 │   │   ├── rate-limiter.ts # In-memory per-user rate limiter (20/hr free, 100/hr Pro)
 │   │   └── parse-json.ts  # Multi-strategy JSON extraction from AI responses
 │   ├── pdf/               # PDF generation logic
-│   ├── stripe/            # Stripe client, helpers
+│   ├── razorpay/          # Razorpay client, signature verification, rate-limit
 │   ├── supabase/          # Supabase client config
 │   ├── db/                # Drizzle DB client, schema, utility functions
 │   ├── validations/       # Zod schemas
@@ -319,43 +319,62 @@ All templates use pure inline styles (no Tailwind) for dual web + PDF rendering 
 - **Phase 9** ✅ — PDF export with @react-pdf/renderer, public resume page
 - **Phase 10** ✅ — AI infrastructure, bullet writer, summary writer
 - **Phase 11** ✅ — Full resume generator, ATS scanner/optimizer, cover letter generator
-- **Phase 12** ✅ — Stripe integration, checkout flows, webhooks, credits page, pricing page
+- **Phase 12** ✅ — Razorpay integration, checkout flows, webhooks, credits page, pricing page
 - **Phase 13** ✅ — Landing page (GSAP animations), marketing header/footer, about/privacy/terms
 - **Phase 14** ✅ — Vitest (40 tests), error boundaries, 404 page, security headers, SEO, robots/sitemap
 - **Phase 15** ✅ — Vercel config, env validation, health endpoint, pre-launch checklist, favicon
 
 ---
 
-## Stripe Architecture (Phase 12)
+## Razorpay Architecture (Phase 12)
 
-### Infrastructure (`src/lib/stripe/`)
-- **`client.ts`** — Lazy-init Stripe SDK via Proxy pattern. API version `2026-02-25.clover`.
-- **`helpers.ts`** — `getOrCreateStripeCustomer()` with row-level locking to prevent race conditions. `getSubscriptionPriceId()` for env-based price ID resolution.
-- **`rate-limit.ts`** — In-memory rate limiter for checkout/portal routes (10 req/min per user).
+### Infrastructure (`src/lib/razorpay/`)
+- **`client.ts`** — Lazy-init Razorpay SDK via Proxy pattern.
+- **`verify.ts`** — HMAC SHA256 signature verification (timing-safe) for payments, subscriptions, and webhooks.
+- **`rate-limit.ts`** — Redis-backed rate limiter for payment routes (10 req/min per user).
 
-### Checkout Flow
+### Payment Flow (Client-Side Modal)
 ```
-1. POST /api/stripe/checkout/credits — Creates Stripe Checkout session (mode: payment, inline price_data)
-2. POST /api/stripe/checkout/subscription — Creates Stripe Checkout session (mode: subscription, env price ID)
-3. POST /api/stripe/portal — Creates Stripe Customer Portal session for billing management
+Credit Packs:
+1. POST /api/razorpay/order — Creates Razorpay Order (returns orderId)
+2. Client opens Razorpay modal with orderId
+3. POST /api/razorpay/verify — Verifies signature, credits user (idempotent via payment_id)
+
+Subscriptions:
+1. POST /api/razorpay/subscription — Creates Razorpay Subscription (returns subscriptionId)
+2. Client opens Razorpay modal with subscriptionId
+3. POST /api/razorpay/verify — Verifies signature, upserts subscription record
+4. Webhook (subscription.activated) — Awards credits + upgrades tier (prevents double-crediting)
+
+Cancel:
+1. POST /api/razorpay/subscription/cancel — Cancels on Razorpay + downgrades locally
 ```
 
-### Webhook Handler (`POST /api/webhooks/stripe`)
-- **Idempotency:** `stripe_events` table stores processed event IDs, skips duplicates
+### Webhook Handler (`POST /api/webhooks/razorpay`)
+- **Idempotency:** `payment_events` table with composite key (event_type + entity_id + timestamp)
 - **Atomic operations:** Subscription activation (upsert + tier upgrade + credits) in single `db.transaction()`
-- **Error classification:** Transient errors → 500 (Stripe retries), permanent errors → 200 (stops retries, logs for reconciliation)
-- **Events handled:** `checkout.session.completed`, `invoice.paid`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_failed`
+- **Error classification:** Transient errors → 500 (Razorpay retries), permanent errors → 200 (stops retries)
+- **Events handled:** `subscription.activated`, `subscription.charged`, `subscription.cancelled`, `subscription.halted`, `subscription.pending`, `payment.failed`
+- **Payment failure:** Marks PAST_DUE only (no immediate downgrade). Full downgrade on `subscription.halted`.
+- **First-charge protection:** Skips monthly credits if SIGNUP_BONUS was awarded < 5 minutes ago.
 
 ### Security
-- CSRF: Origin header validation on all checkout/portal routes
-- Rate limiting: 10 req/min per user on checkout/portal
+- CSRF: Origin header validation on all payment routes
+- Rate limiting: Redis-backed 10 req/min per user
 - Auth: All routes require authenticated session
-- Subscription check: Queries DB directly (not stale JWT session)
+- Timing-safe HMAC: `crypto.timingSafeEqual()` for all signature verification
+- Idempotency: Verify endpoint deduplicates via `razorpay_payment_id` in `payment_events` table
+
+### Client-Side Hook (`src/hooks/use-razorpay.ts`)
+- Dynamically loads `checkout.razorpay.com/v1/checkout.js`
+- Returns Promise-based `openCheckout()` function
+- Resolves on successful payment, rejects on modal dismiss
+- Uses `NEXT_PUBLIC_RAZORPAY_KEY_ID` env var
 
 ### UI Pages
-- **Credits page** (`/credits`): Balance card, Pro upgrade section, credit packs, cost reference, paginated transaction history with Suspense boundary
-- **Pricing page** (`/pricing`): Free vs Pro comparison, credit packs, cost table, FAQ, auth-aware CTAs
-- **Settings page**: Manage Billing button (Stripe Portal) for Pro users
+- **Credits page** (`/credits`): Balance card, Pro upgrade section, credit packs, Razorpay modal checkout, transaction history
+- **Pricing page** (`/pricing`): Free vs Pro comparison (INR), credit packs, cost table, FAQ
+- **Settings page**: Cancel Subscription button for Pro users (no external portal)
 
 ---
 
@@ -547,16 +566,16 @@ All templates use pure inline styles (no Tailwind) for dual web + PDF rendering 
 
 ---
 
-### PHASE 12 — Credit System & Stripe Payments (Days 66-73)
+### PHASE 12 — Credit System & Razorpay Payments (Days 66-73)
 - Credits page UI: balance, plan card, usage breakdown, transaction history, buy credits, upgrade CTA
 - Credit confirmation modal before every paid action
 - "Not enough credits" flow → redirect to purchase
 - Credit balance in header (animated, warning when < 20)
-- Stripe products: 3 credit packs + Pro monthly + Pro yearly
-- Stripe Checkout for credits (POST /api/stripe/checkout/credits)
-- Stripe Checkout for subscription (POST /api/stripe/checkout/subscription)
-- Stripe Customer Portal (POST /api/stripe/portal)
-- Stripe webhooks: checkout.session.completed, invoice.paid, subscription.updated, subscription.deleted, payment_failed
+- Razorpay Orders for credit packs (POST /api/razorpay/order)
+- Razorpay Subscriptions for Pro plans (POST /api/razorpay/subscription)
+- Client-side Razorpay modal checkout (useRazorpay hook)
+- Payment verification endpoint (POST /api/razorpay/verify)
+- Razorpay webhooks: subscription.activated, subscription.charged, subscription.cancelled, subscription.halted, payment.failed
 - Pricing page with Free vs Pro comparison
 - Upgrade prompts at strategic touchpoints
 
@@ -599,7 +618,7 @@ All templates use pure inline styles (no Tailwind) for dual web + PDF rendering 
 ---
 
 ### PHASE 15 — Deployment & Launch (Days 89-95)
-- **Infrastructure:** Vercel deploy, custom domain + SSL, production Supabase, Stripe live mode, Resend domain verification
+- **Infrastructure:** Vercel deploy, custom domain + SSL, production Supabase, Razorpay live mode, Resend domain verification
 - **Pre-launch checklist:** test every flow on production (all 3 auth methods, all 15 templates, all AI features, payments, exports, emails, mobile)
 - **Performance benchmarks:** landing < 2s, editor < 3s, PDF < 5s, AI stream < 1s
 - **Monitoring:** uptime monitoring, Sentry alerting, /api/health endpoint
@@ -626,7 +645,7 @@ All templates use pure inline styles (no Tailwind) for dual web + PDF rendering 
 | API | Vitest + Supertest | All routes, auth, credits |
 | E2E | Playwright | Full user journeys |
 | Visual | Manual | All 15 templates × sample data |
-| Payment | Stripe Test Mode | Purchase + subscription flows |
+| Payment | Razorpay Test Mode | Purchase + subscription flows |
 | AI | Manual Review | Prompt quality, output relevance |
 | Performance | Lighthouse | Score > 90 all pages |
 | Security | Manual + OWASP | XSS, CSRF, injection, auth |

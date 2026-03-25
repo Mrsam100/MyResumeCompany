@@ -173,9 +173,9 @@ export default function AboutPage() {
         <p>
           We use a credit-based system so you only pay for what you use. Every new account starts
           with 100 free credits — enough for a full AI-generated resume, ATS scan, and PDF export.
-          Need more? Credit packs start at $4.99, or upgrade to{' '}
+          Need more? Credit packs start at ₹299, or upgrade to{' '}
           <Link href="/pricing" className="text-primary underline underline-offset-4 hover:text-primary/80">
-            Pro for $12/month
+            Pro for ₹799/month
           </Link>{' '}
           for unlimited AI usage and 500 bonus credits every month. No hidden fees, no surprise
           charges.

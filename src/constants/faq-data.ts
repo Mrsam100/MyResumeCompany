@@ -10,7 +10,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: 'Is MyResumeCompany really free?',
-    answer: "Yes. You get 100 free credits on signup — enough for a full AI-generated resume, ATS scan, and PDF export. Most people finish their resume without ever paying. Credit packs start at $4.99 if you need more.",
+    answer: "Yes. You get 100 free credits on signup — enough for a full AI-generated resume, ATS scan, and PDF export. Most people finish their resume without ever paying. Credit packs start at ₹299 if you need more.",
   },
   {
     question: 'What makes these templates ATS-compatible?',
@@ -26,7 +26,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: 'Do I need to pay for a subscription?',
-    answer: "No. Free users pay credits per action. Pro users ($12/month or $99/year) get unlimited AI usage and 500 bonus credits per month. Both plans have access to all 50+ templates and the full editor.",
+    answer: "No. Free users pay credits per action. Pro users (₹799/month or ₹6,499/year) get unlimited AI usage and 500 bonus credits per month. Both plans have access to all 50+ templates and the full editor.",
   },
   {
     question: 'Can I export my resume as a Word document?',

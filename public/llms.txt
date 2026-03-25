@@ -19,8 +19,8 @@ MyResumeCompany is an online resume builder that combines professionally designe
 
 ## Pricing
 - Free: 100 credits on signup, all features accessible
-- Pro: $12/month or $99/year — unlimited AI usage, 500 credits/month
-- Credit packs: $4.99 (100), $9.99 (300), $19.99 (800)
+- Pro: ₹799/month or ₹6,499/year — unlimited AI usage, 500 credits/month
+- Credit packs: ₹299 (100), ₹599 (300), ₹1,199 (800)
 
 ## Pages
 - Homepage: https://myresumecompany.com
@@ -38,5 +38,5 @@ MyResumeCompany is an online resume builder that combines professionally designe
 ## Technical
 - Built with Next.js, React, TypeScript
 - AI powered by Google Gemini API
-- Payments via Stripe
+- Payments via Razorpay
 - Hosted on Vercel

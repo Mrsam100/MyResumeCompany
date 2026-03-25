@@ -273,7 +273,7 @@ export default async function HomePage() {
           <div className="mt-12 grid gap-6 sm:grid-cols-2">
             <div className="rounded-2xl border border-slate-200 bg-white/80 p-8 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
               <p className="text-sm font-semibold text-slate-500">Free</p>
-              <p className="mt-2 text-4xl font-bold text-slate-900">$0</p>
+              <p className="mt-2 text-4xl font-bold text-slate-900">₹0</p>
               <p className="mt-1 text-sm text-slate-500">100 credits on signup</p>
               <ul className="mt-6 space-y-3">
                 {FREE_FEATURES.map((f) => (
@@ -293,10 +293,10 @@ export default async function HomePage() {
               </div>
               <p className="text-sm font-semibold text-blue-600">Pro</p>
               <div className="mt-2 flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-slate-900">$12</span>
+                <span className="text-4xl font-bold text-slate-900">₹799</span>
                 <span className="text-slate-500">/month</span>
               </div>
-              <p className="mt-1 text-sm text-slate-500">or $99/year (save 31%)</p>
+              <p className="mt-1 text-sm text-slate-500">or ₹6,499/year (save 32%)</p>
               <ul className="mt-6 space-y-3">
                 {PRO_FEATURES.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-sm text-slate-600">
@@ -311,7 +311,7 @@ export default async function HomePage() {
               </Link>
             </div>
           </div>
-          <p className="mt-6 text-center text-xs text-slate-400">Credit packs also available: 100 for $4.99 &middot; 300 for $9.99 &middot; 800 for $19.99</p>
+          <p className="mt-6 text-center text-xs text-slate-400">Credit packs also available: 100 for ₹299 &middot; 300 for ₹599 &middot; 800 for ₹1,199</p>
         </div>
       </section>
 

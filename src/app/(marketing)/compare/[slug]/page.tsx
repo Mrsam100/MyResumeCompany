@@ -40,12 +40,12 @@ const COMPETITORS: Record<string, Competitor> = {
       { name: 'Number of templates', us: '15', them: '20+' },
       { name: 'Free tier', us: '100 credits', them: 'Limited preview' },
       { name: 'PDF export on free plan', us: true, them: false },
-      { name: 'Pro price', us: '$12/mo', them: '$24.95/mo' },
+      { name: 'Pro price', us: '₹799/mo', them: '$24.95/mo' },
       { name: 'Public shareable link', us: true, them: false },
       { name: 'Drag-and-drop editor', us: true, them: true },
     ],
     summary:
-      "MyResumeCompany offers a more affordable Pro plan at $12/month vs Zety's $24.95/month, with unique features like an AI full resume generator, ATS optimizer that rewrites your bullets, and free PDF exports. Zety has a larger template library and strong brand recognition, but charges significantly more for a comparable feature set.",
+      "MyResumeCompany offers a more affordable Pro plan at ₹799/month vs Zety's $24.95/month, with unique features like an AI full resume generator, ATS optimizer that rewrites your bullets, and free PDF exports. Zety has a larger template library and strong brand recognition, but charges significantly more for a comparable feature set.",
     overview: [
       "Zety is one of the most recognized names in the online resume builder space. Founded in 2016, Zety has built a reputation for its polished user interface, wide template selection, and built-in writing tips that guide users through the resume creation process step by step. With over 20 templates spanning professional, modern, and creative styles, Zety appeals to a broad audience of job seekers, from recent graduates to experienced professionals switching careers.",
       "Zety's core product revolves around a form-based editor that walks users through each section of a resume. The platform offers pre-written phrases for common job titles, which can be helpful for people who struggle with resume writing. Zety also provides a cover letter builder and some basic resume checking features. Their builder is available in multiple languages, making it popular with international job seekers.",
@@ -58,21 +58,21 @@ const COMPETITORS: Record<string, Competitor> = {
       "Established brand with years of content marketing, including a popular career advice blog that provides useful resume writing tips and job search strategies."
     ],
     weaknesses: [
-      "Pricing is significantly higher at $24.95/month compared to MyResumeCompany's $12/month Pro plan. Over a year, that adds up to nearly $300 vs $99 with our annual plan.",
+      "Pricing is significantly higher at $24.95/month compared to MyResumeCompany's ₹799/month Pro plan. Over a year, that adds up to nearly $300 vs ₹6,499 with our annual plan.",
       "No AI full resume generator — Zety helps you fill in sections, but it cannot generate a complete, tailored resume from a job title and your experience in one step.",
       "No ATS optimizer that rewrites your bullet points to match a specific job description. Zety offers basic checking, but not the intelligent rewriting that helps your resume rank higher in applicant tracking systems.",
       "Free tier is essentially a preview — you cannot download a PDF without paying. MyResumeCompany gives you 100 free credits, enough to generate AI content and export your resume without entering a credit card."
     ],
     whoShouldChoose: {
       them: "Choose Zety if you want a very guided, step-by-step resume building experience with pre-written content suggestions for your specific job title. If you prefer browsing a large template gallery and you value the hand-holding approach of having phrases suggested to you at each step, Zety's editor may appeal to you. Zety is also a reasonable choice if you need multilingual support for non-English resumes.",
-      us: "Choose MyResumeCompany if you want advanced AI capabilities at a lower price. Our AI full resume generator creates an entire resume tailored to your target role, our ATS scanner gives you a specific 0-100 score, and our ATS optimizer rewrites your bullet points to match the exact job description you are applying to. At $12/month (or $99/year), you get more AI power for less than half of what Zety charges. Our free tier also lets you actually export a PDF, so you can try before you buy."
+      us: "Choose MyResumeCompany if you want advanced AI capabilities at a lower price. Our AI full resume generator creates an entire resume tailored to your target role, our ATS scanner gives you a specific 0-100 score, and our ATS optimizer rewrites your bullet points to match the exact job description you are applying to. At ₹799/month (or ₹6,499/year), you get more AI power for less than half of what Zety charges. Our free tier also lets you actually export a PDF, so you can try before you buy."
     },
     pricingComparison:
-      "Zety's Pro plan is priced at $24.95 per month with no annual discount publicly available — that works out to roughly $300 per year if you stay subscribed. By comparison, MyResumeCompany Pro is $12 per month or $99 per year, saving you over $200 annually. On Zety's free tier, you can build a resume but cannot download it as a PDF, which many users find frustrating after spending time on their resume. MyResumeCompany's free tier includes 100 credits — enough to use AI features and export at least one complete resume as a PDF without paying anything. Zety does not offer credit packs or pay-as-you-go options; it is subscription-only. MyResumeCompany offers both subscriptions and credit packs starting at $4.99 for 100 credits, giving you flexibility to pay only when you need to. For active job seekers who need multiple resumes and cover letters, the cost difference is substantial.",
+      "Zety's Pro plan is priced at $24.95 per month with no annual discount publicly available — that works out to roughly $300 per year if you stay subscribed. By comparison, MyResumeCompany Pro is ₹799 per month or ₹6,499 per year, saving you significantly on annual billing. On Zety's free tier, you can build a resume but cannot download it as a PDF, which many users find frustrating after spending time on their resume. MyResumeCompany's free tier includes 100 credits — enough to use AI features and export at least one complete resume as a PDF without paying anything. Zety does not offer credit packs or pay-as-you-go options; it is subscription-only. MyResumeCompany offers both subscriptions and credit packs starting at $4.99 for 100 credits, giving you flexibility to pay only when you need to. For active job seekers who need multiple resumes and cover letters, the cost difference is substantial.",
     faq: [
       {
         question: 'Is Zety worth the price at $24.95/month?',
-        answer: 'Zety is a solid resume builder with good templates and writing guidance, but at $24.95/month it is one of the most expensive options on the market. If you primarily need AI-powered resume writing, ATS optimization, and PDF exports, MyResumeCompany offers all of those features at $12/month — less than half the cost. Zety may be worth it if you specifically value their pre-written phrase library and multilingual support.'
+        answer: 'Zety is a solid resume builder with good templates and writing guidance, but at $24.95/month it is one of the most expensive options on the market. If you primarily need AI-powered resume writing, ATS optimization, and PDF exports, MyResumeCompany offers all of those features at ₹799/month — a fraction of the cost. Zety may be worth it if you specifically value their pre-written phrase library and multilingual support.'
       },
       {
         question: 'Can I switch from Zety to MyResumeCompany?',
@@ -103,7 +103,7 @@ const COMPETITORS: Record<string, Competitor> = {
       { name: 'Number of templates', us: '15', them: '30+' },
       { name: 'Free tier', us: '100 credits', them: '1 resume' },
       { name: 'PDF export on free plan', us: true, them: false },
-      { name: 'Pro price', us: '$12/mo', them: '$15/mo' },
+      { name: 'Pro price', us: '₹799/mo', them: '$15/mo' },
       { name: 'Public shareable link', us: true, them: false },
       { name: 'Drag-and-drop editor', us: true, them: true },
     ],
@@ -128,10 +128,10 @@ const COMPETITORS: Record<string, Competitor> = {
     ],
     whoShouldChoose: {
       them: "Choose Resume.io if your top priority is browsing a large library of beautifully designed templates and you want a very simple, no-frills editing experience. If you already know what to write on your resume and just need a clean tool to format it, Resume.io's straightforward editor and wide template selection may be all you need. Resume.io is also a good option if you need to create resumes in multiple languages or follow European CV conventions.",
-      us: "Choose MyResumeCompany if you want AI that goes beyond basic writing suggestions. Our AI full resume generator creates a complete, tailored resume from your experience and target role. Our ATS scanner gives you a specific score with actionable feedback, and our ATS optimizer rewrites your bullet points to match the job you are applying to — a feature no other builder in this price range offers. At $12/month vs $15/month, you get more features for less money, plus a free tier that actually lets you export a PDF."
+      us: "Choose MyResumeCompany if you want AI that goes beyond basic writing suggestions. Our AI full resume generator creates a complete, tailored resume from your experience and target role. Our ATS scanner gives you a specific score with actionable feedback, and our ATS optimizer rewrites your bullet points to match the job you are applying to — a feature no other builder in this price range offers. At ₹799/month vs $15/month, you get more features for less money, plus a free tier that actually lets you export a PDF."
     },
     pricingComparison:
-      "Resume.io charges $15 per month for their Pro plan, which includes unlimited resumes, PDF exports, and access to all templates. MyResumeCompany Pro is $12 per month or $99 per year — saving you $36 annually on monthly billing or $81 on annual billing compared to Resume.io's monthly rate. Resume.io's free tier allows you to build one resume but does not include PDF export, meaning you cannot actually use your resume without paying. MyResumeCompany's free tier includes 100 credits, which is enough to generate AI bullet points, run an ATS scan, and export a PDF — giving you a genuine trial of the full product. For users who need resumes occasionally rather than monthly, MyResumeCompany also offers credit packs starting at $4.99 for 100 credits, while Resume.io only offers subscription-based pricing with no pay-as-you-go option.",
+      "Resume.io charges $15 per month for their Pro plan, which includes unlimited resumes, PDF exports, and access to all templates. MyResumeCompany Pro is ₹799 per month or ₹6,499 per year — offering significant savings on annual billing compared to Resume.io's monthly rate. Resume.io's free tier allows you to build one resume but does not include PDF export, meaning you cannot actually use your resume without paying. MyResumeCompany's free tier includes 100 credits, which is enough to generate AI bullet points, run an ATS scan, and export a PDF — giving you a genuine trial of the full product. For users who need resumes occasionally rather than monthly, MyResumeCompany also offers credit packs starting at $4.99 for 100 credits, while Resume.io only offers subscription-based pricing with no pay-as-you-go option.",
     faq: [
       {
         question: 'How does Resume.io compare to MyResumeCompany for ATS compatibility?',
@@ -139,7 +139,7 @@ const COMPETITORS: Record<string, Competitor> = {
       },
       {
         question: 'Is Resume.io worth $15/month?',
-        answer: 'Resume.io offers a solid, clean resume builder with a good template library and cover letter support. At $15/month, it is reasonably priced compared to some competitors. However, MyResumeCompany offers more AI features — including a full resume generator and ATS optimizer — for $12/month, which is $3 less. If AI-powered resume writing and ATS optimization matter to you, MyResumeCompany provides better value.'
+        answer: 'Resume.io offers a solid, clean resume builder with a good template library and cover letter support. At $15/month, it is reasonably priced compared to some competitors. However, MyResumeCompany offers more AI features — including a full resume generator and ATS optimizer — for ₹799/month (pricing in INR). If AI-powered resume writing and ATS optimization matter to you, MyResumeCompany provides better value.'
       },
       {
         question: 'Can I transfer my Resume.io resume to MyResumeCompany?',
@@ -194,7 +194,7 @@ const COMPETITORS: Record<string, Competitor> = {
       us: "Choose MyResumeCompany if you are applying to jobs online through company websites, job boards, or application portals — which is how the vast majority of jobs are filled today. Our templates are tested against real ATS systems to ensure your resume gets parsed correctly. Our ATS scanner gives you a specific compatibility score, and our optimizer rewrites your bullets to match the job description. Combined with AI writing tools that help you craft professional content, MyResumeCompany is built for the reality of modern job applications."
     },
     pricingComparison:
-      "Canva's free tier is genuinely free — you can create and download resumes as PDFs at no cost, though you will see ads and some premium templates and assets require Canva Pro ($12.99/month). MyResumeCompany's free tier includes 100 credits, which covers AI content generation and PDF export without ads. MyResumeCompany Pro at $12/month is slightly less than Canva Pro at $12.99/month, but the comparison is not entirely apples-to-apples: Canva Pro gives you access to the full Canva design suite (presentations, social media, etc.), while MyResumeCompany Pro is focused entirely on resume building with AI writing, ATS optimization, and professional templates. If you only need Canva for resumes, MyResumeCompany is the better investment because you get resume-specific AI tools and ATS compatibility that Canva simply does not offer. If you already pay for Canva Pro for other design needs, you still benefit from using MyResumeCompany for your actual job applications to ensure ATS compatibility.",
+      "Canva's free tier is genuinely free — you can create and download resumes as PDFs at no cost, though you will see ads and some premium templates and assets require Canva Pro ($12.99/month). MyResumeCompany's free tier includes 100 credits, which covers AI content generation and PDF export without ads. MyResumeCompany Pro at ₹799/month is priced specifically for resume building, compared to Canva Pro at $12.99/month which covers the full Canva design suite (presentations, social media, etc.). The comparison is not entirely apples-to-apples: MyResumeCompany Pro is focused entirely on resume building with AI writing, ATS optimization, and professional templates. If you only need Canva for resumes, MyResumeCompany is the better investment because you get resume-specific AI tools and ATS compatibility that Canva simply does not offer. If you already pay for Canva Pro for other design needs, you still benefit from using MyResumeCompany for your actual job applications to ensure ATS compatibility.",
     faq: [
       {
         question: 'Are Canva resumes ATS-compatible?',

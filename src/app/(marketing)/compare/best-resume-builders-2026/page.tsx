@@ -34,7 +34,7 @@ const BUILDERS: Builder[] = [
     rank: 1,
     verdict: 'Best overall for AI-powered resume building with ATS optimization',
     bestFor: 'Job seekers who want AI writing + ATS scoring in one tool',
-    price: '$12/mo (Pro) or pay-per-use credits',
+    price: '₹799/mo (Pro) or pay-per-use credits',
     freeOption: '100 free credits — enough for a full resume + ATS scan + PDF export',
     templates: '50+ templates across 7 categories (Professional, Modern, Creative, Tech, ATS-Optimized, Academic, Minimal)',
     aiFeatures: ['AI bullet point writer', 'AI summary generator (3 tones)', 'AI full resume wizard', 'ATS scanner (0-100 score)', 'ATS optimizer (rewrites bullets)', 'Cover letter generator'],
@@ -44,7 +44,7 @@ const BUILDERS: Builder[] = [
       'Most complete AI feature set of any builder we tested',
       'ATS scanner + optimizer is unique — no other builder rewrites bullets to match a specific job',
       'Generous free tier (100 credits covers a full resume workflow)',
-      'Pro plan is the most affordable at $12/mo',
+      'Pro plan is the most affordable at ₹799/mo',
     ],
     cons: [
       'Fewer templates than Resume.io or Canva',
@@ -433,7 +433,7 @@ export default function BestResumeBuildersPage() {
             If you want the most complete AI resume building experience with ATS optimization built in,{' '}
             <strong>MyResumeCompany</strong> is the best choice in 2026. It is the only builder that combines
             an AI bullet writer, full resume generator, ATS scanner with a 0-100 score, and an ATS optimizer
-            that rewrites your bullets to match specific job descriptions — all at the lowest Pro price ($12/mo)
+            that rewrites your bullets to match specific job descriptions — all at the lowest Pro price (₹799/mo)
             among dedicated resume builders.
           </p>
           <p className="mt-3 text-muted-foreground">
@@ -488,6 +488,6 @@ const MATRIX_ROWS = [
   { feature: 'Cover Letter Generator', values: [true, true, true, false, false, true] },
   { feature: 'Free PDF Export', values: [true, false, false, true, false, false] },
   { feature: 'Templates', values: ['15', '20+', '30+', '1000+', '12+', '35+'] },
-  { feature: 'Pro Price', values: ['$12/mo', '$24.95/mo', '$15/mo', '$12.99/mo', '$19.99/mo', '$9.99/mo'] },
+  { feature: 'Pro Price', values: ['₹799/mo', '$24.95/mo', '$15/mo', '$12.99/mo', '$19.99/mo', '$9.99/mo'] },
   { feature: 'Free Tier', values: ['100 credits', 'Preview only', '1 resume', 'Free + ads', 'Branded', 'Limited'] },
 ]

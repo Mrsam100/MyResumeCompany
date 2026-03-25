@@ -6,7 +6,7 @@ import { signOut } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Loader2, CreditCard, Crown, ExternalLink, User, Lock, AlertTriangle, Settings } from 'lucide-react'
+import { Loader2, CreditCard, Crown, User, Lock, AlertTriangle, Settings } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -77,15 +77,19 @@ export default function SettingsPage() {
     }
   }
 
-  async function handleManageBilling() {
+  async function handleCancelSubscription() {
+    if (!confirm('Are you sure you want to cancel your Pro subscription? You will lose access to unlimited AI features.')) {
+      return
+    }
     try {
-      const res = await fetch('/api/stripe/portal', { method: 'POST' })
-      if (!res.ok) {
-        toast.error('Failed to open billing portal')
-        return
+      const res = await fetch('/api/razorpay/subscription/cancel', { method: 'POST' })
+      if (res.ok) {
+        toast.success('Subscription cancelled')
+        update()
+      } else {
+        const data = await res.json()
+        toast.error(data.error || 'Failed to cancel subscription')
       }
-      const { url } = await res.json()
-      if (url) window.location.href = url
     } catch {
       toast.error('Something went wrong')
     }
@@ -207,10 +211,9 @@ export default function SettingsPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             {user?.subscriptionTier === 'PRO' ? (
-              <Button variant="outline" className="gap-2" onClick={handleManageBilling}>
+              <Button variant="outline" className="gap-2 text-destructive hover:text-destructive" onClick={handleCancelSubscription}>
                 <CreditCard className="h-4 w-4" />
-                Manage Billing
-                <ExternalLink className="h-3 w-3" />
+                Cancel Subscription
               </Button>
             ) : (
               <Link href="/credits">
