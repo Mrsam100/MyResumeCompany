@@ -1,16 +1,20 @@
 /**
  * CSS-only resume mockup for hero section.
  * No images needed — pure divs mimicking a resume layout.
+ * Enhanced with animated glow + floating effect.
  */
 export function HeroMockup() {
   return (
     <div className="relative mx-auto w-[280px] sm:w-[320px]">
-      {/* Gradient glow behind the mockup */}
-      <div className="absolute -inset-6 rounded-3xl bg-gradient-to-br from-blue-400/20 via-violet-400/20 to-blue-300/10 blur-2xl" />
+      {/* Animated gradient glow behind the mockup */}
+      <div
+        className="absolute -inset-8 rounded-3xl opacity-60 blur-3xl animate-gradient-shift"
+        style={{ background: 'linear-gradient(135deg, oklch(0.7 0.15 260) 0%, oklch(0.6 0.2 290) 50%, oklch(0.7 0.12 230) 100%)', backgroundSize: '200% 200%' }}
+      />
 
       {/* Resume card */}
       <div
-        className="relative rounded-xl border border-slate-200 bg-white p-6 shadow-2xl shadow-blue-500/10"
+        className="relative rounded-xl border border-slate-200/80 bg-white/95 p-6 shadow-2xl shadow-blue-500/10 backdrop-blur-sm"
         style={{ transform: 'perspective(800px) rotateY(-3deg) rotateX(2deg)' }}
       >
         {/* Header */}
@@ -78,8 +82,8 @@ export function HeroMockup() {
           </div>
         </div>
 
-        {/* ATS Score badge */}
-        <div className="absolute -right-3 -top-3 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg shadow-green-500/30">
+        {/* ATS Score badge — pulsing glow */}
+        <div className="absolute -right-3 -top-3 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg shadow-green-500/30 animate-pulse-glow">
           <div className="text-center">
             <p className="text-[10px] font-bold text-white leading-none">92</p>
             <p className="text-[6px] text-white/80">ATS</p>
