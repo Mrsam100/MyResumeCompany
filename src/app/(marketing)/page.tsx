@@ -46,13 +46,14 @@ export default async function HomePage() {
           offers: {
             '@type': 'AggregateOffer',
             lowPrice: '0',
-            highPrice: '19.99',
-            priceCurrency: 'USD',
-            offerCount: 3,
+            highPrice: '899',
+            priceCurrency: 'INR',
+            offerCount: 4,
             offers: [
-              { '@type': 'Offer', name: 'Free Plan', price: '0', priceCurrency: 'USD', description: '100 free credits, all 50+ templates, AI features' },
-              { '@type': 'Offer', name: 'Pro Monthly', price: '12', priceCurrency: 'USD', description: 'Unlimited AI, 500 credits/month' },
-              { '@type': 'Offer', name: 'Pro Yearly', price: '99', priceCurrency: 'USD', description: 'Unlimited AI, 500 credits/month — save 31%' },
+              { '@type': 'Offer', name: 'Free Plan', price: '0', priceCurrency: 'INR', description: '100 free credits, all 50+ templates, AI features' },
+              { '@type': 'Offer', name: 'Starter Pack', price: '199', priceCurrency: 'INR', description: '200 credits' },
+              { '@type': 'Offer', name: 'Popular Pack', price: '449', priceCurrency: 'INR', description: '500 credits' },
+              { '@type': 'Offer', name: 'Pro Pack', price: '899', priceCurrency: 'INR', description: '1200 credits' },
             ],
           },
           featureList: ['50+ resume templates', 'AI bullet writer', 'ATS scanner 0-100', 'Cover letter generator', 'PDF & DOCX export'],
@@ -267,51 +268,40 @@ export default async function HomePage() {
         <div className="relative mx-auto max-w-4xl">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl">Simple, transparent pricing</h2>
-            <p className="mt-3 text-slate-500">Start free. Upgrade when you need unlimited AI.</p>
+            <p className="mt-3 text-slate-500">Start free with 100 credits. Top up whenever you need more.</p>
           </div>
 
-          <div className="mt-12 grid gap-6 sm:grid-cols-2">
-            <div className="rounded-2xl border border-slate-200 bg-white/80 p-8 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-              <p className="text-sm font-semibold text-slate-500">Free</p>
-              <p className="mt-2 text-4xl font-bold text-slate-900">₹0</p>
-              <p className="mt-1 text-sm text-slate-500">100 credits on signup</p>
-              <ul className="mt-6 space-y-3">
-                {FREE_FEATURES.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5 text-sm text-slate-600">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-green-500" /> {f}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/signup" className="mt-8 block">
-                <Button variant="outline" className="w-full rounded-xl transition-all duration-200 hover:bg-slate-50">Start free</Button>
-              </Link>
-            </div>
-
-            <div className="relative rounded-2xl border-2 border-blue-500 bg-white p-8 shadow-xl shadow-blue-500/10 transition-all duration-300 hover:-translate-y-1">
-              <div className="absolute -top-3 left-6">
-                <Badge className="bg-gradient-to-r from-blue-600 to-violet-600 text-white animate-gradient-shift">Most Popular</Badge>
+          <div className="mt-10 grid gap-6 sm:grid-cols-3">
+            {CREDIT_PACKS.map((pack) => (
+              <div
+                key={pack.name}
+                className={`relative rounded-2xl border bg-white p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${pack.popular ? 'border-2 border-blue-500 shadow-xl shadow-blue-500/10' : 'border-slate-200'}`}
+              >
+                {pack.popular && (
+                  <div className="absolute -top-3 left-6">
+                    <Badge className="bg-gradient-to-r from-blue-600 to-violet-600 text-white animate-gradient-shift">Most Popular</Badge>
+                  </div>
+                )}
+                <p className={`text-sm font-semibold ${pack.popular ? 'text-blue-600' : 'text-slate-500'}`}>{pack.name}</p>
+                <div className="mt-2 flex items-baseline gap-1">
+                  <span className="text-4xl font-bold text-slate-900">₹{pack.price}</span>
+                </div>
+                <p className="mt-1 text-sm text-slate-500">{pack.credits} credits</p>
+                <p className="mt-1 text-xs text-slate-400">₹{(pack.price / pack.credits).toFixed(2)} per credit</p>
+                <Link href={ctaHref} className="mt-8 block">
+                  <Button
+                    className={`w-full rounded-xl ${pack.popular ? 'bg-gradient-to-r from-blue-600 to-violet-600 shadow-md hover:shadow-lg animate-gradient-shift' : ''}`}
+                    variant={pack.popular ? 'default' : 'outline'}
+                  >
+                    Get Started Free
+                  </Button>
+                </Link>
               </div>
-              <p className="text-sm font-semibold text-blue-600">Pro</p>
-              <div className="mt-2 flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-slate-900">₹799</span>
-                <span className="text-slate-500">/month</span>
-              </div>
-              <p className="mt-1 text-sm text-slate-500">or ₹6,499/year (save 32%)</p>
-              <ul className="mt-6 space-y-3">
-                {PRO_FEATURES.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5 text-sm text-slate-600">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-blue-600" /> {f}
-                  </li>
-                ))}
-              </ul>
-              <Link href={isLoggedIn ? '/credits' : '/signup'} className="mt-8 block">
-                <Button className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 shadow-md transition-all duration-200 hover:shadow-lg animate-gradient-shift">
-                  Go Pro <ArrowRight className="ml-1 h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
+            ))}
           </div>
-          <p className="mt-6 text-center text-xs text-slate-400">Credit packs also available: 100 for ₹299 &middot; 300 for ₹599 &middot; 800 for ₹1,199</p>
+          <p className="mt-8 text-center text-sm text-slate-500">
+            Every new account gets <strong>100 free credits</strong> — no credit card required.
+          </p>
         </div>
       </section>
 
@@ -395,11 +385,8 @@ const FREE_FEATURES = [
   'Cover letter generator',
 ]
 
-const PRO_FEATURES = [
-  'Everything in Free',
-  'Unlimited AI usage (0 credits)',
-  '500 bonus credits every month',
-  'Unlimited PDF & DOCX exports',
-  'Priority support',
-  'Save 31% with annual plan',
+const CREDIT_PACKS = [
+  { name: 'Starter', price: 199, credits: 200, popular: false },
+  { name: 'Popular', price: 449, credits: 500, popular: true },
+  { name: 'Pro Pack', price: 899, credits: 1200, popular: false },
 ]

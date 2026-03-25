@@ -23,7 +23,6 @@ export async function GET(req: Request) {
 
     return NextResponse.json({
       credits: balance.credits,
-      tier: balance.tier,
       transactions: history.transactions,
       totalTransactions: history.total,
       page: history.page,

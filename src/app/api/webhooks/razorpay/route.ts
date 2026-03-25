@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server'
-import { eq, sql } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import * as Sentry from '@sentry/nextjs'
 import { verifyWebhookSignature } from '@/lib/razorpay/verify'
 import { db } from '@/lib/db'
-import { users, subscriptions, paymentEvents, creditTransactions } from '@/lib/db/schema'
+import { paymentEvents } from '@/lib/db/schema'
 import { addCredits } from '@/lib/db/credits'
-import { invalidateSessionCache } from '@/lib/redis'
-import { SIGNUP_CREDITS } from '@/constants/credit-costs'
+import { CREDIT_PACKS } from '@/constants/credit-costs'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,7 +16,7 @@ interface RazorpayWebhookEvent {
   contains: string[]
   payload: {
     payment?: { entity: RazorpayPayment }
-    subscription?: { entity: RazorpaySubscription }
+    order?: { entity: RazorpayOrder }
   }
   created_at: number
 }
@@ -29,30 +28,23 @@ interface RazorpayPayment {
   currency: string
   status: string
   order_id: string | null
-  description: string | null
   notes: Record<string, string>
 }
 
-interface RazorpaySubscription {
+interface RazorpayOrder {
   id: string
   entity: string
-  plan_id: string
+  amount: number
+  currency: string
   status: string
-  current_start: number | null
-  current_end: number | null
   notes: Record<string, string>
 }
 
 /**
- * Build a unique event ID from the webhook payload.
- * Includes entity ID to prevent collisions when multiple entities
- * have events at the same timestamp.
+ * Build a unique event ID for idempotency.
  */
 function buildEventId(event: RazorpayWebhookEvent): string {
-  const entityId =
-    event.payload.subscription?.entity?.id ??
-    event.payload.payment?.entity?.id ??
-    'unknown'
+  const entityId = event.payload.payment?.entity?.id ?? 'unknown'
   return `${event.event}_${entityId}_${event.created_at}`
 }
 
@@ -106,7 +98,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    // Record event first (unique PK prevents duplicates on concurrent retries)
+    // Record event first (unique PK prevents duplicates)
     try {
       await db.insert(paymentEvents).values({ id: eventId, type: event.event })
     } catch (insertErr: unknown) {
@@ -116,33 +108,10 @@ export async function POST(req: Request) {
       throw insertErr
     }
 
-    switch (event.event) {
-      case 'subscription.activated':
-        await handleSubscriptionActivated(event)
-        break
-
-      case 'subscription.charged':
-        await handleSubscriptionCharged(event)
-        break
-
-      case 'subscription.cancelled':
-        await handleSubscriptionCancelled(event)
-        break
-
-      case 'subscription.halted':
-        await handleSubscriptionHalted(event)
-        break
-
-      case 'subscription.pending':
-        await handleSubscriptionPending(event)
-        break
-
-      case 'payment.failed':
-        await handlePaymentFailed(event)
-        break
-
-      default:
-        break
+    // Only handle payment.captured — this is the backup for credit pack purchases
+    // in case the client-side verify call failed after modal success.
+    if (event.event === 'payment.captured') {
+      await handlePaymentCaptured(event)
     }
 
     return NextResponse.json({ received: true })
@@ -155,7 +124,7 @@ export async function POST(req: Request) {
       err instanceof Error &&
       (err.message === 'User not found' ||
        err.message === 'Credit amount must be positive' ||
-       (('code' in err) && (err as { code: string }).code === '23503')) // FK violation = user deleted
+       (('code' in err) && (err as { code: string }).code === '23503'))
 
     if (isPermanent) {
       Sentry.captureMessage(`PERMANENT webhook failure for event ${eventId}`, {
@@ -165,244 +134,61 @@ export async function POST(req: Request) {
       return NextResponse.json({ received: true, error: 'permanent failure' })
     }
 
-    // Transient error — return 500 so Razorpay retries
     return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 })
   }
 }
 
-// ─── Subscription activated (first payment successful) ───
-// This is the ONLY path that awards signup bonus credits.
-// The verify endpoint only upserts the subscription record.
-async function handleSubscriptionActivated(event: RazorpayWebhookEvent) {
-  const sub = event.payload.subscription?.entity
-  if (!sub) return
-
-  const userId = sub.notes?.userId
-  if (!userId) {
-    Sentry.captureMessage('Subscription missing userId in notes', { level: 'error', extra: { subscriptionId: sub.id } })
-    return
-  }
-
-  await db.transaction(async (tx) => {
-    await tx
-      .insert(subscriptions)
-      .values({
-        userId,
-        razorpaySubscriptionId: sub.id,
-        razorpayPlanId: sub.plan_id,
-        status: 'ACTIVE',
-        currentPeriodStart: sub.current_start ? new Date(sub.current_start * 1000) : null,
-        currentPeriodEnd: sub.current_end ? new Date(sub.current_end * 1000) : null,
-      })
-      .onConflictDoUpdate({
-        target: subscriptions.userId,
-        set: {
-          razorpaySubscriptionId: sub.id,
-          razorpayPlanId: sub.plan_id,
-          status: 'ACTIVE',
-          currentPeriodStart: sub.current_start ? new Date(sub.current_start * 1000) : null,
-          currentPeriodEnd: sub.current_end ? new Date(sub.current_end * 1000) : null,
-        },
-      })
-
-    await tx
-      .update(users)
-      .set({ subscriptionTier: 'PRO' })
-      .where(eq(users.id, userId))
-
-    await tx
-      .update(users)
-      .set({ credits: sql`${users.credits} + ${SIGNUP_CREDITS.PRO}` })
-      .where(eq(users.id, userId))
-
-    await tx.insert(creditTransactions).values({
-      userId,
-      amount: SIGNUP_CREDITS.PRO,
-      type: 'SIGNUP_BONUS',
-      description: `Pro subscription activated — ${SIGNUP_CREDITS.PRO} bonus credits`,
-    })
-  })
-
-  await invalidateSessionCache(userId).catch((err) => {
-    Sentry.captureException(err, { tags: { component: 'razorpay-webhook', feature: 'session-cache' } })
-  })
-
-  console.log(`Subscription activated for user ${userId}`)
-}
-
-// ─── Recurring subscription charge successful ───
-async function handleSubscriptionCharged(event: RazorpayWebhookEvent) {
-  const sub = event.payload.subscription?.entity
-  if (!sub) return
-
-  const existing = await db.query.subscriptions.findFirst({
-    where: eq(subscriptions.razorpaySubscriptionId, sub.id),
-    columns: { userId: true },
-  })
-
-  if (!existing) {
-    Sentry.captureMessage('No subscription found for charge', { level: 'warning', extra: { subscriptionId: sub.id } })
-    return
-  }
-
-  // Update period dates + ensure ACTIVE status
-  await db
-    .update(subscriptions)
-    .set({
-      currentPeriodStart: sub.current_start ? new Date(sub.current_start * 1000) : null,
-      currentPeriodEnd: sub.current_end ? new Date(sub.current_end * 1000) : null,
-      status: 'ACTIVE',
-    })
-    .where(eq(subscriptions.razorpaySubscriptionId, sub.id))
-
-  // Skip monthly credits on first charge (activation already awarded SIGNUP_BONUS).
-  // Check if a SUBSCRIPTION_MONTHLY credit was ever given for this user.
-  // If not, this is the first billing cycle — skip.
-  const hasMonthlyCredit = await db.query.creditTransactions.findFirst({
-    where: eq(creditTransactions.userId, existing.userId),
-    columns: { id: true },
-  })
-
-  // The first charge coincides with activation, so check if SIGNUP_BONUS
-  // was recently added (within last minute) — if so, skip
-  const recentBonus = await db.query.creditTransactions.findFirst({
-    where: eq(creditTransactions.userId, existing.userId),
-    columns: { id: true, type: true, createdAt: true },
-    orderBy: (ct, { desc }) => [desc(ct.createdAt)],
-  })
-
-  if (recentBonus?.type === 'SIGNUP_BONUS') {
-    const bonusAge = Date.now() - new Date(recentBonus.createdAt).getTime()
-    if (bonusAge < 5 * 60 * 1000) {
-      // SIGNUP_BONUS was added less than 5 minutes ago — this is the first charge
-      console.log(`Skipping monthly credits for user ${existing.userId} (first charge, activation credits already given)`)
-      return
-    }
-  }
-
-  try {
-    await addCredits(
-      existing.userId,
-      SIGNUP_CREDITS.PRO,
-      'SUBSCRIPTION_MONTHLY',
-      'Pro monthly credit refill — 500 credits',
-    )
-    console.log(`Monthly credits added for user ${existing.userId}`)
-  } catch (err) {
-    Sentry.captureException(err, { level: 'fatal', tags: { component: 'razorpay-webhook', feature: 'monthly-credits' } })
-    throw err
-  }
-}
-
-// ─── Subscription cancelled ───
-async function handleSubscriptionCancelled(event: RazorpayWebhookEvent) {
-  const sub = event.payload.subscription?.entity
-  if (!sub) return
-
-  const existing = await db.query.subscriptions.findFirst({
-    where: eq(subscriptions.razorpaySubscriptionId, sub.id),
-    columns: { userId: true },
-  })
-
-  if (!existing) return
-
-  await db.transaction(async (tx) => {
-    await tx
-      .update(subscriptions)
-      .set({ status: 'CANCELED' })
-      .where(eq(subscriptions.razorpaySubscriptionId, sub.id))
-
-    await tx
-      .update(users)
-      .set({ subscriptionTier: 'FREE' })
-      .where(eq(users.id, existing.userId))
-  })
-
-  await invalidateSessionCache(existing.userId).catch((err) => {
-    Sentry.captureException(err, { tags: { component: 'razorpay-webhook', feature: 'session-cache' } })
-  })
-
-  console.log(`Subscription cancelled, user ${existing.userId} downgraded to FREE`)
-}
-
-// ─── Subscription halted (all payment retries exhausted) ───
-// This is the correct place to fully downgrade the user.
-async function handleSubscriptionHalted(event: RazorpayWebhookEvent) {
-  const sub = event.payload.subscription?.entity
-  if (!sub) return
-
-  const existing = await db.query.subscriptions.findFirst({
-    where: eq(subscriptions.razorpaySubscriptionId, sub.id),
-    columns: { userId: true },
-  })
-
-  if (!existing) return
-
-  await db.transaction(async (tx) => {
-    await tx
-      .update(subscriptions)
-      .set({ status: 'CANCELED' })
-      .where(eq(subscriptions.razorpaySubscriptionId, sub.id))
-
-    await tx
-      .update(users)
-      .set({ subscriptionTier: 'FREE' })
-      .where(eq(users.id, existing.userId))
-  })
-
-  await invalidateSessionCache(existing.userId).catch((err) => {
-    Sentry.captureException(err, { tags: { component: 'razorpay-webhook', feature: 'session-cache' } })
-  })
-
-  console.log(`Subscription halted (retries exhausted), user ${existing.userId} downgraded to FREE`)
-}
-
-// ─── Subscription payment pending ───
-async function handleSubscriptionPending(event: RazorpayWebhookEvent) {
-  const sub = event.payload.subscription?.entity
-  if (!sub) return
-
-  const existing = await db.query.subscriptions.findFirst({
-    where: eq(subscriptions.razorpaySubscriptionId, sub.id),
-    columns: { userId: true },
-  })
-
-  if (!existing) return
-
-  await db
-    .update(subscriptions)
-    .set({ status: 'PAST_DUE' })
-    .where(eq(subscriptions.razorpaySubscriptionId, sub.id))
-
-  console.log(`Subscription pending for user ${existing.userId}`)
-}
-
-// ─── Payment failed ───
-// Only mark as PAST_DUE — don't downgrade tier yet.
-// Razorpay retries automatically. Full downgrade happens on subscription.halted.
-async function handlePaymentFailed(event: RazorpayWebhookEvent) {
+/**
+ * Handle payment.captured — backup credit award for credit pack purchases.
+ * The primary path is the client-side verify call. This handles the case
+ * where the client verify timed out or failed after payment succeeded.
+ *
+ * Idempotency: checks payment_events for verify_{payment_id} before crediting.
+ */
+async function handlePaymentCaptured(event: RazorpayWebhookEvent) {
   const payment = event.payload.payment?.entity
   if (!payment) return
 
   const userId = payment.notes?.userId
-  if (!userId) return
+  const type = payment.notes?.type
+  const packId = payment.notes?.packId
+  const creditsStr = payment.notes?.credits
 
-  const existing = await db.query.subscriptions.findFirst({
-    where: eq(subscriptions.userId, userId),
-    columns: { userId: true, status: true },
+  if (!userId || type !== 'credit_pack' || !packId || !creditsStr) return
+
+  // Check if verify endpoint already credited this payment
+  const verifyEventId = `verify_${payment.id}`
+  const alreadyVerified = await db.query.paymentEvents.findFirst({
+    where: eq(paymentEvents.id, verifyEventId),
   })
+  if (alreadyVerified) {
+    console.log(`Payment ${payment.id} already verified by client, skipping webhook credit`)
+    return
+  }
 
-  if (!existing || existing.status !== 'ACTIVE') return
+  // Record that we're crediting via webhook (prevents double if verify comes later)
+  try {
+    await db.insert(paymentEvents).values({ id: verifyEventId, type: 'webhook_credit' })
+  } catch (insertErr: unknown) {
+    if (insertErr instanceof Error && 'code' in insertErr && (insertErr as { code: string }).code === '23505') {
+      return // Already processed
+    }
+    throw insertErr
+  }
 
-  // Only mark PAST_DUE — keep PRO tier until halted
-  await db
-    .update(subscriptions)
-    .set({ status: 'PAST_DUE' })
-    .where(eq(subscriptions.userId, userId))
+  const credits = parseInt(creditsStr, 10)
+  if (isNaN(credits) || credits <= 0) {
+    Sentry.captureMessage('Invalid credit amount in payment notes', { level: 'error', extra: { paymentId: payment.id } })
+    return
+  }
 
-  await invalidateSessionCache(userId).catch((err) => {
-    Sentry.captureException(err, { tags: { component: 'razorpay-webhook', feature: 'session-cache' } })
-  })
+  const pack = CREDIT_PACKS.find((p) => p.id === packId)
+  await addCredits(
+    userId,
+    credits,
+    'PURCHASE',
+    `Credit pack: ${pack?.label ?? packId} (${credits} credits) — Payment: ${payment.id} (webhook)`,
+  )
 
-  console.log(`Payment failed for user ${userId}, subscription marked PAST_DUE (retries pending)`)
+  console.log(`Webhook credited ${credits} credits for user ${userId} (payment: ${payment.id})`)
 }

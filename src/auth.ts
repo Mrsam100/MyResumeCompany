@@ -7,6 +7,7 @@ import { eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { users, accounts, sessions, verificationTokens } from '@/lib/db/schema'
 import { addCredits } from '@/lib/db/credits'
+import { SIGNUP_CREDITS } from '@/constants/credit-costs'
 import { getCachedSession, setCachedSession } from '@/lib/redis'
 import { loginSchema } from '@/lib/validations/auth'
 import { verifyPassword, needsHashUpgrade, hashPassword } from '@/lib/auth/password'
@@ -101,7 +102,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
         }
 
-        await addCredits(user.id, 100, 'SIGNUP_BONUS', 'Welcome bonus — 100 free credits')
+        await addCredits(user.id, SIGNUP_CREDITS, 'SIGNUP_BONUS', `Welcome bonus — ${SIGNUP_CREDITS} free credits`)
 
         // Send welcome email (non-blocking — don't fail signup on email error)
         if (user.email) {
@@ -121,7 +122,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const cached = await getCachedSession(user.id as string)
         if (cached) {
           token.credits = cached.credits
-          token.subscriptionTier = cached.subscriptionTier
+          token.subscriptionTier = cached.subscriptionTier ?? 'FREE'
           token.hasPassword = cached.hasPassword
         } else {
           const dbUser = await db.query.users.findFirst({
@@ -130,13 +131,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           })
           if (dbUser) {
             token.credits = dbUser.credits
-            token.subscriptionTier = dbUser.subscriptionTier
+            token.subscriptionTier = dbUser.subscriptionTier ?? 'FREE'
             token.hasPassword = !!dbUser.hashedPassword
 
             // Populate cache for next time
             await setCachedSession(user.id as string, {
               credits: dbUser.credits,
-              subscriptionTier: dbUser.subscriptionTier,
+              subscriptionTier: dbUser.subscriptionTier ?? 'FREE',
               hasPassword: !!dbUser.hashedPassword,
             })
           }

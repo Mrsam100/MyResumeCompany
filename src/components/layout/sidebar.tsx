@@ -11,8 +11,6 @@ import {
   Coins,
   Settings,
   LogOut,
-  Crown,
-  Sparkles,
 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
@@ -89,26 +87,6 @@ export function Sidebar() {
           )
         })}
       </nav>
-
-      {/* Upgrade CTA */}
-      {user?.subscriptionTier !== 'PRO' && (
-        <div className="mx-3 mb-3">
-          <Link href="/credits">
-            <div className="rounded-xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-[1px]">
-              <div className="rounded-[11px] bg-card/90 p-3 transition-shadow duration-300 hover:shadow-[0_0_20px_oklch(0.205_0_0/10%)]">
-                <div className="flex items-center gap-2 text-sm font-semibold text-primary">
-                  <Crown className="h-4 w-4" />
-                  <Sparkles className="h-3 w-3 text-amber-500" />
-                  Upgrade to Pro
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Unlimited AI + 500 credits/month
-                </p>
-              </div>
-            </div>
-          </Link>
-        </div>
-      )}
 
       {/* User menu */}
       <div className="border-t border-border/50 p-3">

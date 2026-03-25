@@ -233,14 +233,14 @@ export const ONBOARDING_EMAILS: { day: number; subject: string; builder: (name: 
   },
   {
     day: 7,
-    subject: 'Unlock unlimited AI with Pro',
-    builder: (name, appUrl) => emailShell(`Running low on credits, ${esc(name)}?`,
-      p('You started with 100 free credits. <strong>Pro</strong> gives you unlimited AI usage + 500 monthly credits for just ₹799/month.')
+    subject: 'Need more credits? Packs start at ₹199',
+    builder: (name, appUrl) => emailShell(`Top up your credits, ${esc(name)}`,
+      p('You started with 100 free credits. When you need more, our credit packs are the fastest way to keep going.')
       + `<div style="margin:24px 0;padding:20px;background:#f0fdf4;border-radius:8px;border:1px solid #bbf7d0;">
-<p style="margin:0 0 8px;color:#166534;font-size:14px;font-weight:600;">Pro includes:</p>
+<p style="margin:0 0 8px;color:#166534;font-size:14px;font-weight:600;">Credit packs:</p>
 <ul style="margin:0;padding-left:20px;color:#166534;font-size:14px;line-height:1.8;">
-<li>Unlimited AI features</li><li>Unlimited PDF & DOCX exports</li><li>500 bonus credits/month</li></ul></div>`
-      + ctaButton('Upgrade to Pro — ₹799/mo', `${appUrl}/credits`)),
+<li>Starter — 200 credits for ₹199</li><li>Popular — 500 credits for ₹449</li><li>Pro Pack — 1200 credits for ₹899</li></ul></div>`
+      + ctaButton('Buy Credits — from ₹199', `${appUrl}/credits`)),
   },
 ]
 
@@ -255,7 +255,7 @@ export async function sendLowCreditsEmail(to: string, name: string, credits: num
       p(`Hi ${esc(name)}, you have <strong>${credits} credits</strong> remaining.`)
       + `<div style="margin:24px 0;padding:16px;background:#fef3c7;border-radius:8px;border:1px solid #fde68a;">
 <p style="margin:0;color:#92400e;font-size:14px;">Credit costs: Bullets (10) · Summary (10) · ATS Scan (15) · PDF Export (30)</p></div>`
-      + p('Top up with a credit pack or upgrade to Pro for unlimited AI.')
+      + p('Top up with a credit pack — packs start at just ₹199 for 200 credits.')
       + ctaButton('Get More Credits', `${appUrl}/credits`)),
   })
 }

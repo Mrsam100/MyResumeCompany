@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { CREDIT_COSTS, CREDIT_PACKS, SUBSCRIPTION_PLANS, SIGNUP_CREDITS } from '@/constants/credit-costs'
+import { CREDIT_COSTS, CREDIT_PACKS, SIGNUP_CREDITS } from '@/constants/credit-costs'
 
 describe('Credit Costs Constants', () => {
   it('all credit costs are positive numbers', () => {
@@ -50,29 +50,12 @@ describe('Credit Packs', () => {
   })
 })
 
-describe('Subscription Plans', () => {
-  it('yearly is cheaper per month than monthly', () => {
-    const monthlyRate = SUBSCRIPTION_PLANS.PRO_MONTHLY.price
-    const yearlyMonthlyRate = SUBSCRIPTION_PLANS.PRO_YEARLY.price / 12
-    expect(yearlyMonthlyRate).toBeLessThan(monthlyRate)
-  })
-
-  it('both plans give 500 credits', () => {
-    expect(SUBSCRIPTION_PLANS.PRO_MONTHLY.credits).toBe(500)
-    expect(SUBSCRIPTION_PLANS.PRO_YEARLY.credits).toBe(500)
-  })
-})
-
 describe('Signup Credits', () => {
-  it('free users get 100 credits', () => {
-    expect(SIGNUP_CREDITS.FREE).toBe(100)
+  it('users get 100 credits', () => {
+    expect(SIGNUP_CREDITS).toBe(100)
   })
 
-  it('pro users get more credits than free', () => {
-    expect(SIGNUP_CREDITS.PRO).toBeGreaterThan(SIGNUP_CREDITS.FREE)
-  })
-
-  it('free credits cover at least one full resume', () => {
-    expect(SIGNUP_CREDITS.FREE).toBeGreaterThanOrEqual(CREDIT_COSTS.AI_FULL_RESUME)
+  it('signup credits cover at least one full resume', () => {
+    expect(SIGNUP_CREDITS).toBeGreaterThanOrEqual(CREDIT_COSTS.AI_FULL_RESUME)
   })
 })

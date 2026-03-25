@@ -4,27 +4,23 @@ import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
   Coins,
-  Crown,
   Loader2,
-  Sparkles,
   Zap,
   Package,
-  Check,
   Clock,
-  CreditCard,
   RefreshCw,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCurrentUser } from '@/hooks/use-current-user'
 import { useRazorpay } from '@/hooks/use-razorpay'
 import { cn } from '@/lib/utils'
-import { CREDIT_COSTS, CREDIT_PACKS, SUBSCRIPTION_PLANS, CURRENCY } from '@/constants/credit-costs'
+import { CREDIT_COSTS, CREDIT_PACKS, CURRENCY } from '@/constants/credit-costs'
 
 interface Transaction {
   id: string
@@ -41,10 +37,12 @@ const COST_LABELS: Record<string, string> = {
   AI_ATS_SCAN: 'ATS Scan',
   AI_ATS_OPTIMIZE: 'ATS Optimize',
   AI_COVER_LETTER: 'Cover Letter',
+  AI_LINKEDIN_IMPORT: 'LinkedIn Import',
+  AI_RESUME_IMPORT: 'Resume Import',
   PDF_EXPORT: 'PDF Export',
+  DOCX_EXPORT: 'DOCX Export',
   SIGNUP_BONUS: 'Signup Bonus',
   PURCHASE: 'Credit Purchase',
-  SUBSCRIPTION_MONTHLY: 'Pro Credits',
   REFUND: 'Refund',
   ADMIN_ADJUSTMENT: 'Admin Adjustment',
 }
@@ -81,12 +79,9 @@ function CreditsPageInner() {
   const [totalPages, setTotalPages] = useState(1)
   const [page, setPage] = useState(1)
   const [purchasing, setPurchasing] = useState<string | null>(null)
-  const [subscribing, setSubscribing] = useState<string | null>(null)
   const abortRef = useRef<AbortController | null>(null)
 
-  const isPro = user?.subscriptionTier === 'PRO'
-
-  // Show success toast on return (for any edge case redirects)
+  // Show success/cancel toast on return from any edge-case redirects
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
       toast.success('Payment successful!')
@@ -206,239 +201,46 @@ function CreditsPageInner() {
     }
   }
 
-  async function handleSubscribe(plan: 'monthly' | 'yearly') {
-    if (subscribing) return // Prevent double-click
-    setSubscribing(plan)
-    try {
-      // 1. Create Razorpay subscription
-      const res = await fetch('/api/razorpay/subscription', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan }),
-      })
-      if (!res.ok) {
-        const data = await res.json()
-        toast.error(data.error || 'Failed to create subscription')
-        return
-      }
-      const { subscriptionId } = await res.json()
-
-      // 2. Open Razorpay modal
-      const response = await openCheckout({
-        subscription_id: subscriptionId,
-        name: 'TheResumeCompany',
-        description: `Pro ${plan === 'monthly' ? 'Monthly' : 'Yearly'} Subscription`,
-        prefill: {
-          name: user?.name ?? undefined,
-          email: user?.email ?? undefined,
-        },
-        theme: { color: '#f59e0b' },
-      })
-
-      // 3. Verify subscription (with timeout)
-      const controller = new AbortController()
-      const timeout = setTimeout(() => controller.abort(), 20000)
-      try {
-        const verifyRes = await fetch('/api/razorpay/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'subscription',
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_subscription_id: response.razorpay_subscription_id,
-            razorpay_signature: response.razorpay_signature,
-            plan,
-          }),
-          signal: controller.signal,
-        })
-
-        if (verifyRes.ok) {
-          toast.success('Pro subscription activated! Welcome to Pro!')
-          update()
-          fetchCredits()
-        } else {
-          const data = await verifyRes.json()
-          toast.error(data.error || 'Subscription verification failed. It will activate shortly.')
-        }
-      } finally {
-        clearTimeout(timeout)
-      }
-    } catch (err) {
-      if (err instanceof Error && err.message === 'Payment cancelled') {
-        toast.info('Payment cancelled')
-      } else if (err instanceof Error && err.name === 'AbortError') {
-        toast.info('Verification timed out. Your subscription will activate shortly via webhook.')
-      } else {
-        toast.error('Something went wrong. If you were charged, your subscription will activate automatically.')
-      }
-    } finally {
-      setSubscribing(null)
-    }
-  }
-
-  async function handleCancelSubscription() {
-    if (!confirm('Are you sure you want to cancel your Pro subscription? You will lose access to unlimited AI features.')) {
-      return
-    }
-    try {
-      const res = await fetch('/api/razorpay/subscription/cancel', { method: 'POST' })
-      if (res.ok) {
-        toast.success('Subscription cancelled')
-        update()
-      } else {
-        const data = await res.json()
-        toast.error(data.error || 'Failed to cancel subscription')
-      }
-    } catch {
-      toast.error('Something went wrong')
-    }
-  }
-
   const credits = user?.credits ?? 0
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 sm:space-y-8">
       {/* Header */}
       <div className="animate-fade-in-up">
-        <h1 className="text-2xl font-bold tracking-tight">Credits & Billing</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Credits</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Manage your credits, subscription, and billing
+          Buy credits and track your usage
         </p>
       </div>
 
       {/* Balance Card */}
-      <Card className="animate-fade-in-up bg-gradient-to-br from-amber-500/8 via-transparent to-orange-500/5 border-amber-500/15" style={{ animationDelay: '50ms' }}>
+      <Card
+        className="animate-fade-in-up bg-gradient-to-br from-amber-500/8 via-transparent to-orange-500/5 border-amber-500/15"
+        style={{ animationDelay: '50ms' }}
+      >
         <CardContent className="p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <div className="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-xl shadow-md bg-gradient-to-br from-amber-400/20 to-orange-400/20">
-                <Coins className="h-7 w-7 text-amber-500" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Current Balance</p>
-                <p className={cn('text-3xl sm:text-4xl font-bold tabular-nums', credits < 20 && !isPro && 'text-destructive')}>
-                  {isPro ? (
-                    <span className="flex items-center gap-2">
-                      {credits} <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white"><Crown className="mr-1 h-3 w-3" />PRO</Badge>
-                    </span>
-                  ) : (
-                    <>{credits} credits</>
-                  )}
-                </p>
-                {isPro && (
-                  <p className="text-sm text-muted-foreground">
-                    Unlimited AI usage + 500 credits/month
-                  </p>
-                )}
-              </div>
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex h-12 w-12 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-xl shadow-md bg-gradient-to-br from-amber-400/20 to-orange-400/20">
+              <Coins className="h-7 w-7 text-amber-500" />
             </div>
-            {isPro && (
-              <Button
-                variant="outline"
-                onClick={handleCancelSubscription}
-                className="w-full sm:w-auto gap-2 text-destructive hover:text-destructive"
-              >
-                <CreditCard className="h-4 w-4" />
-                Cancel Subscription
-              </Button>
-            )}
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Current Balance</p>
+              <p className={cn('text-3xl sm:text-4xl font-bold tabular-nums', credits < 20 && 'text-destructive')}>
+                {credits}
+                <span className="ml-1.5 text-lg sm:text-xl font-medium text-muted-foreground">credits</span>
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Pro Plan Section — only show for non-Pro users */}
-      {!isPro && (
-        <>
-          <div className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-            <h2 className="mb-4 text-lg font-semibold flex items-center gap-2">
-              <Crown className="h-5 w-5 text-amber-500" />
-              Upgrade to Pro
-            </h2>
-            <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
-              {/* Monthly */}
-              <Card className="relative overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">Pro Monthly</CardTitle>
-                  <CardDescription>Unlimited AI, billed monthly</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <span className="text-2xl sm:text-3xl font-bold">{CURRENCY.symbol}{(SUBSCRIPTION_PLANS.PRO_MONTHLY.price / 100).toFixed(0)}</span>
-                    <span className="text-muted-foreground">/month</span>
-                  </div>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2"><div className="bg-green-500/10 rounded-full p-0.5"><Check className="h-4 w-4 text-green-500" /></div>Unlimited AI features</li>
-                    <li className="flex items-center gap-2"><div className="bg-green-500/10 rounded-full p-0.5"><Check className="h-4 w-4 text-green-500" /></div>500 credits/month</li>
-                    <li className="flex items-center gap-2"><div className="bg-green-500/10 rounded-full p-0.5"><Check className="h-4 w-4 text-green-500" /></div>Unlimited PDF exports</li>
-                    <li className="flex items-center gap-2"><div className="bg-green-500/10 rounded-full p-0.5"><Check className="h-4 w-4 text-green-500" /></div>Priority support</li>
-                  </ul>
-                  <Button
-                    onClick={() => handleSubscribe('monthly')}
-                    disabled={subscribing === 'monthly'}
-                    className="w-full gap-2"
-                  >
-                    {subscribing === 'monthly' ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Sparkles className="h-4 w-4" />
-                    )}
-                    Subscribe Monthly
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Yearly */}
-              <Card className="relative overflow-hidden border-2 border-amber-500/40 shadow-lg shadow-amber-500/5 bg-gradient-to-br from-amber-500/5 to-orange-500/3 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                <div className="absolute right-3 top-3">
-                  <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
-                    Save 32%
-                  </Badge>
-                </div>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">Pro Yearly</CardTitle>
-                  <CardDescription>Unlimited AI, billed annually</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <span className="text-2xl sm:text-3xl font-bold">{CURRENCY.symbol}{(SUBSCRIPTION_PLANS.PRO_YEARLY.price / 100).toFixed(0)}</span>
-                    <span className="text-muted-foreground">/year</span>
-                    <span className="ml-2 text-sm text-muted-foreground">
-                      ({CURRENCY.symbol}{(SUBSCRIPTION_PLANS.PRO_YEARLY.price / 100 / 12).toFixed(0)}/mo)
-                    </span>
-                  </div>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2"><div className="bg-green-500/10 rounded-full p-0.5"><Check className="h-4 w-4 text-green-500" /></div>Everything in Monthly</li>
-                    <li className="flex items-center gap-2"><div className="bg-green-500/10 rounded-full p-0.5"><Check className="h-4 w-4 text-green-500" /></div>500 credits/month</li>
-                    <li className="flex items-center gap-2"><div className="bg-green-500/10 rounded-full p-0.5"><Check className="h-4 w-4 text-green-500" /></div>2 months free</li>
-                    <li className="flex items-center gap-2"><div className="bg-green-500/10 rounded-full p-0.5"><Check className="h-4 w-4 text-green-500" /></div>Best value</li>
-                  </ul>
-                  <Button
-                    onClick={() => handleSubscribe('yearly')}
-                    disabled={subscribing === 'yearly'}
-                    className="w-full gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-                  >
-                    {subscribing === 'yearly' ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Crown className="h-4 w-4" />
-                    )}
-                    Subscribe Yearly
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
-          <Separator />
-        </>
-      )}
-
       {/* Credit Packs */}
-      <div className="animate-fade-in-up" style={{ animationDelay: '150ms' }}>
-        <h2 className="mb-4 text-lg font-semibold flex items-center gap-2">
+      <div className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+        <h2 className="mb-1 text-lg font-semibold flex items-center gap-2">
           <Package className="h-5 w-5 text-primary" />
-          Buy Credit Packs
+          Buy Credits
         </h2>
+        <p className="mb-4 text-sm text-muted-foreground">Credits never expire. Use them anytime.</p>
         <div className="grid gap-3 sm:gap-4 sm:grid-cols-3">
           {CREDIT_PACKS.map((pack) => (
             <Card
@@ -487,7 +289,7 @@ function CreditsPageInner() {
       <Separator />
 
       {/* Credit Costs Reference */}
-      <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+      <div className="animate-fade-in-up" style={{ animationDelay: '150ms' }}>
         <h2 className="mb-4 text-lg font-semibold">Credit Costs</h2>
         <Card>
           <CardContent className="p-0">
@@ -500,13 +302,7 @@ function CreditsPageInner() {
                   <p className="text-xs font-medium text-muted-foreground">
                     {COST_LABELS[key] ?? key}
                   </p>
-                  <p className="mt-1 text-lg font-semibold">
-                    {isPro ? (
-                      <span className="text-green-500">Free</span>
-                    ) : (
-                      <>{cost} credits</>
-                    )}
-                  </p>
+                  <p className="mt-1 text-lg font-semibold">{cost} credits</p>
                 </div>
               ))}
             </div>
@@ -517,7 +313,7 @@ function CreditsPageInner() {
       <Separator />
 
       {/* Transaction History */}
-      <div className="animate-fade-in-up" style={{ animationDelay: '250ms' }}>
+      <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
         <h2 className="mb-4 text-lg font-semibold flex items-center gap-2">
           <Clock className="h-5 w-5 text-muted-foreground" />
           Transaction History
@@ -563,7 +359,10 @@ function CreditsPageInner() {
           <Card>
             <CardContent className="divide-y p-0">
               {transactions.map((tx) => (
-                <div key={tx.id} className="flex items-center justify-between px-4 sm:px-5 py-3.5 hover:bg-muted/30 transition-colors duration-150">
+                <div
+                  key={tx.id}
+                  className="flex items-center justify-between px-4 sm:px-5 py-3.5 hover:bg-muted/30 transition-colors duration-150"
+                >
                   <div>
                     <p className="text-sm font-medium">
                       {COST_LABELS[tx.type] ?? tx.type}

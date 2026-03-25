@@ -17,9 +17,11 @@ const COMPANY_LINKS = [
 ]
 
 const COMPARE_LINKS = [
-  { href: '/compare/vs-zety', label: 'vs Zety' },
-  { href: '/compare/vs-resume-io', label: 'vs Resume.io' },
-  { href: '/compare/vs-canva', label: 'vs Canva' },
+  { href: '/compare/vs-zety', label: 'TheResumeCompany vs Zety' },
+  { href: '/compare/vs-resume-io', label: 'TheResumeCompany vs Resume.io' },
+  { href: '/compare/vs-canva', label: 'TheResumeCompany vs Canva' },
+  { href: '/compare/best-resume-builders-2026', label: 'Best Resume Builders 2026' },
+  { href: '/compare', label: 'All Comparisons' },
 ]
 
 export function MarketingFooter() {

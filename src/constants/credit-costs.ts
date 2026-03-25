@@ -16,17 +16,9 @@ export const CREDIT_COSTS = {
 export type CreditAction = keyof typeof CREDIT_COSTS
 
 export const CREDIT_PACKS = [
-  { id: 'starter', credits: 100, price: 29900, label: 'Starter', popular: false },   // ₹299
-  { id: 'popular', credits: 300, price: 59900, label: 'Popular', popular: true },     // ₹599
-  { id: 'power', credits: 800, price: 119900, label: 'Power Pack', popular: false },  // ₹1,199
+  { id: 'starter', credits: 200, price: 19900, label: 'Starter', popular: false },    // ₹199
+  { id: 'popular', credits: 500, price: 44900, label: 'Popular', popular: true },      // ₹449
+  { id: 'pro', credits: 1200, price: 89900, label: 'Pro Pack', popular: false },       // ₹899
 ] as const
 
-export const SUBSCRIPTION_PLANS = {
-  PRO_MONTHLY: { price: 79900, interval: 'month' as const, credits: 500, label: 'Pro Monthly' },   // ₹799/mo
-  PRO_YEARLY: { price: 649900, interval: 'year' as const, credits: 500, label: 'Pro Yearly' },     // ₹6,499/yr
-} as const
-
-export const SIGNUP_CREDITS = {
-  FREE: 100,
-  PRO: 500,
-} as const
+export const SIGNUP_CREDITS = 100

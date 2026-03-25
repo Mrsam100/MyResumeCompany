@@ -26,7 +26,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: 'Do I need to pay for a subscription?',
-    answer: "No. Free users pay credits per action. Pro users (₹799/month or ₹6,499/year) get unlimited AI usage and 500 bonus credits per month. Both plans have access to all 50+ templates and the full editor.",
+    answer: "No subscriptions. You start free with 100 credits and only buy more when you need them. Credit packs start at ₹199 for 200 credits, ₹449 for 500 credits, or ₹899 for 1200 credits. All plans include access to all 50+ templates and the full editor.",
   },
   {
     question: 'Can I export my resume as a Word document?',

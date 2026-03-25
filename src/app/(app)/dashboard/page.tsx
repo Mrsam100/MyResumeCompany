@@ -12,7 +12,6 @@ import {
   Target,
   ArrowRight,
   Coins,
-  Crown,
   TrendingUp,
   Wand2,
 } from 'lucide-react'
@@ -21,7 +20,6 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { ResumeCard } from '@/components/resume/resume-card'
 import { ResumeWizard } from '@/components/ai/resume-wizard'
@@ -102,7 +100,6 @@ export default function DashboardPage() {
 
   const firstName = user?.name?.split(' ')[0] ?? 'there'
   const credits = user?.credits ?? 0
-  const isPro = user?.subscriptionTier === 'PRO'
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
@@ -148,21 +145,17 @@ export default function DashboardPage() {
                 <p
                   className={cn(
                     'mt-1 text-3xl font-bold tabular-nums truncate',
-                    credits < 20 && !isPro && 'text-destructive',
+                    credits < 20 && 'text-destructive',
                   )}
                 >
-                  {isPro ? (
-                    <span className="text-xl">Unlimited</span>
-                  ) : (
-                    credits
-                  )}
+                  {credits}
                 </p>
               </div>
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 shadow-sm">
                 <Coins className="h-6 w-6 text-amber-500" />
               </div>
             </div>
-            {!isPro && credits < 30 && (
+            {credits < 30 && (
               <Link href="/credits" className="mt-3 block">
                 <p className="text-xs font-medium text-primary hover:underline">
                   Buy more credits &rarr;
@@ -176,33 +169,18 @@ export default function DashboardPage() {
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div className="min-w-0">
-                <p className="text-sm font-medium text-muted-foreground">Plan</p>
-                <div className="mt-1 flex items-center gap-2">
-                  <p className="text-3xl font-bold tabular-nums truncate">{isPro ? 'Pro' : 'Free'}</p>
-                  {isPro && (
-                    <Badge className="shrink-0 bg-gradient-to-r from-amber-500 to-orange-500 text-white">
-                      <Crown className="mr-1 h-3 w-3" />
-                      PRO
-                    </Badge>
-                  )}
-                </div>
+                <p className="text-sm font-medium text-muted-foreground">Templates</p>
+                <p className="mt-1 text-3xl font-bold tabular-nums truncate">15</p>
               </div>
-              <div
-                className={cn(
-                  'flex h-12 w-12 shrink-0 items-center justify-center rounded-xl shadow-sm',
-                  isPro ? 'bg-amber-500/10' : 'bg-green-500/10',
-                )}
-              >
-                <TrendingUp className={cn('h-6 w-6', isPro ? 'text-amber-500' : 'text-green-500')} />
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green-500/10 shadow-sm">
+                <TrendingUp className="h-6 w-6 text-green-500" />
               </div>
             </div>
-            {!isPro && (
-              <Link href="/credits" className="mt-3 block">
-                <p className="text-xs font-medium text-primary hover:underline">
-                  Upgrade to Pro &rarr;
-                </p>
-              </Link>
-            )}
+            <Link href="/templates" className="mt-3 block">
+              <p className="text-xs font-medium text-primary hover:underline">
+                Browse templates &rarr;
+              </p>
+            </Link>
           </CardContent>
         </Card>
 

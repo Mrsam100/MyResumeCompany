@@ -5,10 +5,10 @@ We are building an AI-powered resume builder SaaS to disrupt the resume builder 
 
 ## Key Decisions
 - **Target:** B2C job seekers (students, professionals, career changers)
-- **Monetization:** Credits + Subscription hybrid
+- **Monetization:** Credits-only (no subscriptions)
   - Free signup = 100 credits
-  - Pro plan = ₹799/mo (unlimited AI + 500 credits/month) or ₹6,499/year
-  - Credit packs: ₹299/100, ₹599/300, ₹1,199/800
+  - Credit packs: ₹199/200, ₹449/500, ₹899/1,200
+  - Credits never expire
 - **AI Features:** Bullet writer, summary writer, full resume generator, ATS scorer/optimizer, cover letter generator
 - **Timeline:** ~95 days (3 months) to production launch
 - **Starting from:** Zero. No code, no design, no brand assets.
@@ -29,7 +29,7 @@ We are building an AI-powered resume builder SaaS to disrupt the resume builder 
 | Database | PostgreSQL via Supabase | Auth, realtime, storage, DB in one platform |
 | ORM | Drizzle ORM | Type-safe, zero-codegen, SQL-like, lightweight |
 | Validation | Zod v4 | Runtime type validation, form validation, API validation |
-| Payments | Razorpay (Orders + Subscriptions + Webhooks) | INR payments, client-side modal checkout |
+| Payments | Razorpay (Orders + Webhooks) | INR credit pack purchases, client-side modal checkout |
 | File Storage | Supabase Storage | Generated PDFs, user uploads |
 | Hosting | Vercel | Zero-config Next.js, edge functions, analytics |
 | Email | Resend | Transactional emails (welcome, receipts, etc.) |
@@ -128,21 +128,22 @@ src/
 
 ## Credit System
 
-| Action | Credit Cost | Pro Subscriber |
-|--------|------------|----------------|
-| Signup bonus | +100 | +500 |
-| AI bullet points | -10 | Unlimited (0 charged) |
-| AI summary | -10 | Unlimited (0 charged) |
-| AI full resume | -40 | Unlimited (0 charged) |
-| ATS scan | -15 | Unlimited (0 charged) |
-| ATS optimize | -15 | Unlimited (0 charged) |
-| Cover letter | -20 | Unlimited (0 charged) |
-| PDF export | -30 | Unlimited (0 charged) |
-| Monthly Pro refill | — | +500/month |
+| Action | Credit Cost |
+|--------|------------|
+| Signup bonus | +100 |
+| AI bullet points | -10 |
+| AI summary | -10 |
+| AI full resume | -40 |
+| ATS scan | -15 |
+| ATS optimize | -15 |
+| Cover letter | -20 |
+| PDF export | -30 |
+
+**Credit packs (INR, one-time purchase, never expire):** Starter ₹199/200, Popular ₹449/500, Pro ₹899/1200
 
 **Credit flow:** `checkAuth()` (auth + rate limit) → validate input with Zod → `deductCreditsForAI()` → call AI → on failure: `refundCredits()` with type `REFUND` and retry logic (3 attempts, 500ms delay).
 
-**Pro handling:** `deductCredits()` in `src/lib/db/credits.ts` checks `subscriptionTier === 'PRO'` and logs a 0-amount transaction. No credits deducted.
+**No subscriptions/tiers.** Every user pays credits per action. `deductCredits()` checks balance and throws `Insufficient credits` if not enough.
 
 ---
 
@@ -223,7 +224,7 @@ interface SectionEntry {
 - **`client.ts`** — Lazy-initialized Google Generative AI SDK. Model: `gemini-2.0-flash`. Exports `generateAIResponse()` with system prompt, timeout, and max tokens. Throws if `GEMINI_API_KEY` not set.
 - **`prompts.ts`** — System prompt (STAR format, action verbs, no fabrication) + 6 prompt builders. Input sanitization via `sanitize()` (short fields: strips control chars + newlines + HTML tags, max 500 chars) and `sanitizeLong()` (long-form content: preserves newlines, strips control chars + HTML tags). All user data wrapped in `<user_data>` XML tags with system prompt instruction to treat as data only.
 - **`credit-check.ts`** — `checkAuth()` (auth + rate limit, returns userId + tier), `deductCreditsForAI()` (deducts or returns 402), `refundCredits()` (uses `REFUND` transaction type, 3 retries with 500ms delay, CRITICAL log on final failure).
-- **`rate-limiter.ts`** — In-memory Map-based per-user rate limiter. 20/hr for FREE, 100/hr for PRO. Cleanup every 5 minutes. Returns 429 with `Retry-After` header.
+- **`rate-limiter.ts`** — Redis-backed per-user rate limiter. 40/hr for all users. Returns 429 with `Retry-After` header.
 - **`parse-json.ts`** — Multi-strategy JSON extraction: (1) markdown fences, (2) non-greedy regex, (3) greedy fallback. Validates shape matches expected type (object vs array).
 
 ### AI Route Pattern (all 6 routes follow this)
@@ -330,40 +331,30 @@ All templates use pure inline styles (no Tailwind) for dual web + PDF rendering 
 
 ### Infrastructure (`src/lib/razorpay/`)
 - **`client.ts`** — Lazy-init Razorpay SDK via Proxy pattern.
-- **`verify.ts`** — HMAC SHA256 signature verification (timing-safe) for payments, subscriptions, and webhooks.
+- **`verify.ts`** — HMAC SHA256 signature verification (timing-safe) for payments and webhooks.
 - **`rate-limit.ts`** — Redis-backed rate limiter for payment routes (10 req/min per user).
 
-### Payment Flow (Client-Side Modal)
+### Payment Flow (Client-Side Modal — Credits Only)
 ```
-Credit Packs:
 1. POST /api/razorpay/order — Creates Razorpay Order (returns orderId)
-2. Client opens Razorpay modal with orderId
+2. Client opens Razorpay modal with orderId (useRazorpay hook)
 3. POST /api/razorpay/verify — Verifies signature, credits user (idempotent via payment_id)
-
-Subscriptions:
-1. POST /api/razorpay/subscription — Creates Razorpay Subscription (returns subscriptionId)
-2. Client opens Razorpay modal with subscriptionId
-3. POST /api/razorpay/verify — Verifies signature, upserts subscription record
-4. Webhook (subscription.activated) — Awards credits + upgrades tier (prevents double-crediting)
-
-Cancel:
-1. POST /api/razorpay/subscription/cancel — Cancels on Razorpay + downgrades locally
+4. Webhook (payment.captured) — Backup: credits user if client verify failed
 ```
 
 ### Webhook Handler (`POST /api/webhooks/razorpay`)
 - **Idempotency:** `payment_events` table with composite key (event_type + entity_id + timestamp)
-- **Atomic operations:** Subscription activation (upsert + tier upgrade + credits) in single `db.transaction()`
+- **Backup crediting:** If client-side verify timed out, webhook credits user (checks verify event first to prevent double-crediting)
 - **Error classification:** Transient errors → 500 (Razorpay retries), permanent errors → 200 (stops retries)
-- **Events handled:** `subscription.activated`, `subscription.charged`, `subscription.cancelled`, `subscription.halted`, `subscription.pending`, `payment.failed`
-- **Payment failure:** Marks PAST_DUE only (no immediate downgrade). Full downgrade on `subscription.halted`.
-- **First-charge protection:** Skips monthly credits if SIGNUP_BONUS was awarded < 5 minutes ago.
+- **Events handled:** `payment.captured`
 
 ### Security
 - CSRF: Origin header validation on all payment routes
 - Rate limiting: Redis-backed 10 req/min per user
 - Auth: All routes require authenticated session
 - Timing-safe HMAC: `crypto.timingSafeEqual()` for all signature verification
-- Idempotency: Verify endpoint deduplicates via `razorpay_payment_id` in `payment_events` table
+- Idempotency: Verify endpoint deduplicates via `verify_{payment_id}` in `payment_events` table
+- Double-click prevention: Client guards with `if (purchasing) return`
 
 ### Client-Side Hook (`src/hooks/use-razorpay.ts`)
 - Dynamically loads `checkout.razorpay.com/v1/checkout.js`
@@ -372,9 +363,9 @@ Cancel:
 - Uses `NEXT_PUBLIC_RAZORPAY_KEY_ID` env var
 
 ### UI Pages
-- **Credits page** (`/credits`): Balance card, Pro upgrade section, credit packs, Razorpay modal checkout, transaction history
-- **Pricing page** (`/pricing`): Free vs Pro comparison (INR), credit packs, cost table, FAQ
-- **Settings page**: Cancel Subscription button for Pro users (no external portal)
+- **Credits page** (`/credits`): Balance card, 3 credit packs with Razorpay modal, credit costs reference, transaction history
+- **Pricing page** (`/pricing`): Features list, 3 credit packs, credit cost table, FAQ
+- **Settings page**: Profile, password, danger zone (no billing section)
 
 ---
 
@@ -444,7 +435,7 @@ Cancel:
 ### PHASE 3 — Authentication System (Days 6-9)
 - NextAuth.js v5 + DrizzleAdapter
 - Google OAuth, GitHub OAuth, email/password (bcrypt)
-- Session callbacks: include userId, credits, subscriptionTier (only queries DB on initial sign-in)
+- Session callbacks: include userId, credits (only queries DB on initial sign-in)
 - Protected route middleware (protect /dashboard/*, /editor/*, etc.)
 - Signup API: hash password, create user, award 100 credits, log transaction (atomic with unique constraint catch)
 - Login page UI: social buttons + email/password form, open redirect protection
@@ -462,7 +453,7 @@ Cancel:
 - Top bar: breadcrumbs, credit balance, "New Resume" button, user avatar dropdown
 - Dashboard page: welcome message, stats row, recent resumes grid, empty state, "Create with AI" → ResumeWizard
 - Resume card component: thumbnail, title, last edited, template badge, 3-dot menu
-- Settings page: profile, password, subscription, danger zone (delete account)
+- Settings page: profile, password, danger zone (delete account)
 - Resume CRUD API routes: GET/POST /api/resumes, GET/PUT/DELETE /api/resumes/[id], POST /api/resumes/[id]/duplicate, POST /api/resumes/[id]/save
 - Default resume content factory
 
@@ -572,14 +563,13 @@ Cancel:
 - "Not enough credits" flow → redirect to purchase
 - Credit balance in header (animated, warning when < 20)
 - Razorpay Orders for credit packs (POST /api/razorpay/order)
-- Razorpay Subscriptions for Pro plans (POST /api/razorpay/subscription)
 - Client-side Razorpay modal checkout (useRazorpay hook)
 - Payment verification endpoint (POST /api/razorpay/verify)
-- Razorpay webhooks: subscription.activated, subscription.charged, subscription.cancelled, subscription.halted, payment.failed
+- Razorpay webhook: payment.captured (backup crediting)
 - Pricing page with Free vs Pro comparison
 - Upgrade prompts at strategic touchpoints
 
-**Verify:** Purchase flow works, subscription works, webhooks process correctly, cancellation downgrades
+**Verify:** Credit pack purchase flow works, webhooks process correctly, idempotency prevents double-crediting
 
 ---
 

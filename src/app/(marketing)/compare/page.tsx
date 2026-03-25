@@ -16,10 +16,10 @@ const COMPARISONS = [
   {
     slug: 'vs-zety',
     name: 'Zety',
-    tagline: 'Half the price, more AI features',
-    highlight: '₹799/mo vs $24.95/mo',
+    tagline: 'No subscription needed, more AI features',
+    highlight: 'No subscription vs $24.95/mo',
     description:
-      'Zety is a popular resume builder with 20+ templates and step-by-step writing tips. MyResumeCompany offers the same core features at roughly half the price, plus an ATS scanner, ATS optimizer, and AI full resume generator that Zety lacks.',
+      'Zety is a popular resume builder with 20+ templates and step-by-step writing tips. MyResumeCompany offers the same core features with no monthly subscription — just buy credit packs from ₹199 when you need them — plus an ATS scanner, ATS optimizer, and AI full resume generator that Zety lacks.',
   },
   {
     slug: 'vs-resume-io',

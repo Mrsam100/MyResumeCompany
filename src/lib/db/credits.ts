@@ -1,4 +1,4 @@
-import { eq, desc, and, count, sql, isNull } from 'drizzle-orm'
+import { eq, desc, and, count, sql } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { users, creditTransactions } from './schema'
 import type { CreditTransactionType } from './schema'
@@ -10,12 +10,10 @@ const LOW_CREDITS_THRESHOLD = 20
 export async function checkSufficientCredits(userId: string, cost: number) {
   const user = await db.query.users.findFirst({
     where: eq(users.id, userId),
-    columns: { credits: true, subscriptionTier: true },
+    columns: { credits: true },
   })
 
   if (!user) throw new Error('User not found')
-
-  if (user.subscriptionTier === 'PRO') return true
 
   return user.credits >= cost
 }
@@ -31,23 +29,12 @@ export async function deductCredits(
 
   const result = await db.transaction(async (tx) => {
     const [user] = await tx
-      .select({ credits: users.credits, subscriptionTier: users.subscriptionTier })
+      .select({ credits: users.credits })
       .from(users)
       .where(eq(users.id, userId))
       .for('update')
 
     if (!user) throw new Error('User not found')
-
-    if (user.subscriptionTier === 'PRO') {
-      await tx.insert(creditTransactions).values({
-        userId,
-        amount: 0,
-        type,
-        description: `${description ?? type} (Pro — free)`,
-        resumeId,
-      })
-      return { credits: user.credits, charged: 0 }
-    }
 
     if (user.credits < amount) {
       throw new Error('Insufficient credits')
@@ -83,9 +70,9 @@ export async function deductCredits(
 async function triggerLowCreditsEmail(userId: string, credits: number) {
   const user = await db.query.users.findFirst({
     where: eq(users.id, userId),
-    columns: { email: true, name: true, lowCreditsNotifiedAt: true, subscriptionTier: true },
+    columns: { email: true, name: true, lowCreditsNotifiedAt: true },
   })
-  if (!user?.email || user.subscriptionTier === 'PRO') return
+  if (!user?.email) return
 
   // Only send once per 7 days
   if (user.lowCreditsNotifiedAt) {
@@ -159,10 +146,10 @@ export async function getTransactionHistory(
 export async function getCreditBalance(userId: string) {
   const user = await db.query.users.findFirst({
     where: eq(users.id, userId),
-    columns: { credits: true, subscriptionTier: true },
+    columns: { credits: true },
   })
 
   if (!user) throw new Error('User not found')
 
-  return { credits: user.credits, tier: user.subscriptionTier }
+  return { credits: user.credits }
 }

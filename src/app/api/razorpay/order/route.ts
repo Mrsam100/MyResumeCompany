@@ -6,7 +6,7 @@ import { checkPaymentRateLimit } from '@/lib/razorpay/rate-limit'
 import { CREDIT_PACKS, CURRENCY } from '@/constants/credit-costs'
 
 const inputSchema = z.object({
-  packId: z.enum(['starter', 'popular', 'power']),
+  packId: z.enum(['starter', 'popular', 'pro']),
 })
 
 /**

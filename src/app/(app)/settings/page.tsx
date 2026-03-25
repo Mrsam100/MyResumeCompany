@@ -1,12 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Loader2, CreditCard, Crown, User, Lock, AlertTriangle, Settings } from 'lucide-react'
+import { Loader2, User, Lock, AlertTriangle, Settings } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -14,7 +13,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { Badge } from '@/components/ui/badge'
 import {
   Dialog,
   DialogContent,
@@ -71,24 +69,6 @@ export default function SettingsPage() {
         await update()
       } else {
         toast.error('Failed to update profile')
-      }
-    } catch {
-      toast.error('Something went wrong')
-    }
-  }
-
-  async function handleCancelSubscription() {
-    if (!confirm('Are you sure you want to cancel your Pro subscription? You will lose access to unlimited AI features.')) {
-      return
-    }
-    try {
-      const res = await fetch('/api/razorpay/subscription/cancel', { method: 'POST' })
-      if (res.ok) {
-        toast.success('Subscription cancelled')
-        update()
-      } else {
-        const data = await res.json()
-        toast.error(data.error || 'Failed to cancel subscription')
       }
     } catch {
       toast.error('Something went wrong')
@@ -182,48 +162,6 @@ export default function SettingsPage() {
               Save changes
             </Button>
           </form>
-        </CardContent>
-      </Card>
-
-      {/* Subscription */}
-      <Card className="border-l-[3px] border-l-amber-500 hover:shadow-sm transition-shadow duration-200 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-        <CardHeader>
-          <CardTitle><CreditCard className="inline h-4 w-4 text-muted-foreground mr-2" />Subscription</CardTitle>
-          <CardDescription>Your current plan and billing</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">Current Plan</p>
-              <p className="text-sm text-muted-foreground">
-                {user?.subscriptionTier === 'PRO'
-                  ? 'Unlimited AI + 500 credits/month'
-                  : 'Free tier with credit-based usage'}
-              </p>
-            </div>
-            <Badge
-              variant={user?.subscriptionTier === 'PRO' ? 'default' : 'secondary'}
-              className={user?.subscriptionTier === 'PRO' ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white' : ''}
-            >
-              {user?.subscriptionTier === 'PRO' && <Crown className="mr-1 h-3 w-3" />}
-              {user?.subscriptionTier ?? 'FREE'}
-            </Badge>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {user?.subscriptionTier === 'PRO' ? (
-              <Button variant="outline" className="gap-2 text-destructive hover:text-destructive" onClick={handleCancelSubscription}>
-                <CreditCard className="h-4 w-4" />
-                Cancel Subscription
-              </Button>
-            ) : (
-              <Link href="/credits">
-                <Button variant="outline" className="gap-2">
-                  <Crown className="h-4 w-4" />
-                  Upgrade to Pro
-                </Button>
-              </Link>
-            )}
-          </div>
         </CardContent>
       </Card>
 
